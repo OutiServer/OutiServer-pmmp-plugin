@@ -1,0 +1,60 @@
+name: OutiServerMoney
+author: Ken_Cir0909
+version: "1.0.0"
+api: [3.0.0]
+main: Ken_Cir0909\OutiMoney\Main
+
+commands:
+  helpmoney:
+    usage: /helpmoney <コマンド>
+    description: Moneyプラグインhelp
+    permission: HelpMoney.command
+  money:
+    usage: /money <プレイヤー>
+    description: 自分の所持金を確認する
+    permission: Money.command
+
+  givemoney:
+    usage: /givemoney <プレイヤー> <金>
+    description: プレイヤーに金を付与する
+    permission: GiveMoney.command
+
+  addmoney:
+    usage: /addmoney <プレイヤー> <金>
+    description: プレイヤーに金を追加する
+    permission: AddMoney.command
+
+  removemoney:
+    usage: /removemoney <プレイヤー> <金>
+    description: プレイヤーから金を減らす
+    permission: RemoveMoney.command
+
+  setmoney:
+    usage: /setmoney <プレイヤー> <金>
+    description: プレイヤーに金をセットする
+    permission: SetMoney.command
+
+
+permissions:
+  HelpMoney.command:
+    description: PermissionDesc
+    default: true 
+  Money.command:
+    description: PermissionDesc
+    default: true
+
+  GiveMoney.command:
+    description: PermissionDesc
+    default: true
+
+  AddMoney.command:
+    description: PermissionDesc
+    default: op
+
+  RemoveMoney.command:
+    description: PermissionDesc
+    default: op
+
+  SetMoney.command:
+    description: PermissionDesc
+    default: op
