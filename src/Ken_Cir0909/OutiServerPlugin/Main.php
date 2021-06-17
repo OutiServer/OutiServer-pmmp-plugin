@@ -25,9 +25,7 @@ use pocketmine\tile\Tile;
 use pocketmine\math\Vector3;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\level\Position;
-use pocketmine\utils\TextFormat;
 use pocketmine\scheduler\ClosureTask;
-use pocketmine\utils\Config;
 
 //Form
 use jojoe77777\FormAPI\SimpleForm;
