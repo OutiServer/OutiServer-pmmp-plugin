@@ -2,17 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ken_Cir0909\OutiMoney;
+namespace Ken_Cir0909\OutiServerPlugin;
 
 // Task
-use Ken_Cir0909\OutiMoney\Tasks\MessageTask;
-use Ken_Cir0909\OutiMoney\Tasks\ShopMessageTask;
-use Ken_Cir0909\OutiMoney\Tasks\AuctionMessageTask;
-use Ken_Cir0909\OutiMoney\Tasks\AuctionTask;
+use Ken_Cir0909\OutiServerPlugin\Tasks\discord;
 
 // Util
-use Ken_Cir0909\OutiMoney\Utils\Database;
-use Ken_Cir0909\OutiMoney\Utils\Debug;
+use Ken_Cir0909\OutiServerPlugin\Utils\Database;
 
 // pmmp
 use pocketmine\plugin\PluginBase;
@@ -30,6 +26,8 @@ use pocketmine\math\Vector3;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\level\Position;
 use pocketmine\utils\TextFormat;
+use pocketmine\scheduler\ClosureTask;
+use pocketmine\utils\Config;
 
 //Form
 use jojoe77777\FormAPI\SimpleForm;
@@ -38,63 +36,91 @@ use jojoe77777\FormAPI\CustomForm;
 
 class Main extends PluginBase implements Listener
 {
+    public $client;
+    public $started = false;
     private $db;
     private $startlands = [];
     private $endlands = [];
     private $levelnamelands = [];
+    private $config;
 
     public function onEnable()
     {
-        $this->db = new \SQLite3($this->getDataFolder() . "homeserver.db");
-        $this->db->exec("DROP TABLE lands");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (id TEXT PRIMARY KEY, user TEXT, money INTEGER)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS shops (id TEXT PRIMARY KEY, ownerxuid TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS auctions (id TEXT PRIMARY KEY, sellerxuid INTEGER, sellername TEXT, itemid INTEGER, itemmeta INTEGER, itemcount INTEGER, buyerxuid INTEGER, buyername TEXT, price INTEGER)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id TEXT PRIMARY KEY, ownerxuid INTEGER, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER)");
+        $this->db = new Database($this->getDataFolder() . 'outiserver.db');
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->client = new discord($this->getFile(), 'Nzc3MTk4MjM2NDcyODM2MTQ3.X6_8Qw.SIxASRiZcHMVPcs0LwatlS5dNaE');
 
-        $task = new MessageTask("サーバーが起動しました！");
-        Server::getInstance()->getAsyncPool()->submitTask($task);
+        $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
+            function (int $currentTick): void {
+                $this->started = true;
+                $this->getLogger()->info("ログ出力を開始します");
+                ob_start();
+            }
+        ), 10);
+
+        $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
+            function (int $currentTick): void {
+                if (!$this->started) {
+                    return;
+                }
+                $string = ob_get_contents();
+                if ($string === "") {
+                    return;
+                }
+                $this->client->sendLogMessage($string);
+                ob_flush();
+            }
+        ), 10, 1);
+
+        $this->client->sendChatMessage('サーバーが起動しました！');
     }
 
     public function onDisable()
     {
-        $this->db->close();
+        $this->client->sendChatMessage('サーバーが停止しました');
 
-        $task = new MessageTask("Server Closed");
-        Server::getInstance()->getAsyncPool()->submitTask($task);
+        $this->db->close();
+        if (!$this->started) {
+            return;
+        }
+        $this->getLogger()->info("出力バッファリングを終了しています...");
+        $this->client->shutdown();
+        ob_flush();
+        ob_end_clean();
+        $this->getLogger()->info("discordBotの終了を待機しております...");
+        $this->client->join();
     }
 
+    // サーバー参加関数
     public function onJoin(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
         $xuid = $player->getXuid();
         $name = $player->getName();
 
-        $task = new MessageTask("$name がサーバーに参加しました");
-        Server::getInstance()->getAsyncPool()->submitTask($task);
-
-        $result = $this->db->query("SELECT * FROM moneys WHERE id = $xuid");
-        $playerdata = $result->fetchArray();
-
-        if (!$playerdata) {
-            $this->db->exec("INSET INTO moneys VALUES ($xuid, $xuid, 1000)");
-            $player->sendMessage("おうちサーバーへようこそ！あなたの現在の所持金は 1000円です！");
+        // サーバーに参加した時playerデータがなければ作成する
+        $playerdata = $this->db->Getmoney($xuid);
+        if ($playerdata === false) {
+            $this->db->Setemoney($xuid);
+            $player->sendMessage("おうちサーバーへようこそ！あなたの現在の所持金は1000円です！");
         } else {
-            $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"]. "円");
+            $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
         }
 
+        // サーバーに参加した時iPhoneを持っていなければ渡す
         $item = Item::get(347, 0, 1);
         if (!$player->getInventory()->contains($item)) {
             $player->getInventory()->addItem($item);
         }
-    }
 
+        $this->client->sendChatMessage("$name がサーバーに参加しました");
+    }
+ 
+    // コマンド関数(廃止予定)
     public function onCommand(CommandSender $sender, Command $cmd, string $label, array $args) : bool
     {
         $commandname = $cmd->getName();
-        if ($commandname === "helpmoney") {
+        if ($commandname === "outihelp") {
             if (count($args) === 0) {
                 $sender->sendMessage("Moneyplugin help\n/money <プレイヤー>: 自分の所持金を確認する\n/givemoney <プレイヤー> <金>: プレイヤーに金を付与する\n/addmoney <プレイヤー> <金>: プレイヤーに金を追加する\n/removemoney <プレイヤー> <金>: プレイヤーから金を減らす\n/setmoney <プレイヤー> <金>: プレイヤーに金をセットする");
             } elseif ($args[0] === "money") {
@@ -109,40 +135,21 @@ class Main extends PluginBase implements Listener
                 $sender->sendMessage("コマンド名 setmoney\n引数 <プレイヤー> <金>: プレイヤーに金をセットする OPのみ使える");
             }
         } elseif ($commandname === "money") {
-            if ($sender instanceof Player) {
-                if (count($args) === 0) {
-                    $xuid = $sender->getXuid();
-                    $playerdata = $this->db->query("SELECT * FROM moneys WHERE id = $xuid");
-                    while ($arr = $playerdata->fetchArray()) {
-                        $sender->sendMessage("あなたの現在の所持金: " . $arr["money"]);
-                    }
-                } elseif (is_string($args[0])) {
-                    $player = Server::getInstance()->getPlayer($args[0]);
-                    if ($player) {
-                        $xuid = $player->getXuid();
-                        $name = $player->getname();
-                        $playerdata = $this->db->query("SELECT * FROM moneys WHERE id = $xuid");
-                        while ($arr = $playerdata->fetchArray()) {
-                            $sender->sendMessage("$name の現在の所持金: " . $arr["money"]);
-                        }
-                    } else {
-                        return false;
-                    }
-                } else {
+            if ($sender instanceof Player && (count($args) === 0)) {
+                $xuid = $sender->getXuid();
+                $money = $this->db->Getmoney($xuid);
+                if ($playerdata === false) {
                     return false;
                 }
+                $sender->sendMessage("あなたの現在の所持金: " . $money["money"]);
             } elseif (count($args) > 0) {
                 if (is_string($args[0])) {
                     $player = Server::getInstance()->getPlayer($args[0]);
                     if ($player) {
                         $xuid = $player->getXuid();
                         $name = $player->getname();
-                        $playerdata = $this->db->query("SELECT * FROM moneys WHERE id = $xuid");
-                        while ($arr = $playerdata->fetchArray()) {
-                            $sender->sendMessage("$name の現在の所持金: " . $arr["money"]);
-                        }
-                    } else {
-                        return false;
+                        $money = $this->db->Getmoney($xuid);
+                        $sender->sendMessage("$name の現在の所持金: " . $money["money"]);
                     }
                 } else {
                     return false;
@@ -736,92 +743,6 @@ class Main extends PluginBase implements Listener
         $form->setContent("AdminShop 売却最終確認\n" . $item->getName() . "を" . $item->getCount() . "個売却しますか？\n");
         $form->setButton1("売却する");
         $form->setButton2("やめる");
-        $player->sendForm($form);
-    }
-
-    // オークション処理機構 複雑なので後回し
-
-    private function Auction(Player $player)
-    {
-        $form = new SimpleForm(function (Player $player, $data) {
-            if ($data === null) {
-                return true;
-            }
-            switch ($data) {
-            case 1:
-                $this->CreateAuction($player);
-                break;
-            case 2:
-                $name = $player->getName();
-                $task = new AuctionMessageTask("$name がオークションに入札しました");
-                Server::getInstance()->getAsyncPool()->submitTask($task);
-
-            break;
-        }
-        });
-        
-        $form->setTitle("iPhone");
-        $form->addButton("現在開催中のオークション");
-        $form->addButton("出品");
-        $form->addButton("入札");
-        $player->sendForm($form);
-    }
-
-    private function CreateAuction(Player $player)
-    {
-        $form = new CustomForm(function (Player $player, $data) {
-            if ($data === null) {
-                return true;
-            }
-
-            if (!is_numeric($data[0]) or !is_numeric($data[1]) or !is_numeric($data[2]) or !is_numeric($data[3])) {
-                return true;
-            }
-            $item = Item::get((int)$data[0], (int)$data[1], (int)$data[2]);
-            if (!$player->getInventory()->contains($item)) {
-                $player->sendMessage("アイテムが足りません！");
-            }
-
-            $this->ListingAuction($player, $item, (int)$data[3]);
-        });
-
-        $form->setTitle("オークション出品"); //This sets the title of the form
-        $form->addInput("出品するItemID", "itemid", ""); //This adds a Input, Text already entered
-        $form->addInput("出品するItemのMETA", "itemmeta", "0");
-        $form->addInput("出品する個数", "itemcount", "1");
-        $form->addInput("終了までの時間 分", "minutes", "1");
-        $player->sendForm($form); //This sends it to the player
-    }
-
-    private function ListingAuction(Player $player, $item, $minutes)
-    {
-        $form = new SimpleForm(function (Player $player, $data) use ($item, $minutes) {
-            if ($data === null) {
-                return true;
-            }
-            switch ($data) {
-            case 0:
-                $xuid = $player->getXuid();
-                $stmt = $this->db->prepare("INSERT INTO auctions VALUES (:id, :sellerxuid, :itemid, :itemmeta, :itemcount, :buyerxuid, :price");
-                $stmt->bindValue(":id", $xuid, SQLITE3_TEXT);
-                $stmt->bindValue(":sellerxuid", $xuid, SQLITE3_TEXT);
-                $stmt->bindValue(":itemid", $item->getId(), SQLITE3_INTEGER);
-                $stmt->bindValue(":itemmeta", $item->getDamage(), SQLITE3_INTEGER);
-                $stmt->bindValue(":itemcount", $item->getCount(), SQLITE3_INTEGER);
-                $stmt->bindValue(":buyerxuid", "なし", SQLITE3_TEXT);
-                $stmt->bindValue(":price", 0, SQLITE3_INTEGER);
-                $stmt->execute();
-                $this->getScheduler()->scheduleDelayedTask(new AuctionTask($this, $xuid), 20 * ($minutes * 60));
-
-            break;
-        }
-        });
-        
-        $form->setTitle("オークション出品最終確認");
-        $form->setContent($item->getName() . "を" . $item->getCount() . "出品してもよろしいですか？ 取り消すことはできません");
-        $form->addButton("出品する");
-        $form->addButton("やめる");
-
         $player->sendForm($form);
     }
 

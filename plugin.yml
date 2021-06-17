@@ -1,12 +1,15 @@
-name: OutiServerMoney
+name: OutiServerPlugin
 author: Ken_Cir0909
 version: "1.0.0"
 api: [3.0.0]
-main: Ken_Cir0909\OutiMoney\Main
+main: Ken_Cir0909\OutiServerPlugin\Main
+
+depend:
+  - FormAPI
 
 commands:
-  helpmoney:
-    usage: /helpmoney <コマンド>
+  outihelp:
+    usage: /outihelp <コマンド>
     description: Moneyプラグインhelp
     permission: HelpMoney.command
   money:
