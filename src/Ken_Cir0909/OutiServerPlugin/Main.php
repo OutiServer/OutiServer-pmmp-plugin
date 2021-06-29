@@ -4,43 +4,31 @@ declare(strict_types=1);
 
 namespace Ken_Cir0909\OutiServerPlugin;
 
-// Task
 use Ken_Cir0909\OutiServerPlugin\Tasks\discord;
-
-// Util
 use Ken_Cir0909\OutiServerPlugin\Utils\Database;
-
-// pmmp
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
+use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent};
+use pocketmine\event\block\{SignChangeEvent, BlockBreakEvent, BlockBurnEvent};
+use pocketmine\command\ConsoleCommandSender;
 use pocketmine\Player;
 use pocketmine\Server;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\tile\Tile;
 use pocketmine\math\Vector3;
-use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\level\Position;
 use pocketmine\scheduler\ClosureTask;
-
-//Form
-use jojoe77777\FormAPI\SimpleForm;
-use jojoe77777\FormAPI\ModalForm;
-use jojoe77777\FormAPI\CustomForm;
+use jojoe77777\FormAPI\{SimpleForm, ModalForm, CustomForm};
 
 class Main extends PluginBase implements Listener
 {
+    /* @var $client discord */
     public $client;
     public $started = false;
+    /* @var $db Database */
     private $db;
-    private $startlands = [];
-    private $endlands = [];
-    private $levelnamelands = [];
-    private $config;
+    private array $startlands = [];
+    private array $endlands = [];
 
     public function onEnable()
     {
@@ -70,7 +58,21 @@ class Main extends PluginBase implements Listener
             }
         ), 10, 1);
 
+        $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
+            function (int $currentTick): void {
+                foreach ($this->client->GetConsoleMessages() as $message) {
+                    Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), $message["content"]);
+                }
+
+                foreach ($this->client->GetChatMessage() as $message) {
+                    Server::getInstance()->broadcastMessage("[Discord:" . $message["username"] . "] " . $message["content"]);
+                }
+            }
+        ), 5, 1);
+
         $this->client->sendChatMessage('サーバーが起動しました！');
+
+        var_dump(serialize(array()));
     }
 
     public function onDisable()
@@ -89,7 +91,6 @@ class Main extends PluginBase implements Listener
         $this->client->join();
     }
 
-    // サーバー参加関数
     public function onJoin(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
@@ -111,9 +112,9 @@ class Main extends PluginBase implements Listener
             $player->getInventory()->addItem($item);
         }
 
-        $this->client->sendChatMessage("$name がサーバーに参加しました");
+        $this->client->sendChatMessage("**$name**がサーバーに参加しました");
     }
- 
+
     public function onInteract(PlayerInteractEvent $event)
     {
         $player = $event->getPlayer();
@@ -127,7 +128,7 @@ class Main extends PluginBase implements Listener
             $player = $event->getPlayer();
             $this->iPhone($player);
         }
-       
+
         if ($shopdata) {
             if ($this->db->isChestShopExits($block, $levelname) and $shopdata["ownerxuid"] !== $xuid and $event->getAction() === 1 and !$player->isOp()) {
                 $event->setCancelled();
@@ -138,14 +139,31 @@ class Main extends PluginBase implements Listener
                 $this->BuyChestShop($player, $shopdata);
             }
         }
-    
+
         if (isset($this->startlands[$player->getXuid()])) {
+            $x = (int) floor($block->x);
+            $z = (int) floor($block->z);
             if ($this->startlands[$player->getXuid()] === true) {
-                $this->startlands[$player->getXuid()] = $block;
+                $this->startlands[$player->getXuid()] = array("x" => $x, "z" => $z, "level" => $levelname);
                 $player->sendMessage("土地保護の終了地点をタップしてください");
             } else {
-                $this->endlands[$player->getXuid()] = $block;
+                if ($this->startlands[$player->getXuid()]["level"] !== $levelname) {
+                    $player->sendMessage("土地保護の開始地点とワールドが違います");
+                    return;
+                }
+                $this->endlands[$player->getXuid()] = array("x" => $x, "z" => $z, "level" => $levelname);
                 $this->buyland($player);
+            }
+        }
+
+        if ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
+            $landid = $this->db->GetLandId($levelname, $block->x, $block->z);
+            if ($landid === false) {
+                return;
+            }
+
+            if (!$this->db->CheckLandOwner($landid, $player->getName()) and !$this->db->checkInvite($landid, $player->getName()) and $this->db->CheckLandProtection($landid)) {
+                $event->setCancelled();
             }
         }
     }
@@ -190,8 +208,27 @@ class Main extends PluginBase implements Listener
             }
         }
 
-        if ($this->db->isLandExits($levelname, $block)) {
-            $player->sendMessage("他人の所有している土地を破壊することはできません");
+        $landid = $this->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
+        if ($landid !== false) {
+            if (!$this->db->CheckLandOwner($landid, $player->getName()) and !$this->db->checkInvite($landid, $player->getName()) and $this->db->CheckLandProtection($landid)) {
+                $event->setCancelled();
+            }
+        }
+    }
+
+    public function onPlayerChat(PlayerChatEvent $event)
+    {
+        $player = $event->getPlayer();
+        $name = $player->getName();
+        $message = $event->getMessage();
+
+        $this->client->sendChatMessage("**$name** >> $message");
+    }
+
+    public function onBlockBurn(BlockBurnEvent $event)
+    {
+        $landid = $this->db->GetLandId($event->getBlock()->getName(), $event->getBlock()->x, $event->getBlock()->z);
+        if($this->db->CheckLandProtection($landid)) {
             $event->setCancelled();
         }
     }
@@ -215,12 +252,12 @@ class Main extends PluginBase implements Listener
             $chest = $pos->level->getTile($pos)->getInventory()->contains($item);
 
             if ($chest) {
-                $this->BuyChestShopCheck($player, $item, $shopdata, $playerinventory);
+                $this->BuyChestShopCheck($player, $item, $shopdata, $inventory);
             } else {
                 $player->sendMessage('申し訳ありませんが、在庫が足りていないようです。');
             }
         });
-        
+
         $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"], 0);
         $form->setTitle("Shop");
         $form->addLabel("販売物: " . $item->getName());
@@ -235,28 +272,28 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $playerxuid = $player->getXuid();
-                $playermoney = $this->db->GetMoney($playerxuid);
-                $price = $item->getCount() * $shopdata["price"];
-                if ($price > $playermoney["money"]) {
-                    $player->sendMessage("お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
-                    return true;
-                }
-                $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->getServer()->getLevelByName($shopdata["levelname"]));
-                $pos->level->getTile($pos)->getInventory()->removeItem($item);
-                $playerinventory->addItem($item);
-                $this->db->UpdateMoney($playerxuid, $playermoney["money"] - $price);
-                $shopownermoney = $this->db->GetMoney($shopdata["ownerxuid"]);
-                $this->db->UpdateMoney($shopdata["ownerxuid"], $shopownermoney["money"] += $price);
-                $player->sendMessage("購入しました");
-            break;
-            case 1:
-                $player->sendMessage("購入しませんでした");
-            break;
-        }
+                case 0:
+                    $playerxuid = $player->getXuid();
+                    $playermoney = $this->db->GetMoney($playerxuid);
+                    $price = $item->getCount() * $shopdata["price"];
+                    if ($price > $playermoney["money"]) {
+                        $player->sendMessage("お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
+                        return true;
+                    }
+                    $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->getServer()->getLevelByName($shopdata["levelname"]));
+                    $pos->level->getTile($pos)->getInventory()->removeItem($item);
+                    $playerinventory->addItem($item);
+                    $this->db->UpdateMoney($playerxuid, $playermoney["money"] - $price);
+                    $shopownermoney = $this->db->GetMoney($shopdata["ownerxuid"]);
+                    $this->db->UpdateMoney($shopdata["ownerxuid"], $shopownermoney["money"] += $price);
+                    $player->sendMessage("購入しました");
+                    break;
+                case 1:
+                    $player->sendMessage("購入しませんでした");
+                    break;
+            }
         });
-        
+
         $form->setTitle("購入確認");
         $form->setContent($item->getName() . "を" . $item->getCount() . "個購入しますか？\n" . $item->getCount() * $shopdata["price"] . "円です");
         $form->addButton("購入する");
@@ -272,7 +309,7 @@ class Main extends PluginBase implements Listener
             }
 
             if (!is_numeric($data[0]) or !is_numeric($data[1]) or !is_numeric($data[2]) or !is_numeric($data[3])) {
-                return;
+                return true;
             }
 
             $xuid = $player->getXuid();
@@ -286,7 +323,7 @@ class Main extends PluginBase implements Listener
                 $player->sendMessage("shopを作成しました！");
             }
         });
-        
+
         $form->setTitle("shop作成");
         $form->addSlider("販売するItemの最大購入数", 1, 64);
         $form->addInput("販売するItemのID", "itemid", "");
@@ -302,24 +339,24 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $xuid = $player->getXuid();
-                $playerdata = $this->db->GetMoney($xuid);
-                if ($playerdata === false) {
+                case 0:
+                    $xuid = $player->getXuid();
+                    $playerdata = $this->db->GetMoney($xuid);
+                    if ($playerdata === false) {
+                        break;
+                    }
+                    $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
                     break;
-                }
-                $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
-                break;
-            break;
-            case 1:
-                $this->AdminShop($player);
-                break;
-            case 2:
-                $this->land($player);
-                break;
-        }
+                case 1:
+                    $this->AdminShop($player);
+                    break;
+                case 2:
+                    $this->land($player);
+                    break;
+            }
+            return true;
         });
-        
+
         $form->setTitle("iPhone");
         $form->addButton("所持金の確認");
         $form->addButton("AdminShop");
@@ -334,18 +371,34 @@ class Main extends PluginBase implements Listener
                 return true;
             }
 
+            $xuid = $player->GetXuid();
+
             switch ($data) {
                 case 0:
                     $this->startlands[$player->getXuid()] = true;
-                    $player->sendMessage("土地保護の開始地点をタップしてください");
+                    $player->sendMessage("土地購入の開始地点をタップしてください");
                     break;
                 case 1:
-                break;
+                    $this->protectionland($player);
+                    break;
+                case 2:
+                    $this->inviteland($player);
+                    break;
+                case 3:
+                    $this->allinvitesland($player);
+                    break;
+                case 4:
+                    $this->MoveLandOwner($player);
+                    break;
             }
         });
 
         $form->setTitle("iPhone-土地");
         $form->addButton("土地購入の開始");
+        $form->addButton("現在立っている土地を保護・保護解除");
+        $form->addButton("現在立っている土地に招待・招待取り消し");
+        $form->addButton("現在立っている土地に招待されている人一覧");
+        $form->addButton("現在立っている土地の所有権の移行");
         $player->sendForm($form);
     }
 
@@ -356,15 +409,15 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $this->AdminShopMenu($player);
-                break;
-            case 1:
-                $this->AdminShopSetprice($player);
-                break;
-        }
+                case 0:
+                    $this->AdminShopMenu($player);
+                    break;
+                case 1:
+                    $this->AdminShopSetprice($player);
+                    break;
+            }
         });
-        
+
         $form->setTitle("iPhone-AdminShop");
         $form->addButton("メニュー");
         if ($player->isOp()) {
@@ -413,7 +466,8 @@ class Main extends PluginBase implements Listener
     {
         $alldata = $this->db->AllAdminShop();
         if ($alldata === false) {
-            return $player->sendMessage("現在AdminShopでは何も売られていないようです");
+            $player->sendMessage("現在AdminShopでは何も売られていないようです");
+            return;
         }
 
         $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
@@ -428,7 +482,7 @@ class Main extends PluginBase implements Listener
 
         $form->setTitle("iPhone");
         $form->setContent("メニュー");
-        
+
         for ($i = 0; $i < count($alldata); $i++) {
             $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"], 1);
             $form->addButton($item->getName() . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
@@ -519,12 +573,214 @@ class Main extends PluginBase implements Listener
 
     private function buyland(Player $player)
     {
-        $pos1 = new Vector3($this->startlands[$player->getXuid()]->x, $this->startlands[$player->getXuid()]->y, $this->startlands[$player->getXuid()]->z);
-        $pos2 = new Vector3($this->endlands[$player->getXuid()]->x, $this->endlands[$player->getXuid()]->y, $this->endlands[$player->getXuid()]->z);
         $xuid = $player->getXuid();
         $levelname = $player->getLevel()->getName();
-        $this->db->SetLand($xuid, $levelname, $pos1, $pos2);
-        unset($this->startlands[$player->getXuid()]);
-        unset($this->endlands[$player->getXuid()]);
+        $l = $this->startlands[$xuid];
+        $endp = $this->endlands[$xuid];
+        $startX = (int) floor($l["x"]);
+        $endX = (int) floor($endp["x"]);
+        $startZ = (int) floor($l["z"]);
+        $endZ = (int) floor($endp["z"]);
+        if ($startX > $endX) {
+            $backup = $startX;
+            $startX = $endX;
+            $endX = $backup;
+        }
+        if ($startZ > $endZ) {
+            $backup = $startZ;
+            $startZ = $endZ;
+            $endZ = $backup;
+        }
+
+        $blockcount = ((($endX + 1) - ($startX - 1)) - 1) * ((($endZ + 1) - ($startZ - 1)) - 1);
+        $price = $blockcount * 1;
+
+        $form = new ModalForm(function (Player $player, $data) use ($xuid, $levelname, $price, $startX, $startZ, $endX, $endZ) {
+            if ($data === true) {
+                $playerdata = $this->db->GetMoney($xuid);
+                if ($price > $playerdata["money"]) {
+                    $player->sendMessage("お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
+                    return;
+                }
+
+                $this->db->UpdateMoney($xuid, $playerdata["money"] - $price);
+                $this->db->SetLand($player->getName(), $levelname, $startX, $startZ, $endX, $endZ);
+                $player->sendMessage("購入しました");
+            } elseif ($data === false) {
+                $player->sendMessage("購入しませんでした");
+            }
+
+            unset($this->startlands[$xuid], $this->endlands[$xuid]);
+        });
+
+        $form->setTitle("iPhone-土地-購入");
+        $form->setContent("土地を" . $blockcount . "ブロック購入しますか？\n" . $price . "円です");
+        $form->setButton1("購入する");
+        $form->setButton2("やめる");
+        $player->sendForm($form);
+    }
+
+    private function protectionland(Player $player)
+    {
+        $landid = $this->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
+        if ($landid === false) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+
+        if (!$this->db->CheckLandOwner($landid, $player->getName())) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+        if (!$this->db->CheckLandProtection($landid)) {
+            $form = new ModalForm(function (Player $player, $data) use ($landid) {
+                if ($data === null) {
+                    return;
+                }
+
+                $this->db->UpdateLandProtection($landid, 1);
+                $player->sendMessage("土地保護を有効にしました");
+            });
+
+            $form->setTitle("iPhone-土地-保護");
+            $form->setContent("現在立っている土地の保護を有効にしますか？");
+            $form->setButton1("有効にする");
+            $form->setButton2("やめる");
+            $player->sendForm($form);
+        } else {
+            $form = new ModalForm(function (Player $player, $data) use ($landid) {
+                if ($data === null) {
+                    return;
+                }
+
+                $this->db->UpdateLandProtection($landid, 0);
+                $player->sendMessage("土地保護を無効にしました");
+            });
+
+            $form->setTitle("iPhone-土地-購入");
+            $form->setContent("現在立っている土地の保護を無効にしますか？");
+            $form->setButton1("無効にする");
+            $form->setButton2("やめる");
+            $player->sendForm($form);
+        }
+    }
+
+    private function inviteland(Player $player)
+    {
+        $landid = $this->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
+        if ($landid === false) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+
+        $form = new CustomForm(function (Player $player, $data) use ($landid) {
+            if ($data === null) {
+                return true;
+            }
+
+            if (!isset($data[0])) {
+                return true;
+            }
+
+            if (!Player::isValidUserName($data[0])) {
+                $player->sendMessage("不正なプレイヤー名です");
+                return true;
+            }
+
+            if($this->db->checkInvite($landid, $data[0])) {
+                if($this->db->RemoveLandInvite($landid, $data[0])) {
+                    $player->sendMessage("$data[0]の土地番号$landid の招待を削除しました");
+                }
+            }
+            else {
+                $this->db->AddLandInvite($landid, $data[0]);
+                $player->sendMessage("$data[0]を土地番号$landid に招待しました");
+            }
+        });
+
+        $form->setTitle("iPhone-土地-招待");
+        $form->addInput("招待する人のプレイヤー名", "playername", "");
+        $player->sendForm($form);
+    }
+
+    private function allinvitesland(Player $player)
+    {
+        $landid = $this->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
+        if ($landid === false) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+
+        $invites = $this->db->GetLandInvites($landid);
+        if($invites === null) {
+            $player->sendMessage("この土地には誰も招待されていません");
+            return;
+        }
+        $invitestext = "土地ID$landid に招待されている人数: " . count($invites);
+        for ($i = 0; $i < count($invites); $i++) {
+            $invitestext .= "\n$invites[$i]";
+        }
+
+        $player->sendMessage($invitestext);
+    }
+
+    private function MoveLandOwner(Player $player)
+    {
+        $landid = $this->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
+        if ($landid === false) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+            $player->sendMessage("この土地はあなたが所有していません");
+            return;
+        }
+
+        $form = new CustomForm(function (Player $player, $data) use ($landid) {
+            if ($data === null) {
+                return true;
+            }
+
+            if (!isset($data[0])) {
+                return true;
+            }
+
+            if (!Player::isValidUserName($data[0])) {
+                $player->sendMessage("不正なプレイヤー名です");
+                return true;
+            }
+
+            $this->CheckMoveLandOwner($player, $landid, $data[0]);
+        });
+
+        $form->setTitle("iPhone-土地-所有権譲渡");
+        $form->addInput("所有権を渡すプレイヤー名", "playername", "");
+        $player->sendForm($form);
+    }
+
+    private function CheckMoveLandOwner(Player $player, int $landid, string $name)
+    {
+        $form = new ModalForm(function (Player $player, $data) use ($landid ,$name) {
+            if ($data === null) {
+                return;
+            }
+
+            $this->db->ChangeLandOwner($landid, $name);
+            $player->sendMessage("所有権を$name に譲渡しました");
+        });
+
+        $form->setTitle("iPhone-土地-所有権譲渡");
+        $form->setContent("現在立っている土地の所有権を$name に譲渡しますか？");
+        $form->setButton1("譲渡する");
+        $form->setButton2("やめる");
+        $player->sendForm($form);
     }
 }
