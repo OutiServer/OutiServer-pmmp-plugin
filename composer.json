@@ -1,5 +1,6 @@
 {
     "require": {
-        "team-reflex/discord-php": "^5.1"
+        "team-reflex/discord-php": "^5.1",
+      "ext-sqlite3": "*"
     }
 }

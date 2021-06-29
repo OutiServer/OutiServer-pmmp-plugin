@@ -13,7 +13,8 @@ class discord extends \Thread
     public $started = false;
     public $content;
     private $token;
-    protected $D2P_Queue;
+    protected $console_Queue;
+    protected $serverchat_Queue;
     protected $log_Queue;
     protected $chat_Queue;
 
@@ -22,7 +23,8 @@ class discord extends \Thread
         $this->file = $file;
         $this->token = $token;
 
-        $this->D2P_Queue = new \Threaded;
+        $this->console_Queue = new \Threaded;
+        $this->serverchat_Queue = new \Threaded;
         $this->log_Queue = new \Threaded;
         $this->chat_Queue = new \Threaded;
 
@@ -62,13 +64,20 @@ class discord extends \Thread
             $this->started = true;
             echo "Bot is ready.", PHP_EOL;
             $discord->on('message', function (Message $message) {
-                if ($message->author->bot or $message->channel_id !== '' or $message->type !== Message::TYPE_NORMAL) {
+                if ($message->author->user->bot === true or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
                     return;
                 }
-                $this->D2P_Queue[] = serialize([
+                if ($message->channel_id === '854354514320293928') {
+                    $this->console_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
                     ]);
+                } elseif ($message->channel_id === '834317763769925632') {
+                    $this->serverchat_Queue[] = serialize([
+                        'username' => $message->author->username,
+                        'content' => $message->content
+                    ]);
+                }
             });
         });
         $discord->run();
@@ -125,7 +134,6 @@ class discord extends \Thread
 
     public function sendChatMessage(string $message)
     {
-        //var_dump("send".$message);
         $this->chat_Queue[] = serialize($message);
     }
 
@@ -134,14 +142,21 @@ class discord extends \Thread
         $this->log_Queue[] = serialize($message);
     }
 
-    public function GetMessages()
+    public function GetConsoleMessages()
     {
-        //var_dump("?!?!");
         $messages = [];
-        while (count($this->D2P_Queue) > 0) {
-            $messages[] = unserialize($this->D2P_Queue->shift());
+        while (count($this->console_Queue) > 0) {
+            $messages[] = unserialize($this->console_Queue->shift());
         }
-        //var_dump($messages);
+        return $messages;
+    }
+
+    public function GetChatMessage()
+    {
+        $messages = [];
+        while (count($this->serverchat_Queue) > 0) {
+            $messages[] = unserialize($this->serverchat_Queue->shift());
+        }
         return $messages;
     }
 }
