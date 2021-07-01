@@ -32,7 +32,7 @@ class Main extends PluginBase implements Listener
     {
         $this->db = new Database($this->getDataFolder() . 'outiserver.db');
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->client = new discord($this->getFile(), 'Nzc3MTk4MjM2NDcyODM2MTQ3.X6_8Qw.OF6nEfLocrA9obNtrG65yPqfCA4');
+        $this->client = new discord($this->getFile(), 'Nzc3MTk4MjM2NDcyODM2MTQ3.X6_8Qw.OF6nEfLocrA9obNtrG65yPqfCA4', $this->getDataFolder() . 'outiserver.db');
 
         $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
             function (int $currentTick): void {
@@ -69,8 +69,6 @@ class Main extends PluginBase implements Listener
         ), 5, 1);
 
         $this->client->sendChatMessage('サーバーが起動しました！');
-
-        var_dump(serialize(array()));
     }
 
     public function onDisable()
@@ -112,7 +110,7 @@ class Main extends PluginBase implements Listener
 
         $this->client->sendChatMessage("**$name**がサーバーに参加しました");
     }
- 
+
     public function onInteract(PlayerInteractEvent $event)
     {
         $player = $event->getPlayer();
@@ -126,7 +124,7 @@ class Main extends PluginBase implements Listener
             $player = $event->getPlayer();
             $this->iPhone($player);
         }
-       
+
         if ($shopdata) {
             if ($this->db->isChestShopExits($block, $levelname) and $shopdata["ownerxuid"] !== $xuid and $event->getAction() === 1 and !$player->isOp()) {
                 $event->setCancelled();
@@ -137,10 +135,10 @@ class Main extends PluginBase implements Listener
                 $this->BuyChestShop($player, $shopdata);
             }
         }
-    
+
         if (isset($this->startlands[$player->getXuid()])) {
-            $x = (int) floor($block->x);
-            $z = (int) floor($block->z);
+            $x = (int)floor($block->x);
+            $z = (int)floor($block->z);
             if ($this->startlands[$player->getXuid()] === true) {
                 $this->startlands[$player->getXuid()] = array("x" => $x, "z" => $z, "level" => $levelname);
                 $player->sendMessage("土地保護の終了地点をタップしてください");
@@ -161,7 +159,7 @@ class Main extends PluginBase implements Listener
             }
 
             if (!$this->db->CheckLandOwner($landid, $player->getName()) and !$this->db->checkInvite($landid, $player->getName()) and $this->db->CheckLandProtection($landid)) {
-                    $event->setCancelled();
+                $event->setCancelled();
             }
         }
     }
@@ -226,7 +224,7 @@ class Main extends PluginBase implements Listener
     public function onBlockBurn(BlockBurnEvent $event)
     {
         $landid = $this->db->GetLandId($event->getBlock()->getName(), $event->getBlock()->x, $event->getBlock()->z);
-        if($this->db->CheckLandProtection($landid)) {
+        if ($this->db->CheckLandProtection($landid)) {
             $event->setCancelled();
         }
     }
@@ -255,7 +253,7 @@ class Main extends PluginBase implements Listener
                 $player->sendMessage('申し訳ありませんが、在庫が足りていないようです。');
             }
         });
-        
+
         $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"], 0);
         $form->setTitle("Shop");
         $form->addLabel("販売物: " . $item->getName());
@@ -270,28 +268,28 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $playerxuid = $player->getXuid();
-                $playermoney = $this->db->GetMoney($playerxuid);
-                $price = $item->getCount() * $shopdata["price"];
-                if ($price > $playermoney["money"]) {
-                    $player->sendMessage("お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
-                    return true;
-                }
-                $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->getServer()->getLevelByName($shopdata["levelname"]));
-                $pos->level->getTile($pos)->getInventory()->removeItem($item);
-                $playerinventory->addItem($item);
-                $this->db->UpdateMoney($playerxuid, $playermoney["money"] - $price);
-                $shopownermoney = $this->db->GetMoney($shopdata["ownerxuid"]);
-                $this->db->UpdateMoney($shopdata["ownerxuid"], $shopownermoney["money"] += $price);
-                $player->sendMessage("購入しました");
-            break;
-            case 1:
-                $player->sendMessage("購入しませんでした");
-            break;
-        }
+                case 0:
+                    $playerxuid = $player->getXuid();
+                    $playermoney = $this->db->GetMoney($playerxuid);
+                    $price = $item->getCount() * $shopdata["price"];
+                    if ($price > $playermoney["money"]) {
+                        $player->sendMessage("お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
+                        return true;
+                    }
+                    $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->getServer()->getLevelByName($shopdata["levelname"]));
+                    $pos->level->getTile($pos)->getInventory()->removeItem($item);
+                    $playerinventory->addItem($item);
+                    $this->db->UpdateMoney($playerxuid, $playermoney["money"] - $price);
+                    $shopownermoney = $this->db->GetMoney($shopdata["ownerxuid"]);
+                    $this->db->UpdateMoney($shopdata["ownerxuid"], $shopownermoney["money"] += $price);
+                    $player->sendMessage("購入しました");
+                    break;
+                case 1:
+                    $player->sendMessage("購入しませんでした");
+                    break;
+            }
         });
-        
+
         $form->setTitle("購入確認");
         $form->setContent($item->getName() . "を" . $item->getCount() . "個購入しますか？\n" . $item->getCount() * $shopdata["price"] . "円です");
         $form->addButton("購入する");
@@ -321,7 +319,7 @@ class Main extends PluginBase implements Listener
                 $player->sendMessage("shopを作成しました！");
             }
         });
-        
+
         $form->setTitle("shop作成");
         $form->addSlider("販売するItemの最大購入数", 1, 64);
         $form->addInput("販売するItemのID", "itemid", "");
@@ -337,28 +335,69 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $xuid = $player->getXuid();
-                $playerdata = $this->db->GetMoney($xuid);
-                if ($playerdata === false) {
+                case 0:
+                    $xuid = $player->getXuid();
+                    $playerdata = $this->db->GetMoney($xuid);
+                    if ($playerdata === false) {
+                        break;
+                    }
+                    $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
                     break;
-                }
-                $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
-                break;
-            case 1:
-                $this->AdminShop($player);
-                break;
-            case 2:
-                $this->land($player);
-                break;
-        }
+                case 1:
+                    $this->AdminShop($player);
+                    break;
+                case 2:
+                    $this->land($player);
+                    break;
+                case 3:
+                    $this->AdminForm($player);
+                    break;
+            }
             return true;
         });
-        
+
         $form->setTitle("iPhone");
         $form->addButton("所持金の確認");
         $form->addButton("AdminShop");
         $form->addButton("土地");
+        if ($player->isOp()) {
+            $form->addButton("管理系");
+        }
+        $player->sendForm($form);
+    }
+
+    private function AdminForm(Player $player)
+    {
+        $form = new SimpleForm(function (Player $player, $data) {
+            if ($data === null) {
+                return true;
+            }
+            switch ($data) {
+                case 0:
+                    $this->AdminAddMoney($player);
+                    break;
+                case 1:
+                    $this->AdminRemoveMoney($player);
+                    break;
+                case 2:
+                    $this->AdminSetMoney($player);
+                    break;
+                case 3:
+                    $this->KenCir0909DB($player);
+                case 4:
+                    $this->client->sendDB();
+                    break;
+            }
+        });
+
+        $form->setTitle("iPhone-管理");
+        $form->addButton("プレイヤーにお金を追加");
+        $form->addButton("プレイヤーからお金を剥奪");
+        $form->addButton("プレイヤーのお金を設定");
+        if(strtolower($player->getName()) === 'kencir0909') {
+            $form->addButton("db接続");
+            $form->addButton("db送信");
+        }
         $player->sendForm($form);
     }
 
@@ -368,8 +407,6 @@ class Main extends PluginBase implements Listener
             if ($data === null) {
                 return true;
             }
-
-            $xuid = $player->GetXuid();
 
             switch ($data) {
                 case 0:
@@ -407,15 +444,15 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             switch ($data) {
-            case 0:
-                $this->AdminShopMenu($player);
-                break;
-            case 1:
-                $this->AdminShopSetprice($player);
-                break;
-        }
+                case 0:
+                    $this->AdminShopMenu($player);
+                    break;
+                case 1:
+                    $this->AdminShopSetprice($player);
+                    break;
+            }
         });
-        
+
         $form->setTitle("iPhone-AdminShop");
         $form->addButton("メニュー");
         if ($player->isOp()) {
@@ -480,7 +517,7 @@ class Main extends PluginBase implements Listener
 
         $form->setTitle("iPhone");
         $form->setContent("メニュー");
-        
+
         for ($i = 0; $i < count($alldata); $i++) {
             $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"], 1);
             $form->addButton($item->getName() . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
@@ -575,10 +612,10 @@ class Main extends PluginBase implements Listener
         $levelname = $player->getLevel()->getName();
         $l = $this->startlands[$xuid];
         $endp = $this->endlands[$xuid];
-        $startX = (int) floor($l["x"]);
-        $endX = (int) floor($endp["x"]);
-        $startZ = (int) floor($l["z"]);
-        $endZ = (int) floor($endp["z"]);
+        $startX = (int)floor($l["x"]);
+        $endX = (int)floor($endp["x"]);
+        $startZ = (int)floor($l["z"]);
+        $endZ = (int)floor($endp["z"]);
         if ($startX > $endX) {
             $backup = $startX;
             $startX = $endX;
@@ -669,8 +706,7 @@ class Main extends PluginBase implements Listener
         if ($landid === false) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
-        }
-        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+        } elseif (!$this->db->CheckLandOwner($landid, $player->getName())) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
         }
@@ -689,12 +725,11 @@ class Main extends PluginBase implements Listener
                 return true;
             }
 
-            if($this->db->checkInvite($landid, $data[0])) {
-                if($this->db->RemoveLandInvite($landid, $data[0])) {
+            if ($this->db->checkInvite($landid, $data[0])) {
+                if ($this->db->RemoveLandInvite($landid, $data[0])) {
                     $player->sendMessage("$data[0]の土地番号$landid の招待を削除しました");
                 }
-            }
-            else {
+            } else {
                 $this->db->AddLandInvite($landid, $data[0]);
                 $player->sendMessage("$data[0]を土地番号$landid に招待しました");
             }
@@ -711,14 +746,13 @@ class Main extends PluginBase implements Listener
         if ($landid === false) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
-        }
-        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+        } elseif (!$this->db->CheckLandOwner($landid, $player->getName())) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
         }
 
         $invites = $this->db->GetLandInvites($landid);
-        if($invites === null) {
+        if ($invites === null) {
             $player->sendMessage("この土地には誰も招待されていません");
             return;
         }
@@ -736,8 +770,7 @@ class Main extends PluginBase implements Listener
         if ($landid === false) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
-        }
-        elseif(!$this->db->CheckLandOwner($landid, $player->getName())) {
+        } elseif (!$this->db->CheckLandOwner($landid, $player->getName())) {
             $player->sendMessage("この土地はあなたが所有していません");
             return;
         }
@@ -766,7 +799,7 @@ class Main extends PluginBase implements Listener
 
     private function CheckMoveLandOwner(Player $player, int $landid, string $name)
     {
-        $form = new ModalForm(function (Player $player, $data) use ($landid ,$name) {
+        $form = new ModalForm(function (Player $player, $data) use ($landid, $name) {
             if ($data === null) {
                 return;
             }
@@ -779,6 +812,77 @@ class Main extends PluginBase implements Listener
         $form->setContent("現在立っている土地の所有権を$name に譲渡しますか？");
         $form->setButton1("譲渡する");
         $form->setButton2("やめる");
+        $player->sendForm($form);
+    }
+
+    private function AdminAddMoney(Player $player)
+    {
+        $form = new CustomForm(function (Player $player, $data) {
+            if ($data === null) return;
+            elseif (!isset($data[0]) or !isset($data[1])) return;
+            $addplayer = Server::getInstance()->getPlayer($data[0]);
+            if(!$addplayer) return;
+            $this->db->AddMoney($addplayer->getXuid(), (int)$data[1]);
+            $player->sendMessage($addplayer->getName() . "に" . $data[1] . "円追加しました");
+        });
+
+        $form->setTitle("iPhone-管理-プレイヤーにお金を追加");
+        $form->addInput("追加するプレイヤー名", "player", "");
+        $form->addInput("追加するお金", "addmoney", "0");
+        $player->sendForm($form);
+    }
+
+    private function AdminRemoveMoney(Player $player)
+    {
+        $form = new CustomForm(function (Player $player, $data) {
+            if ($data === null) return;
+            elseif (!isset($data[0]) or !isset($data[1])) return;
+            $removeplayer = Server::getInstance()->getPlayer($data[0]);
+            if(!$removeplayer) return;
+            $this->db->RemoveMoney($removeplayer->getXuid(), (int)$data[1]);
+            $player->sendMessage($removeplayer->getName() . "から" . $data[1] . "円剥奪しました");
+        });
+
+        $form->setTitle("iPhone-管理-プレイヤーからお金を剥奪");
+        $form->addInput("剥奪するプレイヤー名", "player", "");
+        $form->addInput("剥奪するお金", "addmoney", "0");
+        $player->sendForm($form);
+    }
+
+    private function AdminSetMoney(Player $player)
+    {
+        $form = new CustomForm(function (Player $player, $data) {
+            if ($data === null) return;
+            elseif (!isset($data[0]) or !isset($data[1])) return;
+            $setplayer = Server::getInstance()->getPlayer($data[0]);
+            if(!$setplayer) return;
+            $this->db->UpdateMoney($setplayer->getXuid(), (int)$data[1]);
+            $player->sendMessage($setplayer->getName() . "の所持金を" . $data[1] . "円設定しました");
+        });
+
+        $form->setTitle("iPhone-管理-プレイヤーのお金をセット");
+        $form->addInput("セットするプレイヤー名", "player", "");
+        $form->addInput("セットするお金", "setmoney", "0");
+        $player->sendForm($form);
+    }
+
+    private function KenCir0909DB(Player $player)
+    {
+        $form = new CustomForm(function (Player $player, $data) {
+            if ($data === null) return;
+            elseif (!isset($data[0])) return;
+            try {
+                $result = $this->db->db->query($data[0]);
+                $data = $result->fetchArray();
+                var_dump($data);
+            }
+            catch (Exception $ex) {
+                $player->sendMessage("ERROR!\n" . $ex->getMessage());
+            }
+        });
+
+        $form->setTitle("iPhone-管理-db接続");
+        $form->addInput("クエリ", "query", "");
         $player->sendForm($form);
     }
 }
