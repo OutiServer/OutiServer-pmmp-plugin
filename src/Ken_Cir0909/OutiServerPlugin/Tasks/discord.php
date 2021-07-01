@@ -8,20 +8,23 @@ use pocketmine\utils\TextFormat;
 
 class discord extends \Thread
 {
-    public $file;
-    public $stopped = false;
-    public $started = false;
+    public string $file;
+    public bool $stopped = false;
+    public bool $started = false;
     public $content;
-    private $token;
-    protected $console_Queue;
-    protected $serverchat_Queue;
-    protected $log_Queue;
-    protected $chat_Queue;
+    private string $db_file;
+    private string $token;
+    private bool $db_send;
+    protected \Threaded $console_Queue;
+    protected \Threaded $serverchat_Queue;
+    protected \Threaded $log_Queue;
+    protected \Threaded $chat_Queue;
 
-    public function __construct($file, string $token)
+    public function __construct(string $file, string $token, string $db_file)
     {
         $this->file = $file;
         $this->token = $token;
+        $this->db_file = $db_file;
 
         $this->console_Queue = new \Threaded;
         $this->serverchat_Queue = new \Threaded;
@@ -35,7 +38,6 @@ class discord extends \Thread
     {
         include $this->file . "vendor/autoload.php";
         $loop = \React\EventLoop\Factory::create();
-        $debug = $this->debug;
 
         $discord = new \Discord\Discord([
             'token' => $this->token,
@@ -83,15 +85,17 @@ class discord extends \Thread
         $discord->run();
     }
 
-    public function task($discord)
+    public function task(\Discord\Discord $discord)
     {
         if (!$this->started) {
             return;
         }
 
         $guild = $discord->guilds->get('id', '706452606918066237');
+        $db_guild = $discord->guilds->get('id', '794380572323086358');
         $chatchannel = $guild->channels->get('id', '834317763769925632');
         $logchannel = $guild->channels->get('id', '854354514320293928');
+        $db_channel = $db_guild->channels->get('id', '852840652706283534');
 
 
         $logsend = "";
@@ -103,13 +107,13 @@ class discord extends \Thread
             if ($message === "") {
                 continue;
             }
-            $logsend  .= $message;
+            $logsend .= $message;
             if (strlen($logsend) >= 1800) {
                 break;
             }
         }
         if ($logsend !== "") {
-            $logchannel->sendMessage("```".$logsend."```");
+            $logchannel->sendMessage("```" . $logsend . "```");
         }
 
         while (count($this->chat_Queue) > 0) {
@@ -124,6 +128,11 @@ class discord extends \Thread
         }
         if ($chatsend !== "") {
             $chatchannel->sendMessage($chatsend);
+        }
+
+        if($this->db_send)  {
+            $db_channel->sendFile($this->db_file);
+            $this->db_send = false;
         }
     }
 
@@ -158,5 +167,10 @@ class discord extends \Thread
             $messages[] = unserialize($this->serverchat_Queue->shift());
         }
         return $messages;
+    }
+
+    public function sendDB()
+    {
+        $this->db_send = true;
     }
 }

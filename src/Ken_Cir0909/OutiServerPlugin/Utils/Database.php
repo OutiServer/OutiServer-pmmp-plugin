@@ -6,7 +6,7 @@ namespace Ken_Cir0909\OutiServerPlugin\Utils;
 
 class Database
 {
-    public $db;
+    public \SQLite3 $db;
 
     public function __construct(string $dir)
     {
@@ -32,7 +32,6 @@ class Database
         $sql = $this->db->prepare("INSERT INTO moneys VALUES (:xuid, 1000)");
         $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
         $sql->execute();
-        return;
     }
 
     // プレイヤー所持金取得
@@ -46,6 +45,32 @@ class Database
             return false;
         }
         return $data;
+    }
+
+    public function AddMoney(string $xuid, int $addmoney)
+    {
+        $oldmoney = $this->GetMoney($xuid);
+        if(!$oldmoney) {
+            $this->SetMoney($xuid);
+            $oldmoney = $this->GetMoney($xuid);
+        }
+        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE xuid = :xuid");
+        $sql->bindValue(':money', $oldmoney["money"] + $addmoney, SQLITE3_INTEGER);
+        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql->execute();
+    }
+
+    public function RemoveMoney(string $xuid, int $removemoney)
+    {
+        $oldmoney = $this->GetMoney($xuid);
+        if(!$oldmoney) {
+            $this->SetMoney($xuid);
+            $oldmoney = $this->GetMoney($xuid);
+        }
+        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE xuid = :xuid");
+        $sql->bindValue(':money', $oldmoney["money"] - $removemoney, SQLITE3_INTEGER);
+        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql->execute();
     }
 
     // プレイヤー所持金更新
