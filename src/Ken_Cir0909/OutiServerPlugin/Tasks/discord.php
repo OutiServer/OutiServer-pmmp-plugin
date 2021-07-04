@@ -3,22 +3,31 @@
 namespace Ken_Cir0909\OutiServerPlugin\Tasks;
 
 use Discord\Parts\Channel\Message;
-use Monolog\Logger;
 use pocketmine\utils\TextFormat;
 
 class discord extends \Thread
 {
-    public string $file;
-    public bool $stopped = false;
-    public bool $started = false;
+    /* @var string $file */
+    public $file;
+    /* @var bool $stopped */
+    public $stopped = false;
+    /* @var bool $started */
+    public  $started = false;
     public $content;
-    private string $db_file;
-    private string $token;
-    private bool $db_send;
-    protected \Threaded $console_Queue;
-    protected \Threaded $serverchat_Queue;
-    protected \Threaded $log_Queue;
-    protected \Threaded $chat_Queue;
+    /* @var string $db_file */
+    private $db_file;
+    /* @var string $token */
+    private $token;
+    /* @var bool $db_send */
+    private $db_send;
+    /* @var \Threaded $console_Queue */
+    protected $console_Queue;
+    /* @var \Threaded $serverchat_Queue */
+    protected $serverchat_Queue;
+    /* @var \Threaded $log_Queue */
+    protected $log_Queue;
+    /* @var \Threaded $chat_Queue */
+    protected $chat_Queue;
 
     public function __construct(string $file, string $token, string $db_file)
     {
@@ -62,11 +71,11 @@ class discord extends \Thread
 
         unset($this->token);
 
-        $discord->on('ready', function ($discord) {
+        $discord->on('ready', function (\Discord\Discord $discord) {
             $this->started = true;
             echo "Bot is ready.", PHP_EOL;
-            $discord->on('message', function (Message $message) {
-                if ($message->author->user->bot === true or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
+            $discord->on('message', function (Message $message) use ($discord) {
+                if ($message->author->id === $discord->id or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
                     return;
                 }
                 if ($message->channel_id === '854354514320293928') {
