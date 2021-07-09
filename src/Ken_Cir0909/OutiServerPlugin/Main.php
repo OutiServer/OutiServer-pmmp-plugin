@@ -32,7 +32,7 @@ class Main extends PluginBase implements Listener
     {
         $this->db = new Database($this->getDataFolder() . 'outiserver.db');
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->client = new discord($this->getFile(), 'Nzc3MTk4MjM2NDcyODM2MTQ3.X6_8Qw.OF6nEfLocrA9obNtrG65yPqfCA4', $this->getDataFolder() . 'outiserver.db');
+        $this->client = new discord($this->getFile(), 'Nzg0MDQzNTg4NDI2MDA2NTQ4.X8jjfg._LMfjeEw6K5p8UMhAGvCKzzFP_M', $this->getDataFolder() . 'outiserver.db');
 
         $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
             function (int $currentTick): void {

@@ -11,10 +11,6 @@ class Database
     public function __construct(string $dir)
     {
         $this->db = new \SQLite3($dir);
-        $this->db->exec("DROP TABLE moneys");
-        $this->db->exec("DROP TABLE shops");
-        $this->db->exec("DROP TABLE adminshops");
-        $this->db->exec("DROP TABLE lands");
         $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (xuid TEXT PRIMARY KEY, money INTEGER)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS shops (id INTEGER PRIMARY KEY AUTOINCREMENT, ownerxuid TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER)");

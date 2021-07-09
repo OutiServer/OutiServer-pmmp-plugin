@@ -65,11 +65,11 @@ class discord extends \Thread
         $discord->on('ready', function ($discord) {
             $this->started = true;
             echo "Bot is ready.", PHP_EOL;
-            $discord->on('message', function (Message $message) {
-                if ($message->author->user->bot === true or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
+            $discord->on('message', function (Message $message) use ($discord) {
+                if ($message->author->id === $discord->user->id or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
                     return;
                 }
-                if ($message->channel_id === '854354514320293928') {
+                if ($message->channel_id === '833626570270572584') {
                     $this->console_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
@@ -92,10 +92,9 @@ class discord extends \Thread
         }
 
         $guild = $discord->guilds->get('id', '706452606918066237');
-        $db_guild = $discord->guilds->get('id', '794380572323086358');
         $chatchannel = $guild->channels->get('id', '834317763769925632');
-        $logchannel = $guild->channels->get('id', '854354514320293928');
-        $db_channel = $db_guild->channels->get('id', '852840652706283534');
+        $logchannel = $guild->channels->get('id', '833626570270572584');
+        $db_channel = $guild->channels->get('id', '863124612429381699');
 
 
         $logsend = "";
