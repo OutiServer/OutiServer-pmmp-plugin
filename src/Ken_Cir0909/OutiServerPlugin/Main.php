@@ -19,6 +19,7 @@ use pocketmine\math\Vector3;
 use pocketmine\level\Position;
 use pocketmine\scheduler\ClosureTask;
 use jojoe77777\FormAPI\{SimpleForm, ModalForm, CustomForm};
+use Ken_Cir0909\OutiServerPlugin\Utils\AllItems;
 
 class Main extends PluginBase implements Listener
 {
@@ -69,8 +70,6 @@ class Main extends PluginBase implements Listener
         ), 5, 1);
 
         $this->client->sendChatMessage('サーバーが起動しました！');
-
-        var_dump(serialize(array()));
     }
 
     public function onDisable()
