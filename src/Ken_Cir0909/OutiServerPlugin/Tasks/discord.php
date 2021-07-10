@@ -72,12 +72,12 @@ class discord extends \Thread
                 if ($message->author->id === $discord->user->id or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
                     return;
                 }
-                if ($message->channel_id === $this->chat_id) {
+                if ($message->channel_id === $this->log_id) {
                     $this->console_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
                     ]);
-                } elseif ($message->channel_id === $this->log_id) {
+                } elseif ($message->channel_id === $this->chat_id) {
                     $this->serverchat_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
