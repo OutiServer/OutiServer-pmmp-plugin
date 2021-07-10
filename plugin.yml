@@ -1,5 +1,5 @@
 name: OutiServerPlugin
 author: Ken_Cir0909
-version: "1.0.0"
+version: "1.0.1"
 api: [3.0.0]
 main: Ken_Cir0909\OutiServerPlugin\Main

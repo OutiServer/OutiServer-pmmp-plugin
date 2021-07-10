@@ -9,6 +9,7 @@ use Ken_Cir0909\OutiServerPlugin\Utils\Database;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent};
+use pocketmine\utils\Config;
 use pocketmine\event\block\{SignChangeEvent, BlockBreakEvent, BlockBurnEvent};
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\Player;
@@ -27,12 +28,26 @@ class Main extends PluginBase implements Listener
     private Database $db;
     private array $startlands = [];
     private array $endlands = [];
+    private Config $config;
 
     public function onEnable()
     {
-        $this->db = new Database($this->getDataFolder() . 'outiserver.db');
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->client = new discord($this->getFile(), 'Nzg0MDQzNTg4NDI2MDA2NTQ4.X8jjfg._LMfjeEw6K5p8UMhAGvCKzzFP_M', $this->getDataFolder() . 'outiserver.db');
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML,
+            array(
+                "token" => "Nzg0MDQzNTg4NDI2MDA2NTQ4.X8jjfg._LMfjeEw6K5p8UMhAGvCKzzFP_M",
+                "chat_channel_id" => "834317763769925632",
+                "log_channel_id" => "833626570270572584",
+                "ban_worlds" => array()
+            ));
+        $token = $this->config->get('token');
+        if($token === 'DISCORD_TOKEN') {
+            $this->getLogger()->info("config.yml: tokenが設定されていません");
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+        }
+        $this->db = new Database($this->getDataFolder() . 'outiserver.db');
+        $this->client = new discord($this->getFile(), $token, $this->getDataFolder() . 'outiserver.db', $this->config->get('chat_channel_id'), $this->config->get('log_channel_id'));
+        unset($token);
 
         $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
             function (int $currentTick): void {
@@ -410,6 +425,12 @@ class Main extends PluginBase implements Listener
 
             switch ($data) {
                 case 0:
+                    foreach ($this->config->get('ban_worlds') as $key => $i) {
+                        if ($i === $player->getLevel()->getName()) {
+                            $player->sendMessage("このワールドの土地は購入できません");
+                            return;
+                        }
+                    }
                     $this->startlands[$player->getXuid()] = true;
                     $player->sendMessage("土地購入の開始地点をタップしてください");
                     break;

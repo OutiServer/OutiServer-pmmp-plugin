@@ -12,6 +12,8 @@ class discord extends \Thread
     public bool $stopped = false;
     public bool $started = false;
     public $content;
+    private string $chat_id;
+    private string $log_id;
     private string $db_file;
     private string $token;
     private bool $db_send;
@@ -20,12 +22,13 @@ class discord extends \Thread
     protected \Threaded $log_Queue;
     protected \Threaded $chat_Queue;
 
-    public function __construct(string $file, string $token, string $db_file)
+    public function __construct(string $file, string $token, string $db_file, string $chat_channel_id, string $log_channel_id)
     {
         $this->file = $file;
         $this->token = $token;
         $this->db_file = $db_file;
-
+        $this->chat_id = $chat_channel_id;
+        $this->log_id = $log_channel_id;
         $this->console_Queue = new \Threaded;
         $this->serverchat_Queue = new \Threaded;
         $this->log_Queue = new \Threaded;
@@ -47,7 +50,7 @@ class discord extends \Thread
         $timer = $loop->addPeriodicTimer(1, function () use ($discord) {
             if ($this->stopped) {
                 $guild = $discord->guilds->get('id', '706452606918066237');
-                $chatchannel = $guild->channels->get('id', '834317763769925632');
+                $chatchannel = $guild->channels->get('id', $this->chat_id);
                 $chatchannel->sendMessage("サーバーが停止しました");
                 $discord->close();
                 $discord->loop->stop();
@@ -69,12 +72,12 @@ class discord extends \Thread
                 if ($message->author->id === $discord->user->id or $message->type !== Message::TYPE_NORMAL or $message->content === '') {
                     return;
                 }
-                if ($message->channel_id === '833626570270572584') {
+                if ($message->channel_id === $this->chat_id) {
                     $this->console_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
                     ]);
-                } elseif ($message->channel_id === '834317763769925632') {
+                } elseif ($message->channel_id === $this->log_id) {
                     $this->serverchat_Queue[] = serialize([
                         'username' => $message->author->username,
                         'content' => $message->content
@@ -92,8 +95,8 @@ class discord extends \Thread
         }
 
         $guild = $discord->guilds->get('id', '706452606918066237');
-        $chatchannel = $guild->channels->get('id', '834317763769925632');
-        $logchannel = $guild->channels->get('id', '833626570270572584');
+        $chatchannel = $guild->channels->get('id', $this->chat_id);
+        $logchannel = $guild->channels->get('id', $this->log_id);
         $db_channel = $guild->channels->get('id', '863124612429381699');
 
 
