@@ -555,7 +555,7 @@ class Main extends PluginBase implements Listener
         for ($i = 0; $i < count($alldata); $i++) {
             $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"], 1);
             $itemname = $this->allItem->GetItemJaNameById($item->getId());
-            $form->addButton($itemname . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
+            $form->addButton($itemname . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円", 0, "textures/items/" . $item->getName());
         }
 
         $player->sendForm($form);
