@@ -6,6 +6,7 @@ namespace Ken_Cir0909\OutiServerPlugin;
 
 use Ken_Cir0909\OutiServerPlugin\Tasks\discord;
 use Ken_Cir0909\OutiServerPlugin\Utils\Database;
+use Ken_Cir0909\OutiServerPlugin\AllItem;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent};
@@ -29,6 +30,7 @@ class Main extends PluginBase implements Listener
     private array $startlands = [];
     private array $endlands = [];
     private Config $config;
+    private AllItem $allItem;
 
     public function onEnable()
     {
@@ -83,6 +85,7 @@ class Main extends PluginBase implements Listener
             }
         ), 5, 1);
 
+        $this->allItem = new AllItem($this->getFile() . "resource/allitemdata.json");
         $this->client->sendChatMessage('サーバーが起動しました！');
     }
 
@@ -337,8 +340,7 @@ class Main extends PluginBase implements Listener
 
         $form->setTitle("shop作成");
         $form->addSlider("販売するItemの最大購入数", 1, 64);
-        $form->addInput("販売するItemのID", "itemid", "");
-        $form->addInput("販売するItemのMETA", "itemmeta", "0");
+        $form->addInput("販売するItemの名前", "itemname", "");
         $form->addInput("販売するItemの値段", "price", "1");
         $player->sendForm($form);
     }
