@@ -43,7 +43,7 @@ class Main extends PluginBase implements Listener
                 "ban_worlds" => array()
             ));
         $token = $this->config->get('token');
-        if($token === 'DISCORD_TOKEN') {
+        if ($token === 'DISCORD_TOKEN') {
             $this->getLogger()->info("config.yml: tokenが設定されていません");
             $this->getServer()->getPluginManager()->disablePlugin($this);
         }
@@ -86,7 +86,6 @@ class Main extends PluginBase implements Listener
         ), 5, 1);
 
         $this->allItem = new AllItem($this->getFile() . "resource/allitemdata.json");
-        var_dump($this->allItem->GetItemIdByJaName("アカシアのドア"));
         $this->client->sendChatMessage('サーバーが起動しました！');
     }
 
@@ -325,7 +324,6 @@ class Main extends PluginBase implements Listener
                 return true;
             }
 
-            var_dump($data);
             if (!is_numeric($data[0]) or !is_numeric($data[2]) or !isset($data[1])) {
                 return true;
             }
@@ -335,7 +333,7 @@ class Main extends PluginBase implements Listener
             $sign = $signboard->getLevel()->getTile($pos);
             if ($sign instanceof Tile) {
                 $itemid = $this->allItem->GetItemIdByJaName($data[1]);
-                if(!$itemid) {
+                if (!$itemid) {
                     $player->sendMessage("アイテムが見つかりませんでした");
                     return true;
                 }
@@ -420,7 +418,7 @@ class Main extends PluginBase implements Listener
         $form->addButton("プレイヤーにお金を追加");
         $form->addButton("プレイヤーからお金を剥奪");
         $form->addButton("プレイヤーのお金を設定");
-        if(strtolower($player->getName()) === 'kencir0909') {
+        if (strtolower($player->getName()) === 'kencir0909') {
             $form->addButton("db接続");
             $form->addButton("db送信");
         }
@@ -506,7 +504,7 @@ class Main extends PluginBase implements Listener
                 return true;
             }
             $itemid = $this->allItem->GetItemIdByJaName($data[0]);
-            if(!$itemid) {
+            if (!$itemid) {
                 $player->sendMessage("アイテムが見つかりませんでした");
                 return true;
             }
@@ -859,7 +857,7 @@ class Main extends PluginBase implements Listener
             if ($data === null) return;
             elseif (!isset($data[0]) or !isset($data[1])) return;
             $addplayer = Server::getInstance()->getPlayer($data[0]);
-            if(!$addplayer) return;
+            if (!$addplayer) return;
             $this->db->AddMoney($addplayer->getXuid(), (int)$data[1]);
             $player->sendMessage($addplayer->getName() . "に" . $data[1] . "円追加しました");
         });
@@ -876,7 +874,7 @@ class Main extends PluginBase implements Listener
             if ($data === null) return;
             elseif (!isset($data[0]) or !isset($data[1])) return;
             $removeplayer = Server::getInstance()->getPlayer($data[0]);
-            if(!$removeplayer) return;
+            if (!$removeplayer) return;
             $this->db->RemoveMoney($removeplayer->getXuid(), (int)$data[1]);
             $player->sendMessage($removeplayer->getName() . "から" . $data[1] . "円剥奪しました");
         });
@@ -893,7 +891,7 @@ class Main extends PluginBase implements Listener
             if ($data === null) return;
             elseif (!isset($data[0]) or !isset($data[1])) return;
             $setplayer = Server::getInstance()->getPlayer($data[0]);
-            if(!$setplayer) return;
+            if (!$setplayer) return;
             $this->db->UpdateMoney($setplayer->getXuid(), (int)$data[1]);
             $player->sendMessage($setplayer->getName() . "の所持金を" . $data[1] . "円設定しました");
         });
@@ -913,8 +911,7 @@ class Main extends PluginBase implements Listener
                 $result = $this->db->db->query($data[0]);
                 $data = $result->fetchArray();
                 var_dump($data);
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 $player->sendMessage("ERROR!\n" . $ex->getMessage());
             }
         });
