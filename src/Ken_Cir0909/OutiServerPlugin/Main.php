@@ -6,7 +6,7 @@ namespace Ken_Cir0909\OutiServerPlugin;
 
 use Ken_Cir0909\OutiServerPlugin\Tasks\discord;
 use Ken_Cir0909\OutiServerPlugin\Utils\Database;
-use Ken_Cir0909\OutiServerPlugin\AllItem;
+use Ken_Cir0909\OutiServerPlugin\Utils\AllItem;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent};
@@ -86,6 +86,7 @@ class Main extends PluginBase implements Listener
         ), 5, 1);
 
         $this->allItem = new AllItem($this->getFile() . "resource/allitemdata.json");
+        var_dump($this->allItem->GetItemIdByJaName("アカシアのドア"));
         $this->client->sendChatMessage('サーバーが起動しました！');
     }
 
@@ -273,8 +274,9 @@ class Main extends PluginBase implements Listener
         });
 
         $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"], 0);
+        $itemname = $this->allItem->GetItemJaNameById($item->getId());
         $form->setTitle("Shop");
-        $form->addLabel("販売物: " . $item->getName());
+        $form->addLabel("販売物: " . $itemname);
         $form->addSlider("\n買う個数", 1, $shopdata["maxcount"]);
         $player->sendForm($form);
     }
@@ -308,8 +310,9 @@ class Main extends PluginBase implements Listener
             }
         });
 
+        $itemname = $this->allItem->GetItemJaNameById($item->getId());
         $form->setTitle("購入確認");
-        $form->setContent($item->getName() . "を" . $item->getCount() . "個購入しますか？\n" . $item->getCount() * $shopdata["price"] . "円です");
+        $form->setContent($itemname . "を" . $item->getCount() . "個購入しますか？\n" . $item->getCount() * $shopdata["price"] . "円です");
         $form->addButton("購入する");
         $form->addButton("キャンセル");
         $player->sendForm($form);
@@ -322,18 +325,24 @@ class Main extends PluginBase implements Listener
                 return true;
             }
 
-            if (!is_numeric($data[0]) or !is_numeric($data[1]) or !is_numeric($data[2]) or !is_numeric($data[3])) {
+            var_dump($data);
+            if (!is_numeric($data[0]) or !is_numeric($data[2]) or !isset($data[1])) {
                 return true;
             }
 
             $xuid = $player->getXuid();
             $pos = new Vector3($signboard->x, $signboard->y, $signboard->z);
             $sign = $signboard->getLevel()->getTile($pos);
-
             if ($sign instanceof Tile) {
-                $item = Item::get((int)$data[1], (int)$data[2], 0);
-                $this->db->SetChestShop($xuid, $chest, $signboard, $item, $data[3]);
-                $sign->setText("shop", "shop主: " . $player->getName(), "販売しているItem: " . $item->getName(), "お値段: " . $data[3] . "円");
+                $itemid = $this->allItem->GetItemIdByJaName($data[1]);
+                if(!$itemid) {
+                    $player->sendMessage("アイテムが見つかりませんでした");
+                    return true;
+                }
+                $item = Item::get($itemid, 0, 0);
+                $this->db->SetChestShop($xuid, $chest, $signboard, $item, $data[2]);
+                $itemname = $this->allItem->GetItemJaNameById($item->getId());
+                $sign->setText("shop", "shop主: " . $player->getName(), "販売しているItem: " . $itemname, "お値段: " . $data[2] . "円");
                 $player->sendMessage("shopを作成しました！");
             }
         });
@@ -493,27 +502,31 @@ class Main extends PluginBase implements Listener
                 return true;
             }
 
-            if (!is_numeric($data[0]) or !is_numeric($data[1])) {
+            if (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[0])) {
                 return true;
             }
-            $item = Item::get((int)$data[0], (int)$data[1], 1);
+            $itemid = $this->allItem->GetItemIdByJaName($data[0]);
+            if(!$itemid) {
+                $player->sendMessage("アイテムが見つかりませんでした");
+                return true;
+            }
+            $item = Item::get($itemid, 0, 1);
             if (!$item) {
                 return true;
             }
 
             $itemdata = $this->db->GetAdminShop($item);
             if ($itemdata === false) {
-                $this->db->SetAdminShop($item, $data[2], $data[3]);
+                $this->db->SetAdminShop($item, $data[1], $data[2]);
             } else {
-                $this->db->UpdateAdminShop($item, $data[2], $data[3]);
+                $this->db->UpdateAdminShop($item, $data[1], $data[2]);
             }
 
             $player->sendMessage("設定しました");
         });
 
         $form->setTitle("iPhone-AdminShop-値段設定");
-        $form->addInput("値段設定するItemID", "itemid", "");
-        $form->addInput("値段設定するItemのMETA", "itemmeta", "0");
+        $form->addInput("値段設定するアイテム名", "itemname", "");
         $form->addInput("値段", "buyprice", "1");
         $form->addInput("売却値段", "sellprice", "1");
         $player->sendForm($form);
@@ -543,7 +556,8 @@ class Main extends PluginBase implements Listener
 
         for ($i = 0; $i < count($alldata); $i++) {
             $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"], 1);
-            $form->addButton($item->getName() . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
+            $itemname = $this->allItem->GetItemJaNameById($item->getId());
+            $form->addButton($itemname . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
         }
 
         $player->sendForm($form);
@@ -599,8 +613,9 @@ class Main extends PluginBase implements Listener
             }
         });
 
+        $itemname = $this->allItem->GetItemJaNameById($item->getId());
         $form->setTitle("iPhone-AdminShop-購入最終確認");
-        $form->setContent($item->getName() . "を" . $item->getCount() . "個購入しますか？\n" . $price . "円です");
+        $form->setContent($itemname . "を" . $item->getCount() . "個購入しますか？\n" . $price . "円です");
         $form->setButton1("購入する");
         $form->setButton2("やめる");
         $player->sendForm($form);

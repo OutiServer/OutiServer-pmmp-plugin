@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ken_Cir0909\OutiServerPlugin;
+namespace Ken_Cir0909\OutiServerPlugin\Utils;
 
-class AllItem {
-     public array $items = array();
+class AllItem
+{
+    private array $items = array();
 
     public function __construct(string $path)
     {
@@ -15,8 +16,16 @@ class AllItem {
 
     public function GetItemIdByJaName(string $ja_name)
     {
-        $data = $this->items->ja_name[$ja_name];
-        if(!$data) return false;
-        return  $data->id;
+        if(!isset($this->items["ja_name"][$ja_name])) return false;
+        $data = $this->items["ja_name"][$ja_name];
+        return $data["id"];
+    }
+
+    public function GetItemJaNameById(int $id)
+    {
+        if(!isset($this->items["id"][$id])) return false;
+        $data = $this->items["id"][$id];
+        if (!$data) return false;
+        return $data["ja_name"];
     }
 }
