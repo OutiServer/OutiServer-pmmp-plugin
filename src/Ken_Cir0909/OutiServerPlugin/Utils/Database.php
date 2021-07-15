@@ -81,7 +81,7 @@ class Database
     // チェストショップ設定
     public function SetChestShop($xuid, $chest, $signboard, $item, $price)
     {
-        $sql = $this->db->prepare('INSERT INTO (ownerxuid, chestx, chesty, chestz, signboardx, signboardy, signboardz, itemid, itemmeta, price, maxcount, levelname) shops VALUES (:ownerxuid, :chestx, :chesty, :chestz, :signboardx, :signboardy, :signboardz, :itemid, :itemmeta, :price, :maxcount, :levelname)');
+        $sql = $this->db->prepare('INSERT INTO shops (ownerxuid, chestx, chesty, chestz, signboardx, signboardy, signboardz, itemid, itemmeta, price, maxcount, levelname) VALUES (:ownerxuid, :chestx, :chesty, :chestz, :signboardx, :signboardy, :signboardz, :itemid, :itemmeta, :price, :maxcount, :levelname)');
         $sql->bindValue(':ownerxuid', $xuid, SQLITE3_TEXT);
         $sql->bindValue(':chestx', $chest->x, SQLITE3_INTEGER);
         $sql->bindValue(':chesty', $chest->y, SQLITE3_INTEGER);
@@ -149,7 +149,7 @@ class Database
         $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
         $sql->bindValue(':buyprice', $buy, SQLITE3_INTEGER);
         $sql->bindValue(':sellprice', $sell, SQLITE3_INTEGER);
-        $result = $sql->execute();
+        $sql->execute();
     }
 
     // AdminShop設定更新
@@ -171,7 +171,7 @@ class Database
         $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
         $result = $sql->execute();
         $data = $result->fetchArray();
-        if ($data) {
+        if (!$data) {
             return false;
         }
         return $data;
