@@ -1,0 +1,5860 @@
+{
+    "en_name": {
+        "acacia_door": {
+            "id": 430,
+            "name": "アカシアのドア"
+        },
+        "acacia_door_block": {
+            "id": 196,
+            "name": "アカシアの木のトラップドア"
+        },
+        "acacia_fence_gate": {
+            "id": 187,
+            "name": "アカシアの木の柵のゲート"
+        },
+        "acacia_sign": {
+            "id": 475,
+            "name": "アカシアの看板"
+        },
+        "acacia_stairs": {
+            "id": 163,
+            "name": "アカシアの木の階段"
+        },
+        "activator_rail": {
+            "id": 126,
+            "name": "アクティベーターレール"
+        },
+        "air": {
+            "id": 0,
+            "name": "空気"
+        },
+        "anvil": {
+            "id": 145,
+            "name": "金床"
+        },
+        "apple": {
+            "id": 260,
+            "name": "リンゴ"
+        },
+        "appleapple_enchanted": {
+            "id": 466,
+            "name": "エンチャントされたリンゴ"
+        },
+        "appleenchanted": {
+            "id": 466,
+            "name": "エンチャントされたリンゴ"
+        },
+        "armor_stand": {
+            "id": 425,
+            "name": "防具立て"
+        },
+        "arrow": {
+            "id": 262,
+            "name": "矢"
+        },
+        "baked_potato": {
+            "id": 393,
+            "name": "ベイクドポテト"
+        },
+        "balloon": {
+            "id": 448,
+            "name": "不明なアイテム"
+        },
+        "banner": {
+            "id": 446,
+            "name": "黒の旗"
+        },
+        "banner_pattern": {
+            "id": 434,
+            "name": "旗の模様"
+        },
+        "beacon": {
+            "id": 138,
+            "name": "ビーコン"
+        },
+        "bed": {
+            "id": 355,
+            "name": "白のベッド"
+        },
+        "bed_block": {
+            "id": 26,
+            "name": "ベッド"
+        },
+        "bedrock": {
+            "id": 7,
+            "name": "岩盤"
+        },
+        "beef": {
+            "id": 363,
+            "name": "生の牛肉"
+        },
+        "beetroot": {
+            "id": 457,
+            "name": "ビートルート"
+        },
+        "beetroot_block": {
+            "id": 244,
+            "name": "不明なアイテム"
+        },
+        "beetroot_seeds": {
+            "id": 458,
+            "name": "ビートルートの種"
+        },
+        "beetroot_soup": {
+            "id": 459,
+            "name": "ビートルートスープ"
+        },
+        "birch_door": {
+            "id": 428,
+            "name": "樺の木のドア"
+        },
+        "birch_door_block": {
+            "id": 194,
+            "name": "樺の木のトラップドア"
+        },
+        "birch_fence_gate": {
+            "id": 184,
+            "name": "樺の木の柵のゲート"
+        },
+        "birch_sign": {
+            "id": 473,
+            "name": "樺の看板"
+        },
+        "birch_stairs": {
+            "id": 135,
+            "name": "樺の階段"
+        },
+        "black_glazed_terracotta": {
+            "id": 235,
+            "name": "黒の彩釉テラコッタ"
+        },
+        "blaze_powder": {
+            "id": 377,
+            "name": "ブレイズパウダー"
+        },
+        "blaze_rod": {
+            "id": 369,
+            "name": "ブレイズロッド"
+        },
+        "bleach": {
+            "id": 451,
+            "name": "不明なアイテム"
+        },
+        "blue_glazed_terracotta": {
+            "id": 231,
+            "name": "青の彩釉テラコッタ"
+        },
+        "boat": {
+            "id": 333,
+            "name": "樫の木のボート"
+        },
+        "bone": {
+            "id": 352,
+            "name": "骨"
+        },
+        "bone_block": {
+            "id": 216,
+            "name": "骨ブロック"
+        },
+        "book": {
+            "id": 340,
+            "name": "本"
+        },
+        "bookshelf": {
+            "id": 47,
+            "name": "本棚"
+        },
+        "bottle_o_enchanting": {
+            "id": 384,
+            "name": "エンチャントの瓶"
+        },
+        "bow": {
+            "id": 261,
+            "name": "弓"
+        },
+        "bowl": {
+            "id": 281,
+            "name": "おわん"
+        },
+        "bread": {
+            "id": 297,
+            "name": "パン"
+        },
+        "brewing_stand": {
+            "id": 379,
+            "name": "調合台"
+        },
+        "brewing_stand_block": {
+            "id": 117,
+            "name": "不明なアイテム"
+        },
+        "brick": {
+            "id": 336,
+            "name": "レンガ"
+        },
+        "brick_block": {
+            "id": 45,
+            "name": "レンガブロック"
+        },
+        "brick_stairs": {
+            "id": 108,
+            "name": "レンガ階段"
+        },
+        "brown_glazed_terracotta": {
+            "id": 232,
+            "name": "茶色の彩釉テラコッタ"
+        },
+        "brown_mushroom": {
+            "id": 39,
+            "name": "きのこ(茶色)"
+        },
+        "brown_mushroom_block": {
+            "id": 99,
+            "name": "きのこ"
+        },
+        "bucket": {
+            "id": 325,
+            "name": "バケツ"
+        },
+        "burning_furnace": {
+            "id": 62,
+            "name": "かまど"
+        },
+        "cactus": {
+            "id": 81,
+            "name": "サボテン"
+        },
+        "cake": {
+            "id": 354,
+            "name": "ケーキ"
+        },
+        "cake_block": {
+            "id": 92,
+            "name": "ケーキ"
+        },
+        "carpet": {
+            "id": 171,
+            "name": "白のカーペット"
+        },
+        "carrot": {
+            "id": 391,
+            "name": "ニンジン"
+        },
+        "carrot_block": {
+            "id": 141,
+            "name": "不明なアイテム"
+        },
+        "carrot_on_a_stick": {
+            "id": 398,
+            "name": "ニンジン付きの棒"
+        },
+        "carrotonastick": {
+            "id": 398,
+            "name": "ニンジン付きの棒"
+        },
+        "carrots": {
+            "id": 141,
+            "name": "不明なアイテム"
+        },
+        "cauldron": {
+            "id": 380,
+            "name": "大釜"
+        },
+        "cauldron_block": {
+            "id": 118,
+            "name": "不明なアイテム"
+        },
+        "chain_boots": {
+            "id": 305,
+            "name": "チェーンブーツ"
+        },
+        "chain_chestplate": {
+            "id": 303,
+            "name": "胸当て"
+        },
+        "chain_command_block": {
+            "id": 189,
+            "name": "コマンドブロックのチェーン"
+        },
+        "chain_helmet": {
+            "id": 302,
+            "name": "チェーンヘルメット"
+        },
+        "chain_leggings": {
+            "id": 304,
+            "name": "チェーンレギンス"
+        },
+        "chainmail_boots": {
+            "id": 305,
+            "name": "チェーンブーツ"
+        },
+        "chainmail_chestplate": {
+            "id": 303,
+            "name": "胸当て"
+        },
+        "chainmail_helmet": {
+            "id": 302,
+            "name": "チェーンヘルメット"
+        },
+        "chainmail_leggings": {
+            "id": 304,
+            "name": "チェーンレギンス"
+        },
+        "chest": {
+            "id": 54,
+            "name": "チェスト"
+        },
+        "chest_minecart": {
+            "id": 342,
+            "name": "チェスト付きトロッコ"
+        },
+        "chicken": {
+            "id": 365,
+            "name": "生の鶏肉"
+        },
+        "chorus_flower": {
+            "id": 200,
+            "name": "コーラスの花"
+        },
+        "chorus_fruit": {
+            "id": 432,
+            "name": "コーラスフルーツ"
+        },
+        "chorus_fruit_popped": {
+            "id": 433,
+            "name": "焼いたコーラスフルーツ"
+        },
+        "chorus_plant": {
+            "id": 240,
+            "name": "コーラスプラント"
+        },
+        "clay": {
+            "id": 337,
+            "name": "粘土"
+        },
+        "clay_ball": {
+            "id": 337,
+            "name": "粘土"
+        },
+        "clay_block": {
+            "id": 82,
+            "name": "粘土ブロック"
+        },
+        "clock": {
+            "id": 347,
+            "name": "時計"
+        },
+        "clownfish": {
+            "id": 461,
+            "name": "熱帯魚"
+        },
+        "coal": {
+            "id": 263,
+            "name": "石炭"
+        },
+        "coal_block": {
+            "id": 173,
+            "name": "石炭ブロック"
+        },
+        "coal_ore": {
+            "id": 16,
+            "name": "石炭鉱石"
+        },
+        "cobblestone": {
+            "id": 4,
+            "name": "丸石"
+        },
+        "cobblestone_stairs": {
+            "id": 67,
+            "name": "丸石の階段"
+        },
+        "cobblestone_wall": {
+            "id": 139,
+            "name": "丸石の壁"
+        },
+        "cobweb": {
+            "id": 30,
+            "name": "蜘蛛の巣"
+        },
+        "cocoa": {
+            "id": 127,
+            "name": "ココア"
+        },
+        "cocoa_block": {
+            "id": 127,
+            "name": "ココア"
+        },
+        "command_block": {
+            "id": 137,
+            "name": "コマンドブロック"
+        },
+        "command_block_minecart": {
+            "id": 443,
+            "name": "コマンドブロック付きトロッコ"
+        },
+        "comparator": {
+            "id": 404,
+            "name": "レッドストーンコンパレーター"
+        },
+        "comparator_block": {
+            "id": 149,
+            "name": "不明なアイテム"
+        },
+        "compass": {
+            "id": 345,
+            "name": "コンパス"
+        },
+        "compound": {
+            "id": 499,
+            "name": "不明なアイテム"
+        },
+        "concrete": {
+            "id": 236,
+            "name": "白のコンクリート"
+        },
+        "concrete_powder": {
+            "id": 237,
+            "name": "白のコンクリートパウダー"
+        },
+        "concretepowder": {
+            "id": 237,
+            "name": "白のコンクリートパウダー"
+        },
+        "cooked_beef": {
+            "id": 364,
+            "name": "調理した牛肉"
+        },
+        "cooked_chicken": {
+            "id": 366,
+            "name": "焼き鳥"
+        },
+        "cooked_fish": {
+            "id": 350,
+            "name": "焼いたタラ"
+        },
+        "cooked_mutton": {
+            "id": 424,
+            "name": "調理した羊肉"
+        },
+        "cooked_porkchop": {
+            "id": 320,
+            "name": "調理した豚肉"
+        },
+        "cooked_rabbit": {
+            "id": 412,
+            "name": "調理した兎肉"
+        },
+        "cooked_salmon": {
+            "id": 463,
+            "name": "調理した鮭"
+        },
+        "cookie": {
+            "id": 357,
+            "name": "クッキー"
+        },
+        "crafting_table": {
+            "id": 58,
+            "name": "作業台"
+        },
+        "crossbow": {
+            "id": 471,
+            "name": "クロスボウ"
+        },
+        "cyan_glazed_terracotta": {
+            "id": 229,
+            "name": "水色の彩釉テラコッタ"
+        },
+        "dandelion": {
+            "id": 37,
+            "name": "タンポポ"
+        },
+        "dark_oak_door": {
+            "id": 431,
+            "name": "黒樫の木のドア"
+        },
+        "dark_oak_door_block": {
+            "id": 197,
+            "name": "不明なアイテム"
+        },
+        "dark_oak_fence_gate": {
+            "id": 186,
+            "name": "黒樫の木の柵のゲート"
+        },
+        "dark_oak_stairs": {
+            "id": 164,
+            "name": "黒樫の木の階段"
+        },
+        "darkoak_sign": {
+            "id": 476,
+            "name": "黒樫の看板"
+        },
+        "daylight_detector": {
+            "id": 151,
+            "name": "日照センサー"
+        },
+        "daylight_detector_inverted": {
+            "id": 178,
+            "name": "不明なアイテム"
+        },
+        "daylight_sensor": {
+            "id": 151,
+            "name": "日照センサー"
+        },
+        "daylight_sensor_inverted": {
+            "id": 178,
+            "name": "不明なアイテム"
+        },
+        "dead_bush": {
+            "id": 32,
+            "name": "枯れ木"
+        },
+        "deadbush": {
+            "id": 32,
+            "name": "枯れ木"
+        },
+        "detector_rail": {
+            "id": 28,
+            "name": "感知レール"
+        },
+        "diamond": {
+            "id": 264,
+            "name": "ダイアモンド"
+        },
+        "diamond_axe": {
+            "id": 279,
+            "name": "ダイアモンドの斧"
+        },
+        "diamond_block": {
+            "id": 57,
+            "name": "ダイアモンドのブロック"
+        },
+        "diamond_boots": {
+            "id": 313,
+            "name": "ダイアモンドのブーツ"
+        },
+        "diamond_chestplate": {
+            "id": 311,
+            "name": "ダイアモンドの胸当て"
+        },
+        "diamond_helmet": {
+            "id": 310,
+            "name": "ダイアモンドのヘルメット"
+        },
+        "diamond_hoe": {
+            "id": 293,
+            "name": "ダイアモンドのくわ"
+        },
+        "diamond_horse_armor": {
+            "id": 419,
+            "name": "ダイアモンドの馬鎧"
+        },
+        "diamond_leggings": {
+            "id": 312,
+            "name": "ダイアモンドの脚甲"
+        },
+        "diamond_ore": {
+            "id": 56,
+            "name": "ダイアモンド鉱石"
+        },
+        "diamond_pickaxe": {
+            "id": 278,
+            "name": "ダイアモンドのツルハシ"
+        },
+        "diamond_shovel": {
+            "id": 277,
+            "name": "ダイアモンドのシャベル"
+        },
+        "diamond_sword": {
+            "id": 276,
+            "name": "ダイアモンドの剣"
+        },
+        "dirt": {
+            "id": 3,
+            "name": "土"
+        },
+        "dispenser": {
+            "id": 23,
+            "name": "発射装置"
+        },
+        "double_plant": {
+            "id": 175,
+            "name": "ヒマワリ"
+        },
+        "double_stone_slab": {
+            "id": 43,
+            "name": "石ハーフブロック"
+        },
+        "double_stone_slab2": {
+            "id": 181,
+            "name": "赤砂岩のハーフブロック"
+        },
+        "double_wooden_slab": {
+            "id": 157,
+            "name": "不明なブロック"
+        },
+        "dragon_breath": {
+            "id": 437,
+            "name": "ドラゴンの息"
+        },
+        "dragon_egg": {
+            "id": 122,
+            "name": "ドラゴンの卵"
+        },
+        "dried_kelp": {
+            "id": 464,
+            "name": "乾燥昆布"
+        },
+        "dropper": {
+            "id": 125,
+            "name": "ドロッパー"
+        },
+        "dye": {
+            "id": 351,
+            "name": "墨袋"
+        },
+        "egg": {
+            "id": 344,
+            "name": "タマゴ"
+        },
+        "elytra": {
+            "id": 444,
+            "name": "エリトラ"
+        },
+        "emerald": {
+            "id": 388,
+            "name": "エメラルド"
+        },
+        "emerald_block": {
+            "id": 133,
+            "name": "エメラルドのブロック"
+        },
+        "emerald_ore": {
+            "id": 129,
+            "name": "エメラルド鉱石"
+        },
+        "empty_map": {
+            "id": 395,
+            "name": "空っぽの地図"
+        },
+        "emptymap": {
+            "id": 395,
+            "name": "空っぽの地図"
+        },
+        "enchanted_book": {
+            "id": 403,
+            "name": "エンチャントした本"
+        },
+        "enchanted_golden_apple": {
+            "id": 466,
+            "name": "エンチャントされたリンゴ"
+        },
+        "enchanting_table": {
+            "id": 116,
+            "name": "エンチャントテーブル"
+        },
+        "enchantment_table": {
+            "id": 116,
+            "name": "エンチャントテーブル"
+        },
+        "end_bricks": {
+            "id": 206,
+            "name": "エンドストーンレンガ"
+        },
+        "end_crystal": {
+            "id": 426,
+            "name": "果てのクリスタル"
+        },
+        "end_gateway": {
+            "id": 209,
+            "name": "不明なアイテム"
+        },
+        "end_portal": {
+            "id": 119,
+            "name": "不明なアイテム"
+        },
+        "end_portal_frame": {
+            "id": 120,
+            "name": "エンドポータル"
+        },
+        "end_rod": {
+            "id": 208,
+            "name": "果てのロッド"
+        },
+        "end_stone": {
+            "id": 121,
+            "name": "エンドストーン"
+        },
+        "ender_chest": {
+            "id": 130,
+            "name": "エンダーチェスト"
+        },
+        "ender_eye": {
+            "id": 381,
+            "name": "エンダーアイ"
+        },
+        "ender_pearl": {
+            "id": 368,
+            "name": "エンダーパール"
+        },
+        "experience_bottle": {
+            "id": 384,
+            "name": "エンチャントのビン"
+        },
+        "farmland": {
+            "id": 60,
+            "name": "農地"
+        },
+        "feather": {
+            "id": 288,
+            "name": "羽根"
+        },
+        "fence": {
+            "id": 85,
+            "name": "樫の木の柵"
+        },
+        "fence_gate": {
+            "id": 107,
+            "name": "樫の木の柵のゲート"
+        },
+        "fermented_spider_eye": {
+            "id": 376,
+            "name": "発酵したクモの目"
+        },
+        "filled_map": {
+            "id": 358,
+            "name": "地図"
+        },
+        "fire": {
+            "id": 51,
+            "name": "火"
+        },
+        "fire_charge": {
+            "id": 385,
+            "name": "発火剤"
+        },
+        "fireball": {
+            "id": 385,
+            "name": "発火剤"
+        },
+        "fireworks": {
+            "id": 401,
+            "name": "ロケット花火"
+        },
+        "fireworks_charge": {
+            "id": 402,
+            "name": "花火の星"
+        },
+        "fireworkscharge": {
+            "id": 402,
+            "name": "花火の星"
+        },
+        "fish": {
+            "id": 349,
+            "name": "生のタラ"
+        },
+        "fishing_rod": {
+            "id": 346,
+            "name": "釣り竿"
+        },
+        "flint": {
+            "id": 318,
+            "name": "火打ち石"
+        },
+        "flint_and_steel": {
+            "id": 259,
+            "name": "火打ち石と打ち金"
+        },
+        "flint_steel": {
+            "id": 259,
+            "name": "火打ち石と打ち金"
+        },
+        "flower_pot": {
+            "id": 390,
+            "name": "植木鉢"
+        },
+        "flower_pot_block": {
+            "id": 140,
+            "name": "不明なアイテム"
+        },
+        "flowing_lava": {
+            "id": 10,
+            "name": "不明なアイテム"
+        },
+        "flowing_water": {
+            "id": 8,
+            "name": "不明なアイテム"
+        },
+        "frame": {
+            "id": 389,
+            "name": "額縁"
+        },
+        "frame_block": {
+            "id": 199,
+            "name": "不明なアイテム"
+        },
+        "frosted_ice": {
+            "id": 207,
+            "name": "不明なアイテム"
+        },
+        "furnace": {
+            "id": 61,
+            "name": "かまど"
+        },
+        "ghast_tear": {
+            "id": 370,
+            "name": "ガストの涙"
+        },
+        "glass": {
+            "id": 20,
+            "name": "ガラス"
+        },
+        "glass_bottle": {
+            "id": 374,
+            "name": "ガラスビン"
+        },
+        "glass_pane": {
+            "id": 102,
+            "name": "ガラス板"
+        },
+        "glistering_melon": {
+            "id": 382,
+            "name": "輝くスイカ"
+        },
+        "glowing_obsidian": {
+            "id": 246,
+            "name": "不明なアイテム"
+        },
+        "glowing_redstone_ore": {
+            "id": 74,
+            "name": "不明なアイテム"
+        },
+        "glowingobsidian": {
+            "id": 246,
+            "name": "不明なアイテム"
+        },
+        "glowstone": {
+            "id": 89,
+            "name": "グロウストーン"
+        },
+        "glowstone_dust": {
+            "id": 348,
+            "name": "グロウストーンダスト"
+        },
+        "gold_axe": {
+            "id": 286,
+            "name": "金の斧"
+        },
+        "gold_block": {
+            "id": 41,
+            "name": "金のブロック"
+        },
+        "gold_boots": {
+            "id": 317,
+            "name": "金のブーツ"
+        },
+        "gold_chestplate": {
+            "id": 315,
+            "name": "金の胸当て"
+        },
+        "gold_helmet": {
+            "id": 314,
+            "name": "金のヘルメット"
+        },
+        "gold_hoe": {
+            "id": 294,
+            "name": "金のくわ"
+        },
+        "gold_horse_armor": {
+            "id": 418,
+            "name": "金の馬鎧"
+        },
+        "gold_ingot": {
+            "id": 266,
+            "name": "金の延べ棒"
+        },
+        "gold_leggings": {
+            "id": 316,
+            "name": "金の脚甲"
+        },
+        "gold_nugget": {
+            "id": 371,
+            "name": "金の塊"
+        },
+        "gold_ore": {
+            "id": 14,
+            "name": "金鉱石"
+        },
+        "gold_pickaxe": {
+            "id": 285,
+            "name": "金のツルハシ"
+        },
+        "gold_shovel": {
+            "id": 284,
+            "name": "金のシャベル"
+        },
+        "gold_sword": {
+            "id": 283,
+            "name": "金の剣"
+        },
+        "golden_apple": {
+            "id": 322,
+            "name": "金のリンゴ"
+        },
+        "golden_axe": {
+            "id": 286,
+            "name": "金の斧"
+        },
+        "golden_boots": {
+            "id": 317,
+            "name": "金のブーツ"
+        },
+        "golden_carrot": {
+            "id": 396,
+            "name": "金のニンジン"
+        },
+        "golden_chestplate": {
+            "id": 315,
+            "name": "金の胸当て"
+        },
+        "golden_helmet": {
+            "id": 314,
+            "name": "金のヘルメット"
+        },
+        "golden_hoe": {
+            "id": 294,
+            "name": "金のくわ"
+        },
+        "golden_horse_armor": {
+            "id": 418,
+            "name": "金の馬鎧"
+        },
+        "golden_leggings": {
+            "id": 316,
+            "name": "金の脚甲"
+        },
+        "golden_nugget": {
+            "id": 371,
+            "name": "金の塊"
+        },
+        "golden_pickaxe": {
+            "id": 285,
+            "name": "金のツルハシ"
+        },
+        "golden_rail": {
+            "id": 27,
+            "name": "加速レール"
+        },
+        "golden_shovel": {
+            "id": 284,
+            "name": "金のシャベル"
+        },
+        "golden_sword": {
+            "id": 283,
+            "name": "金の剣"
+        },
+        "grass": {
+            "id": 2,
+            "name": "草ブロック"
+        },
+        "grass_path": {
+            "id": 198,
+            "name": "未装飾路"
+        },
+        "gravel": {
+            "id": 13,
+            "name": "砂利"
+        },
+        "gray_glazed_terracotta": {
+            "id": 227,
+            "name": "灰色の彩釉テラコッタ"
+        },
+        "green_glazed_terracotta": {
+            "id": 233,
+            "name": "緑の彩釉テラコッタ"
+        },
+        "gunpowder": {
+            "id": 289,
+            "name": "火薬"
+        },
+        "hardened_clay": {
+            "id": 172,
+            "name": "テラコッタ"
+        },
+        "hay_bale": {
+            "id": 170,
+            "name": "干し草の俵"
+        },
+        "hay_block": {
+            "id": 170,
+            "name": "干し草の俵"
+        },
+        "heart_of_the_sea": {
+            "id": 467,
+            "name": "海の中心"
+        },
+        "heavy_weighted_pressure_plate": {
+            "id": 148,
+            "name": "重量感知板(重)"
+        },
+        "hopper": {
+            "id": 410,
+            "name": "ホッパー"
+        },
+        "hopper_block": {
+            "id": 154,
+            "name": "不明なアイテム"
+        },
+        "hopper_minecart": {
+            "id": 408,
+            "name": "ホッパー付きトロッコ"
+        },
+        "horse_armor_diamond": {
+            "id": 419,
+            "name": "ダイアモンドの馬鎧"
+        },
+        "horse_armor_gold": {
+            "id": 418,
+            "name": "金の馬鎧"
+        },
+        "horse_armor_iron": {
+            "id": 417,
+            "name": "鉄の馬鎧"
+        },
+        "horse_armor_leather": {
+            "id": 416,
+            "name": "革の馬鎧"
+        },
+        "horsearmordiamond": {
+            "id": 419,
+            "name": "ダイアモンドの馬鎧"
+        },
+        "horsearmorgold": {
+            "id": 418,
+            "name": "金の馬鎧"
+        },
+        "horsearmoriron": {
+            "id": 417,
+            "name": "鉄の馬鎧"
+        },
+        "horsearmorleather": {
+            "id": 416,
+            "name": "革の馬鎧"
+        },
+        "ice": {
+            "id": 79,
+            "name": "氷"
+        },
+        "ice_bomb": {
+            "id": 453,
+            "name": "不明なアイテム"
+        },
+        "info_update": {
+            "id": 248,
+            "name": "不明なアイテム"
+        },
+        "info_update2": {
+            "id": 249,
+            "name": "不明なアイテム"
+        },
+        "invisible_bedrock": {
+            "id": 95,
+            "name": "不可視の岩盤"
+        },
+        "invisiblebedrock": {
+            "id": 95,
+            "name": "不可視の岩盤"
+        },
+        "iron_axe": {
+            "id": 258,
+            "name": "鉄の斧"
+        },
+        "iron_bars": {
+            "id": 101,
+            "name": "鉄格子"
+        },
+        "iron_block": {
+            "id": 42,
+            "name": "鉄のブロック"
+        },
+        "iron_boots": {
+            "id": 309,
+            "name": "鉄のブーツ"
+        },
+        "iron_chestplate": {
+            "id": 307,
+            "name": "鉄の胸当て"
+        },
+        "iron_door": {
+            "id": 330,
+            "name": "鉄のドア"
+        },
+        "iron_door_block": {
+            "id": 71,
+            "name": "不明なアイテム"
+        },
+        "iron_helmet": {
+            "id": 306,
+            "name": "鉄のヘルメット"
+        },
+        "iron_hoe": {
+            "id": 292,
+            "name": "鉄のくわ"
+        },
+        "iron_horse_armor": {
+            "id": 417,
+            "name": "鉄の馬鎧"
+        },
+        "iron_ingot": {
+            "id": 265,
+            "name": "鉄の延べ棒"
+        },
+        "iron_leggings": {
+            "id": 308,
+            "name": ""
+        },
+        "iron_nugget": {
+            "id": 452,
+            "name": "鉄の脚甲"
+        },
+        "iron_ore": {
+            "id": 15,
+            "name": "鉄鉱石"
+        },
+        "iron_pickaxe": {
+            "id": 257,
+            "name": "鉄のツルハシ"
+        },
+        "iron_shovel": {
+            "id": 256,
+            "name": "鉄のシャベル"
+        },
+        "iron_sword": {
+            "id": 267,
+            "name": "鉄の剣"
+        },
+        "iron_trapdoor": {
+            "id": 167,
+            "name": "鉄のトラップドア"
+        },
+        "item_frame": {
+            "id": 389,
+            "name": "額縁"
+        },
+        "item_frame_block": {
+            "id": 199,
+            "name": "不明なアイテム"
+        },
+        "jack_o_lantern": {
+            "id": 91,
+            "name": "ジャック・オ・ランタン"
+        },
+        "jukebox": {
+            "id": 84,
+            "name": "ジュークボックス"
+        },
+        "jungle_door": {
+            "id": 429,
+            "name": "ジャングルの木のドア"
+        },
+        "jungle_door_block": {
+            "id": 195,
+            "name": "不明なアイテム"
+        },
+        "jungle_fence_gate": {
+            "id": 185,
+            "name": "ジャングルの木の柵のゲート"
+        },
+        "jungle_sign": {
+            "id": 474,
+            "name": "ジャングルの木の看板"
+        },
+        "jungle_stairs": {
+            "id": 136,
+            "name": "ジャングルの木の階段"
+        },
+        "kelp": {
+            "id": 335,
+            "name": "昆布"
+        },
+        "ladder": {
+            "id": 65,
+            "name": "はしご"
+        },
+        "lapis_block": {
+            "id": 22,
+            "name": "ラピスラズリのブロック"
+        },
+        "lapis_ore": {
+            "id": 21,
+            "name": "ラピスラズリ鉱石"
+        },
+        "lava": {
+            "id": 11,
+            "name": "不明なアイテム"
+        },
+        "lead": {
+            "id": 420,
+            "name": "首ひも"
+        },
+        "leather": {
+            "id": 334,
+            "name": "革"
+        },
+        "leather_boots": {
+            "id": 301,
+            "name": "革のブーツ"
+        },
+        "leather_cap": {
+            "id": 298,
+            "name": "革の帽子"
+        },
+        "leather_chestplate": {
+            "id": 299,
+            "name": "革の服"
+        },
+        "leather_helmet": {
+            "id": 298,
+            "name": "革の帽子"
+        },
+        "leather_horse_armor": {
+            "id": 416,
+            "name": "革の馬鎧"
+        },
+        "leather_leggings": {
+            "id": 300,
+            "name": "革のパンツ"
+        },
+        "leather_pants": {
+            "id": 300,
+            "name": "革のパンツ"
+        },
+        "leather_tunic": {
+            "id": 299,
+            "name": "革の服"
+        },
+        "leaves": {
+            "id": 18,
+            "name": "樫の葉"
+        },
+        "leaves2": {
+            "id": 161,
+            "name": "アカシアの葉"
+        },
+        "lever": {
+            "id": 69,
+            "name": "レバー"
+        },
+        "light_blue_glazed_terracotta": {
+            "id": 223,
+            "name": "空色の彩釉テラコッタ"
+        },
+        "light_weighted_pressure_plate": {
+            "id": 147,
+            "name": "重量感知板(軽)"
+        },
+        "lily_pad": {
+            "id": 111,
+            "name": "スイレンの葉"
+        },
+        "lime_glazed_terracotta": {
+            "id": 225,
+            "name": "黄緑の彩釉テラコッタ"
+        },
+        "lingering_potion": {
+            "id": 441,
+            "name": "残留する水のビン"
+        },
+        "lit_furnace": {
+            "id": 62,
+            "name": "不明なアイテム"
+        },
+        "lit_pumpkin": {
+            "id": 91,
+            "name": "ジャック・オ・ランタン"
+        },
+        "lit_redstone_lamp": {
+            "id": 124,
+            "name": "不明なアイテム"
+        },
+        "lit_redstone_ore": {
+            "id": 74,
+            "name": "不明なアイテム"
+        },
+        "lit_redstone_torch": {
+            "id": 76,
+            "name": "レッドストーンのたいまつ"
+        },
+        "log": {
+            "id": 17,
+            "name": "樫の丸太"
+        },
+        "log2": {
+            "id": 162,
+            "name": "アカシアの丸太"
+        },
+        "magenta_glazed_terracotta": {
+            "id": 222,
+            "name": "赤紫の彩釉テラコッタ"
+        },
+        "magma": {
+            "id": 213,
+            "name": "マグマブロック"
+        },
+        "magma_cream": {
+            "id": 378,
+            "name": "マグマクリーム"
+        },
+        "map": {
+            "id": 395,
+            "name": "空っぽの地図"
+        },
+        "medicine": {
+            "id": 447,
+            "name": "不明なアイテム"
+        },
+        "melon": {
+            "id": 360,
+            "name": "スイカの薄切り"
+        },
+        "melon_block": {
+            "id": 103,
+            "name": "スイカ"
+        },
+        "melon_seeds": {
+            "id": 362,
+            "name": "スイカの種"
+        },
+        "melon_slice": {
+            "id": 360,
+            "name": "スイカの薄切り"
+        },
+        "melon_stem": {
+            "id": 105,
+            "name": "不明なアイテム"
+        },
+        "minecart": {
+            "id": 328,
+            "name": "トロッコ"
+        },
+        "minecart_with_chest": {
+            "id": 342,
+            "name": "チェスト付きトロッコ"
+        },
+        "minecart_with_command_block": {
+            "id": 443,
+            "name": "コマンドブロック付きトロッコ"
+        },
+        "minecart_with_hopper": {
+            "id": 408,
+            "name": "ホッパー付きトロッコ"
+        },
+        "minecart_with_tnt": {
+            "id": 407,
+            "name": "TNT付きトロッコ"
+        },
+        "mob_head": {
+            "id": 397,
+            "name": "スケルトンの頭"
+        },
+        "mob_head_block": {
+            "id": 144,
+            "name": "不明なアイテム"
+        },
+        "mob_spawner": {
+            "id": 52,
+            "name": "モンスタースポナー"
+        },
+        "monster_egg": {
+            "id": 97,
+            "name": "虫食い石"
+        },
+        "monster_spawner": {
+            "id": 52,
+            "name": "モンスタースポナー"
+        },
+        "moss_stone": {
+            "id": 48,
+            "name": "苔の生えた丸石"
+        },
+        "mossy_cobblestone": {
+            "id": 48,
+            "name": "苔の生えた丸石"
+        },
+        "moving_block": {
+            "id": 250,
+            "name": "不明なアイテム"
+        },
+        "movingblock": {
+            "id": 250,
+            "name": "不明なアイテム"
+        },
+        "mushroom_stew": {
+            "id": 282,
+            "name": "きのこシチュー"
+        },
+        "mutton": {
+            "id": 423,
+            "name": "生の羊肉"
+        },
+        "mutton_cooked": {
+            "id": 424,
+            "name": "調理した羊肉"
+        },
+        "mutton_raw": {
+            "id": 423,
+            "name": "生の羊肉"
+        },
+        "muttoncooked": {
+            "id": 424,
+            "name": "調理した羊肉"
+        },
+        "muttonraw": {
+            "id": 423,
+            "name": "生の羊肉"
+        },
+        "mycelium": {
+            "id": 110,
+            "name": "菌糸"
+        },
+        "name_tag": {
+            "id": 421,
+            "name": "名札"
+        },
+        "nametag": {
+            "id": 421,
+            "name": "名札"
+        },
+        "nautilus_shell": {
+            "id": 465,
+            "name": "オウムガイの殻"
+        },
+        "nether_brick": {
+            "id": 405,
+            "name": "ネザーレンガ"
+        },
+        "nether_brick_block": {
+            "id": 112,
+            "name": "ネザーレンガのブロック"
+        },
+        "nether_brick_fence": {
+            "id": 113,
+            "name": "ネザーレンガの柵"
+        },
+        "nether_brick_stairs": {
+            "id": 114,
+            "name": "ネザーレンガの階段"
+        },
+        "nether_quartz": {
+            "id": 406,
+            "name": "ネザークォーツ"
+        },
+        "nether_quartz_ore": {
+            "id": 153,
+            "name": "ネザークォーツ鉱石"
+        },
+        "nether_reactor": {
+            "id": 247,
+            "name": "ネザーリアクターコア"
+        },
+        "nether_star": {
+            "id": 399,
+            "name": "ネザースター"
+        },
+        "nether_wart": {
+            "id": 372,
+            "name": "ネザーウォート"
+        },
+        "nether_wart_block": {
+            "id": 214,
+            "name": "ネザーウォートブロック"
+        },
+        "nether_wart_plant": {
+            "id": 115,
+            "name": "不明なアイテム"
+        },
+        "netherbrick": {
+            "id": 405,
+            "name": "ネザーレンガ"
+        },
+        "netherrack": {
+            "id": 87,
+            "name": "ネザーレック"
+        },
+        "netherreactor": {
+            "id": 247,
+            "name": "ネザーリアクターコア"
+        },
+        "netherstar": {
+            "id": 399,
+            "name": "ネザースター"
+        },
+        "note_block": {
+            "id": 25,
+            "name": "音ブロック"
+        },
+        "noteblock": {
+            "id": 25,
+            "name": "音ブロック"
+        },
+        "oak_door": {
+            "id": 324,
+            "name": "樫の木のドア"
+        },
+        "oak_door_block": {
+            "id": 64,
+            "name": "不明なアイテム"
+        },
+        "oak_fence_gate": {
+            "id": 107,
+            "name": "樫の木の柵のゲート"
+        },
+        "oak_stairs": {
+            "id": 53,
+            "name": "樫の階段"
+        },
+        "observer": {
+            "id": 251,
+            "name": "観察者"
+        },
+        "obsidian": {
+            "id": 49,
+            "name": "黒曜石"
+        },
+        "orange_glazed_terracotta": {
+            "id": 221,
+            "name": "オレンジの彩釉テラコッタ"
+        },
+        "packed_ice": {
+            "id": 174,
+            "name": "氷塊"
+        },
+        "painting": {
+            "id": 321,
+            "name": "絵"
+        },
+        "paper": {
+            "id": 339,
+            "name": "紙"
+        },
+        "phantom_membrane": {
+            "id": 470,
+            "name": "ファントムの皮膜"
+        },
+        "pink_glazed_terracotta": {
+            "id": 226,
+            "name": "ピンクの彩釉テラコッタ"
+        },
+        "piston": {
+            "id": 33,
+            "name": "ピストン"
+        },
+        "piston_arm_collision": {
+            "id": 34,
+            "name": "不明なアイテム"
+        },
+        "pistonarmcollision": {
+            "id": 34,
+            "name": "不明なアイテム"
+        },
+        "planks": {
+            "id": 5,
+            "name": "樫の木材"
+        },
+        "podzol": {
+            "id": 243,
+            "name": "ポドゾル"
+        },
+        "poisonous_potato": {
+            "id": 394,
+            "name": "有毒なジャガイモ"
+        },
+        "poppy": {
+            "id": 38,
+            "name": "ポピー"
+        },
+        "porkchop": {
+            "id": 319,
+            "name": "生の豚肉"
+        },
+        "portal": {
+            "id": 90,
+            "name": "ポータル"
+        },
+        "potato": {
+            "id": 392,
+            "name": "ジャガイモ"
+        },
+        "potato_block": {
+            "id": 142,
+            "name": "不明なアイテム"
+        },
+        "potatoes": {
+            "id": 142,
+            "name": "不明なアイテム"
+        },
+        "potion": {
+            "id": 373,
+            "name": "水のビン"
+        },
+        "powered_comparator": {
+            "id": 150,
+            "name": "不明なアイテム"
+        },
+        "powered_rail": {
+            "id": 27,
+            "name": "加速レール"
+        },
+        "powered_repeater": {
+            "id": 94,
+            "name": "虫食い石"
+        },
+        "prismarine": {
+            "id": 168,
+            "name": "海晶ブロック"
+        },
+        "prismarine_crystals": {
+            "id": 422,
+            "name": "海結晶"
+        },
+        "prismarine_shard": {
+            "id": 409,
+            "name": "暗結晶の破片"
+        },
+        "pufferfish": {
+            "id": 462,
+            "name": "フグ"
+        },
+        "pumpkin": {
+            "id": 86,
+            "name": "カボチャ"
+        },
+        "pumpkin_pie": {
+            "id": 400,
+            "name": "パンプキンパイ"
+        },
+        "pumpkin_seeds": {
+            "id": 361,
+            "name": "カボチャの種"
+        },
+        "pumpkin_stem": {
+            "id": 104,
+            "name": "カボチャの茎"
+        },
+        "purple_glazed_terracotta": {
+            "id": 219,
+            "name": "紫の彩釉テラコッタ"
+        },
+        "purpur_block": {
+            "id": 201,
+            "name": "プルプァブロック"
+        },
+        "purpur_stairs": {
+            "id": 203,
+            "name": "プルプァの階段"
+        },
+        "quartz": {
+            "id": 406,
+            "name": "ネザークォーツ"
+        },
+        "quartz_block": {
+            "id": 155,
+            "name": "クォーツのブロック"
+        },
+        "quartz_ore": {
+            "id": 153,
+            "name": "ネザークォーツ鉱石"
+        },
+        "quartz_stairs": {
+            "id": 156,
+            "name": "クォーツの階段"
+        },
+        "rabbit": {
+            "id": 411,
+            "name": "生の兎肉"
+        },
+        "rabbit_foot": {
+            "id": 414,
+            "name": "　ウサギの足"
+        },
+        "rabbit_hide": {
+            "id": 415,
+            "name": "ウサギの皮"
+        },
+        "rabbit_stew": {
+            "id": 413,
+            "name": "ウサギシチュー"
+        },
+        "rail": {
+            "id": 66,
+            "name": "レール"
+        },
+        "rapid_fertilizer": {
+            "id": 449,
+            "name": "不明なアイテム"
+        },
+        "raw_beef": {
+            "id": 363,
+            "name": "RAW_BEEF"
+        },
+        "raw_chicken": {
+            "id": 365,
+            "name": "生の牛肉"
+        },
+        "raw_fish": {
+            "id": 349,
+            "name": "生のタラ"
+        },
+        "raw_mutton": {
+            "id": 423,
+            "name": "生の羊肉"
+        },
+        "raw_porkchop": {
+            "id": 319,
+            "name": "生の豚肉"
+        },
+        "raw_rabbit": {
+            "id": 411,
+            "name": "生の兎肉"
+        },
+        "raw_salmon": {
+            "id": 460,
+            "name": "生鮭"
+        },
+        "record_11": {
+            "id": 510,
+            "name": "音楽ディスク"
+        },
+        "record_13": {
+            "id": 500,
+            "name": "音楽ディスク"
+        },
+        "record_blocks": {
+            "id": 502,
+            "name": "音楽ディスク"
+        },
+        "record_cat": {
+            "id": 501,
+            "name": "音楽ディスク"
+        },
+        "record_chirp": {
+            "id": 503,
+            "name": "音楽ディスク"
+        },
+        "record_far": {
+            "id": 504,
+            "name": "音楽ディスク"
+        },
+        "record_mall": {
+            "id": 505,
+            "name": "音楽ディスク"
+        },
+        "record_mellohi": {
+            "id": 506,
+            "name": "音楽ディスク"
+        },
+        "record_stal": {
+            "id": 507,
+            "name": "音楽ディスク"
+        },
+        "record_strad": {
+            "id": 508,
+            "name": "音楽ディスク"
+        },
+        "record_wait": {
+            "id": 511,
+            "name": "音楽ディスク"
+        },
+        "record_ward": {
+            "id": 509,
+            "name": "音楽ディスク"
+        },
+        "red_flower": {
+            "id": 38,
+            "name": "ポピー"
+        },
+        "red_glazed_terracotta": {
+            "id": 234,
+            "name": "赤の彩釉テラコッタ"
+        },
+        "red_mushroom": {
+            "id": 40,
+            "name": "キノコ(赤)"
+        },
+        "red_mushroom_block": {
+            "id": 100,
+            "name": "きのこブロック(赤)"
+        },
+        "red_nether_brick": {
+            "id": 215,
+            "name": "赤いネザーレンガ"
+        },
+        "red_sandstone": {
+            "id": 179,
+            "name": "赤砂岩"
+        },
+        "red_sandstone_stairs": {
+            "id": 180,
+            "name": "赤砂岩の階段"
+        },
+        "redstone": {
+            "id": 331,
+            "name": "レッドストーンの粉"
+        },
+        "redstone_block": {
+            "id": 152,
+            "name": "レッドストーンのブロック"
+        },
+        "redstone_dust": {
+            "id": 331,
+            "name": "レッドストーンの粉"
+        },
+        "redstone_lamp": {
+            "id": 123,
+            "name": "レッドストーンランプ"
+        },
+        "redstone_ore": {
+            "id": 73,
+            "name": "レッドストーン鉱石"
+        },
+        "redstone_torch": {
+            "id": 76,
+            "name": "レッドストーンのたいまつ"
+        },
+        "redstone_wire": {
+            "id": 55,
+            "name": "不明なアイテム"
+        },
+        "reeds": {
+            "id": 338,
+            "name": "サトウキビ"
+        },
+        "reeds_block": {
+            "id": 83,
+            "name": "不明なアイテム"
+        },
+        "repeater": {
+            "id": 356,
+            "name": "レッドストーン反復装置"
+        },
+        "repeater_block": {
+            "id": 93,
+            "name": "不明なアイテム"
+        },
+        "repeating_command_block": {
+            "id": 188,
+            "name": "コマンドブロックの反復"
+        },
+        "reserved6": {
+            "id": 255,
+            "name": "不明なアイテム"
+        },
+        "rotten_flesh": {
+            "id": 367,
+            "name": "腐肉"
+        },
+        "saddle": {
+            "id": 329,
+            "name": "鞍"
+        },
+        "salmon": {
+            "id": 460,
+            "name": "生鮭"
+        },
+        "sand": {
+            "id": 12,
+            "name": "砂"
+        },
+        "sandstone": {
+            "id": 24,
+            "name": "砂岩"
+        },
+        "sandstone_stairs": {
+            "id": 128,
+            "name": "砂岩の階段"
+        },
+        "sapling": {
+            "id": 6,
+            "name": "樫の苗木"
+        },
+        "sea_lantern": {
+            "id": 169,
+            "name": "海のランタン"
+        },
+        "sealantern": {
+            "id": 169,
+            "name": "海のランタン"
+        },
+        "seeds": {
+            "id": 295,
+            "name": "種"
+        },
+        "shears": {
+            "id": 359,
+            "name": "ハサミ"
+        },
+        "shield": {
+            "id": 513,
+            "name": "盾"
+        },
+        "shulker_box": {
+            "id": 218,
+            "name": "白のシュルカーボックス"
+        },
+        "shulker_shell": {
+            "id": 445,
+            "name": "シュルカーの殻"
+        },
+        "sign": {
+            "id": 323,
+            "name": "樫の木の看板"
+        },
+        "sign_post": {
+            "id": 63,
+            "name": "看板"
+        },
+        "silver_glazed_terracotta": {
+            "id": 228,
+            "name": "薄灰色の彩釉テラコッタ"
+        },
+        "skull": {
+            "id": 397,
+            "name": "スケルトンの頭"
+        },
+        "skull_block": {
+            "id": 144,
+            "name": "不明なアイテム"
+        },
+        "slime": {
+            "id": 165,
+            "name": "スライムブロック"
+        },
+        "slime_ball": {
+            "id": 341,
+            "name": "スライムボール"
+        },
+        "slime_block": {
+            "id": 165,
+            "name": "スライムブロック"
+        },
+        "slimeball": {
+            "id": 341,
+            "name": "スライムボール"
+        },
+        "snow": {
+            "id": 80,
+            "name": "雪"
+        },
+        "snow_block": {
+            "id": 80,
+            "name": "雪"
+        },
+        "snow_layer": {
+            "id": 78,
+            "name": "積雪"
+        },
+        "snowball": {
+            "id": 332,
+            "name": "雪玉"
+        },
+        "soul_sand": {
+            "id": 88,
+            "name": "ソウルサンド"
+        },
+        "sparkler": {
+            "id": 442,
+            "name": "不明なアイテム"
+        },
+        "spawn_egg": {
+            "id": 383,
+            "name": "不明なアイテム"
+        },
+        "speckled_melon": {
+            "id": 382,
+            "name": "輝くスイカ"
+        },
+        "spider_eye": {
+            "id": 375,
+            "name": "クモの目"
+        },
+        "splash_potion": {
+            "id": 438,
+            "name": "スプラッシュ水のビン"
+        },
+        "sponge": {
+            "id": 19,
+            "name": "スポンジ"
+        },
+        "spruce_door": {
+            "id": 427,
+            "name": "トウヒの木のドア"
+        },
+        "spruce_door_block": {
+            "id": 193,
+            "name": "不明なアイテム"
+        },
+        "spruce_fence_gate": {
+            "id": 183,
+            "name": "トウヒの木の柵のゲート"
+        },
+        "spruce_sign": {
+            "id": 472,
+            "name": "トウヒの看板"
+        },
+        "spruce_stairs": {
+            "id": 134,
+            "name": "トウヒの階段"
+        },
+        "stained_clay": {
+            "id": 159,
+            "name": "白のテラコッタ"
+        },
+        "stained_glass": {
+            "id": 241,
+            "name": "白のステンドグラス"
+        },
+        "stained_glass_pane": {
+            "id": 160,
+            "name": "白のステンドグラス窓"
+        },
+        "stained_hardened_clay": {
+            "id": 159,
+            "name": "白のテラコッタ"
+        },
+        "standing_banner": {
+            "id": 176,
+            "name": "旗"
+        },
+        "standing_sign": {
+            "id": 63,
+            "name": "看板"
+        },
+        "steak": {
+            "id": 364,
+            "name": "調理した牛肉"
+        },
+        "stick": {
+            "id": 280,
+            "name": "棒"
+        },
+        "sticky_piston": {
+            "id": 29,
+            "name": "吸着ピストン"
+        },
+        "still_lava": {
+            "id": 11,
+            "name": "不明なアイテム"
+        },
+        "still_water": {
+            "id": 9,
+            "name": "不明なアイテム"
+        },
+        "stone": {
+            "id": 1,
+            "name": "石"
+        },
+        "stone_axe": {
+            "id": 275,
+            "name": "石の斧"
+        },
+        "stone_brick": {
+            "id": 98,
+            "name": "石レンガ"
+        },
+        "stone_brick_stairs": {
+            "id": 109,
+            "name": "石レンガ階段"
+        },
+        "stone_bricks": {
+            "id": 98,
+            "name": "石レンガ"
+        },
+        "stone_button": {
+            "id": 77,
+            "name": "石のボタン"
+        },
+        "stone_hoe": {
+            "id": 291,
+            "name": "石のくわ"
+        },
+        "stone_pickaxe": {
+            "id": 274,
+            "name": "石のツルハシ"
+        },
+        "stone_pressure_plate": {
+            "id": 70,
+            "name": "石の感圧板"
+        },
+        "stone_shovel": {
+            "id": 273,
+            "name": "石のシャベル"
+        },
+        "stone_slab": {
+            "id": 44,
+            "name": "なめらかな石ハーフブロック"
+        },
+        "stone_slab2": {
+            "id": 182,
+            "name": "赤砂岩のハーフブロック"
+        },
+        "stone_stairs": {
+            "id": 67,
+            "name": "丸石の階段"
+        },
+        "stone_sword": {
+            "id": 272,
+            "name": "石の剣"
+        },
+        "stone_wall": {
+            "id": 139,
+            "name": "丸石の壁"
+        },
+        "stonebrick": {
+            "id": 98,
+            "name": "石レンガ"
+        },
+        "stonecutter": {
+            "id": 245,
+            "name": "ストーンカッター"
+        },
+        "string": {
+            "id": 287,
+            "name": "糸"
+        },
+        "structure_block": {
+            "id": 252,
+            "name": "ストラクチャーブロック"
+        },
+        "sugar": {
+            "id": 353,
+            "name": "砂糖"
+        },
+        "sugarcane": {
+            "id": 338,
+            "name": "サトウキビ"
+        },
+        "sugarcane_block": {
+            "id": 83,
+            "name": "不明なアイテム"
+        },
+        "sweet_berries": {
+            "id": 477,
+            "name": "スイートベリー"
+        },
+        "tag_block_entity_tag": {
+            "id": "BlockEntityTag",
+            "name": "TAG_BLOCK_ENTITY_TAG"
+        },
+        "tall_grass": {
+            "id": 31,
+            "name": "シダ"
+        },
+        "tallgrass": {
+            "id": 31,
+            "name": "シダ"
+        },
+        "terracotta": {
+            "id": 159,
+            "name": "白のテラコッタ"
+        },
+        "tnt": {
+            "id": 46,
+            "name": "TNT火薬"
+        },
+        "tnt_minecart": {
+            "id": 407,
+            "name": "TNT付きトロッコ"
+        },
+        "torch": {
+            "id": 50,
+            "name": "たいまつ"
+        },
+        "totem": {
+            "id": 450,
+            "name": "不死のトーテム"
+        },
+        "trapdoor": {
+            "id": 96,
+            "name": "樫の木のトラップドア"
+        },
+        "trapped_chest": {
+            "id": 146,
+            "name": "トラップチェスト"
+        },
+        "trident": {
+            "id": 455,
+            "name": "トライデント"
+        },
+        "trip_wire": {
+            "id": 132,
+            "name": "トリップワイヤー"
+        },
+        "tripwire": {
+            "id": 132,
+            "name": "トリップワイヤー"
+        },
+        "tripwire_hook": {
+            "id": 131,
+            "name": "トリップワイヤーフック"
+        },
+        "turtle_helmet": {
+            "id": 469,
+            "name": "亀の甲羅"
+        },
+        "turtle_shell_piece": {
+            "id": 468,
+            "name": "甲羅のかけら"
+        },
+        "undyed_shulker_box": {
+            "id": 205,
+            "name": "シュルカーボックス"
+        },
+        "unlit_redstone_torch": {
+            "id": 75,
+            "name": "不明なアイテム"
+        },
+        "unpowered_comparator": {
+            "id": 149,
+            "name": "不明なアイテム"
+        },
+        "unpowered_repeater": {
+            "id": 93,
+            "name": "不明なアイテム"
+        },
+        "vine": {
+            "id": 106,
+            "name": "つた"
+        },
+        "vines": {
+            "id": 106,
+            "name": "つた"
+        },
+        "wall_banner": {
+            "id": 177,
+            "name": "不明なアイテム"
+        },
+        "wall_sign": {
+            "id": 68,
+            "name": "不明なアイテム"
+        },
+        "water": {
+            "id": 9,
+            "name": "不明なアイテム"
+        },
+        "water_lily": {
+            "id": 111,
+            "name": "スイレンの葉"
+        },
+        "waterlily": {
+            "id": 111,
+            "name": "スイレンの葉"
+        },
+        "web": {
+            "id": 30,
+            "name": "クモの巣"
+        },
+        "wheat": {
+            "id": 296,
+            "name": "小麦"
+        },
+        "wheat_block": {
+            "id": 59,
+            "name": "不明なアイテム"
+        },
+        "wheat_seeds": {
+            "id": 295,
+            "name": "種"
+        },
+        "white_glazed_terracotta": {
+            "id": 220,
+            "name": "白の彩釉テラコッタ"
+        },
+        "wood": {
+            "id": 17,
+            "name": "樫の丸太"
+        },
+        "wood2": {
+            "id": 162,
+            "name": "アカシアの丸太"
+        },
+        "wooden_axe": {
+            "id": 271,
+            "name": "木の斧"
+        },
+        "wooden_button": {
+            "id": 143,
+            "name": "樫の木のボタン"
+        },
+        "wooden_door": {
+            "id": 324,
+            "name": "樫の木のドア"
+        },
+        "wooden_door_block": {
+            "id": 64,
+            "name": "不明なアイテム"
+        },
+        "wooden_hoe": {
+            "id": 290,
+            "name": "木のくわ"
+        },
+        "wooden_pickaxe": {
+            "id": 270,
+            "name": "木のツルハシ"
+        },
+        "wooden_planks": {
+            "id": 5,
+            "name": "樫の木の木材"
+        },
+        "wooden_pressure_plate": {
+            "id": 72,
+            "name": "樫の木の重量感知板"
+        },
+        "wooden_shovel": {
+            "id": 269,
+            "name": "木のシャベル"
+        },
+        "wooden_slab": {
+            "id": 158,
+            "name": "樫のハーフブロック"
+        },
+        "wooden_stairs": {
+            "id": 53,
+            "name": "樫の階段"
+        },
+        "wooden_sword": {
+            "id": 268,
+            "name": "木の剣"
+        },
+        "wooden_trapdoor": {
+            "id": 96,
+            "name": "樫の木のトラップドア"
+        },
+        "wool": {
+            "id": 35,
+            "name": "白のウール"
+        },
+        "workbench": {
+            "id": 58,
+            "name": "作業台"
+        },
+        "writable_book": {
+            "id": 386,
+            "name": "本と羽ペン"
+        },
+        "written_book": {
+            "id": 387,
+            "name": "記入済みの本"
+        },
+        "yellow_flower": {
+            "id": 37,
+            "name": "タンポポ"
+        },
+        "yellow_glazed_terracotta": {
+            "id": 224,
+            "name": "黄色の彩釉テラコッタ"
+        }
+    },
+    "ja_name": {
+        "アカシアのドア": {
+            "id": 430,
+            "name": "acacia_door"
+        },
+        "アカシアの木のトラップドア": {
+            "id": 196,
+            "name": "acacia_door_block"
+        },
+        "アカシアの木の柵のゲート": {
+            "id": 187,
+            "name": "acacia_fence_gate"
+        },
+        "アカシアの看板": {
+            "id": 475,
+            "name": "acacia_sign"
+        },
+        "アカシアの木の階段": {
+            "id": 163,
+            "name": "acacia_stairs"
+        },
+        "アクティベーターレール": {
+            "id": 126,
+            "name": "activator_rail"
+        },
+        "空気": {
+            "id": 0,
+            "name": "air"
+        },
+        "金床": {
+            "id": 145,
+            "name": "anvil"
+        },
+        "リンゴ": {
+            "id": 260,
+            "name": "apple"
+        },
+        "エンチャントされたリンゴ": {
+            "id": 466,
+            "name": "enchanted_golden_apple"
+        },
+        "防具立て": {
+            "id": 425,
+            "name": "armor_stand"
+        },
+        "矢": {
+            "id": 262,
+            "name": "arrow"
+        },
+        "ベイクドポテト": {
+            "id": 393,
+            "name": "baked_potato"
+        },
+        "不明なアイテム": {
+            "id": 64,
+            "name": "wooden_door_block"
+        },
+        "黒の旗": {
+            "id": 446,
+            "name": "banner"
+        },
+        "旗の模様": {
+            "id": 434,
+            "name": "banner_pattern"
+        },
+        "ビーコン": {
+            "id": 138,
+            "name": "beacon"
+        },
+        "白のベッド": {
+            "id": 355,
+            "name": "bed"
+        },
+        "ベッド": {
+            "id": 26,
+            "name": "bed_block"
+        },
+        "岩盤": {
+            "id": 7,
+            "name": "bedrock"
+        },
+        "生の牛肉": {
+            "id": 365,
+            "name": "raw_chicken"
+        },
+        "ビートルート": {
+            "id": 457,
+            "name": "beetroot"
+        },
+        "ビートルートの種": {
+            "id": 458,
+            "name": "beetroot_seeds"
+        },
+        "ビートルートスープ": {
+            "id": 459,
+            "name": "beetroot_soup"
+        },
+        "樺の木のドア": {
+            "id": 428,
+            "name": "birch_door"
+        },
+        "樺の木のトラップドア": {
+            "id": 194,
+            "name": "birch_door_block"
+        },
+        "樺の木の柵のゲート": {
+            "id": 184,
+            "name": "birch_fence_gate"
+        },
+        "樺の看板": {
+            "id": 473,
+            "name": "birch_sign"
+        },
+        "樺の階段": {
+            "id": 135,
+            "name": "birch_stairs"
+        },
+        "黒の彩釉テラコッタ": {
+            "id": 235,
+            "name": "black_glazed_terracotta"
+        },
+        "ブレイズパウダー": {
+            "id": 377,
+            "name": "blaze_powder"
+        },
+        "ブレイズロッド": {
+            "id": 369,
+            "name": "blaze_rod"
+        },
+        "青の彩釉テラコッタ": {
+            "id": 231,
+            "name": "blue_glazed_terracotta"
+        },
+        "樫の木のボート": {
+            "id": 333,
+            "name": "boat"
+        },
+        "骨": {
+            "id": 352,
+            "name": "bone"
+        },
+        "骨ブロック": {
+            "id": 216,
+            "name": "bone_block"
+        },
+        "本": {
+            "id": 340,
+            "name": "book"
+        },
+        "本棚": {
+            "id": 47,
+            "name": "bookshelf"
+        },
+        "エンチャントの瓶": {
+            "id": 384,
+            "name": "bottle_o_enchanting"
+        },
+        "弓": {
+            "id": 261,
+            "name": "bow"
+        },
+        "おわん": {
+            "id": 281,
+            "name": "bowl"
+        },
+        "パン": {
+            "id": 297,
+            "name": "bread"
+        },
+        "調合台": {
+            "id": 379,
+            "name": "brewing_stand"
+        },
+        "レンガ": {
+            "id": 336,
+            "name": "brick"
+        },
+        "レンガブロック": {
+            "id": 45,
+            "name": "brick_block"
+        },
+        "レンガ階段": {
+            "id": 108,
+            "name": "brick_stairs"
+        },
+        "茶色の彩釉テラコッタ": {
+            "id": 232,
+            "name": "brown_glazed_terracotta"
+        },
+        "きのこ(茶色)": {
+            "id": 39,
+            "name": "brown_mushroom"
+        },
+        "きのこ": {
+            "id": 99,
+            "name": "brown_mushroom_block"
+        },
+        "バケツ": {
+            "id": 325,
+            "name": "bucket"
+        },
+        "かまど": {
+            "id": 61,
+            "name": "furnace"
+        },
+        "サボテン": {
+            "id": 81,
+            "name": "cactus"
+        },
+        "ケーキ": {
+            "id": 92,
+            "name": "cake_block"
+        },
+        "白のカーペット": {
+            "id": 171,
+            "name": "carpet"
+        },
+        "ニンジン": {
+            "id": 391,
+            "name": "carrot"
+        },
+        "ニンジン付きの棒": {
+            "id": 398,
+            "name": "carrotonastick"
+        },
+        "大釜": {
+            "id": 380,
+            "name": "cauldron"
+        },
+        "チェーンブーツ": {
+            "id": 305,
+            "name": "chainmail_boots"
+        },
+        "胸当て": {
+            "id": 303,
+            "name": "chainmail_chestplate"
+        },
+        "コマンドブロックのチェーン": {
+            "id": 189,
+            "name": "chain_command_block"
+        },
+        "チェーンヘルメット": {
+            "id": 302,
+            "name": "chainmail_helmet"
+        },
+        "チェーンレギンス": {
+            "id": 304,
+            "name": "chainmail_leggings"
+        },
+        "チェスト": {
+            "id": 54,
+            "name": "chest"
+        },
+        "チェスト付きトロッコ": {
+            "id": 342,
+            "name": "minecart_with_chest"
+        },
+        "生の鶏肉": {
+            "id": 365,
+            "name": "chicken"
+        },
+        "コーラスの花": {
+            "id": 200,
+            "name": "chorus_flower"
+        },
+        "コーラスフルーツ": {
+            "id": 432,
+            "name": "chorus_fruit"
+        },
+        "焼いたコーラスフルーツ": {
+            "id": 433,
+            "name": "chorus_fruit_popped"
+        },
+        "コーラスプラント": {
+            "id": 240,
+            "name": "chorus_plant"
+        },
+        "粘土": {
+            "id": 337,
+            "name": "clay_ball"
+        },
+        "粘土ブロック": {
+            "id": 82,
+            "name": "clay_block"
+        },
+        "時計": {
+            "id": 347,
+            "name": "clock"
+        },
+        "熱帯魚": {
+            "id": 461,
+            "name": "clownfish"
+        },
+        "石炭": {
+            "id": 263,
+            "name": "coal"
+        },
+        "石炭ブロック": {
+            "id": 173,
+            "name": "coal_block"
+        },
+        "石炭鉱石": {
+            "id": 16,
+            "name": "coal_ore"
+        },
+        "丸石": {
+            "id": 4,
+            "name": "cobblestone"
+        },
+        "丸石の階段": {
+            "id": 67,
+            "name": "stone_stairs"
+        },
+        "丸石の壁": {
+            "id": 139,
+            "name": "stone_wall"
+        },
+        "蜘蛛の巣": {
+            "id": 30,
+            "name": "cobweb"
+        },
+        "ココア": {
+            "id": 127,
+            "name": "cocoa_block"
+        },
+        "コマンドブロック": {
+            "id": 137,
+            "name": "command_block"
+        },
+        "コマンドブロック付きトロッコ": {
+            "id": 443,
+            "name": "minecart_with_command_block"
+        },
+        "レッドストーンコンパレーター": {
+            "id": 404,
+            "name": "comparator"
+        },
+        "コンパス": {
+            "id": 345,
+            "name": "compass"
+        },
+        "白のコンクリート": {
+            "id": 236,
+            "name": "concrete"
+        },
+        "白のコンクリートパウダー": {
+            "id": 237,
+            "name": "concretepowder"
+        },
+        "調理した牛肉": {
+            "id": 364,
+            "name": "steak"
+        },
+        "焼き鳥": {
+            "id": 366,
+            "name": "cooked_chicken"
+        },
+        "焼いたタラ": {
+            "id": 350,
+            "name": "cooked_fish"
+        },
+        "調理した羊肉": {
+            "id": 424,
+            "name": "muttoncooked"
+        },
+        "調理した豚肉": {
+            "id": 320,
+            "name": "cooked_porkchop"
+        },
+        "調理した兎肉": {
+            "id": 412,
+            "name": "cooked_rabbit"
+        },
+        "調理した鮭": {
+            "id": 463,
+            "name": "cooked_salmon"
+        },
+        "クッキー": {
+            "id": 357,
+            "name": "cookie"
+        },
+        "作業台": {
+            "id": 58,
+            "name": "workbench"
+        },
+        "クロスボウ": {
+            "id": 471,
+            "name": "crossbow"
+        },
+        "水色の彩釉テラコッタ": {
+            "id": 229,
+            "name": "cyan_glazed_terracotta"
+        },
+        "タンポポ": {
+            "id": 37,
+            "name": "yellow_flower"
+        },
+        "黒樫の木のドア": {
+            "id": 431,
+            "name": "dark_oak_door"
+        },
+        "黒樫の木の柵のゲート": {
+            "id": 186,
+            "name": "dark_oak_fence_gate"
+        },
+        "黒樫の木の階段": {
+            "id": 164,
+            "name": "dark_oak_stairs"
+        },
+        "黒樫の看板": {
+            "id": 476,
+            "name": "darkoak_sign"
+        },
+        "日照センサー": {
+            "id": 151,
+            "name": "daylight_sensor"
+        },
+        "枯れ木": {
+            "id": 32,
+            "name": "deadbush"
+        },
+        "感知レール": {
+            "id": 28,
+            "name": "detector_rail"
+        },
+        "ダイアモンド": {
+            "id": 264,
+            "name": "diamond"
+        },
+        "ダイアモンドの斧": {
+            "id": 279,
+            "name": "diamond_axe"
+        },
+        "ダイアモンドのブロック": {
+            "id": 57,
+            "name": "diamond_block"
+        },
+        "ダイアモンドのブーツ": {
+            "id": 313,
+            "name": "diamond_boots"
+        },
+        "ダイアモンドの胸当て": {
+            "id": 311,
+            "name": "diamond_chestplate"
+        },
+        "ダイアモンドのヘルメット": {
+            "id": 310,
+            "name": "diamond_helmet"
+        },
+        "ダイアモンドのくわ": {
+            "id": 293,
+            "name": "diamond_hoe"
+        },
+        "ダイアモンドの馬鎧": {
+            "id": 419,
+            "name": "horsearmordiamond"
+        },
+        "ダイアモンドの脚甲": {
+            "id": 312,
+            "name": "diamond_leggings"
+        },
+        "ダイアモンド鉱石": {
+            "id": 56,
+            "name": "diamond_ore"
+        },
+        "ダイアモンドのツルハシ": {
+            "id": 278,
+            "name": "diamond_pickaxe"
+        },
+        "ダイアモンドのシャベル": {
+            "id": 277,
+            "name": "diamond_shovel"
+        },
+        "ダイアモンドの剣": {
+            "id": 276,
+            "name": "diamond_sword"
+        },
+        "土": {
+            "id": 3,
+            "name": "dirt"
+        },
+        "発射装置": {
+            "id": 23,
+            "name": "dispenser"
+        },
+        "ヒマワリ": {
+            "id": 175,
+            "name": "double_plant"
+        },
+        "石ハーフブロック": {
+            "id": 43,
+            "name": "double_stone_slab"
+        },
+        "赤砂岩のハーフブロック": {
+            "id": 182,
+            "name": "stone_slab2"
+        },
+        "不明なブロック": {
+            "id": 157,
+            "name": "double_wooden_slab"
+        },
+        "ドラゴンの息": {
+            "id": 437,
+            "name": "dragon_breath"
+        },
+        "ドラゴンの卵": {
+            "id": 122,
+            "name": "dragon_egg"
+        },
+        "乾燥昆布": {
+            "id": 464,
+            "name": "dried_kelp"
+        },
+        "ドロッパー": {
+            "id": 125,
+            "name": "dropper"
+        },
+        "墨袋": {
+            "id": 351,
+            "name": "dye"
+        },
+        "タマゴ": {
+            "id": 344,
+            "name": "egg"
+        },
+        "エリトラ": {
+            "id": 444,
+            "name": "elytra"
+        },
+        "エメラルド": {
+            "id": 388,
+            "name": "emerald"
+        },
+        "エメラルドのブロック": {
+            "id": 133,
+            "name": "emerald_block"
+        },
+        "エメラルド鉱石": {
+            "id": 129,
+            "name": "emerald_ore"
+        },
+        "空っぽの地図": {
+            "id": 395,
+            "name": "map"
+        },
+        "エンチャントした本": {
+            "id": 403,
+            "name": "enchanted_book"
+        },
+        "エンチャントテーブル": {
+            "id": 116,
+            "name": "enchantment_table"
+        },
+        "エンドストーンレンガ": {
+            "id": 206,
+            "name": "end_bricks"
+        },
+        "果てのクリスタル": {
+            "id": 426,
+            "name": "end_crystal"
+        },
+        "エンドポータル": {
+            "id": 120,
+            "name": "end_portal_frame"
+        },
+        "果てのロッド": {
+            "id": 208,
+            "name": "end_rod"
+        },
+        "エンドストーン": {
+            "id": 121,
+            "name": "end_stone"
+        },
+        "エンダーチェスト": {
+            "id": 130,
+            "name": "ender_chest"
+        },
+        "エンダーアイ": {
+            "id": 381,
+            "name": "ender_eye"
+        },
+        "エンダーパール": {
+            "id": 368,
+            "name": "ender_pearl"
+        },
+        "エンチャントのビン": {
+            "id": 384,
+            "name": "experience_bottle"
+        },
+        "農地": {
+            "id": 60,
+            "name": "farmland"
+        },
+        "羽根": {
+            "id": 288,
+            "name": "feather"
+        },
+        "樫の木の柵": {
+            "id": 85,
+            "name": "fence"
+        },
+        "樫の木の柵のゲート": {
+            "id": 107,
+            "name": "oak_fence_gate"
+        },
+        "発酵したクモの目": {
+            "id": 376,
+            "name": "fermented_spider_eye"
+        },
+        "地図": {
+            "id": 358,
+            "name": "filled_map"
+        },
+        "火": {
+            "id": 51,
+            "name": "fire"
+        },
+        "発火剤": {
+            "id": 385,
+            "name": "fireball"
+        },
+        "ロケット花火": {
+            "id": 401,
+            "name": "fireworks"
+        },
+        "花火の星": {
+            "id": 402,
+            "name": "fireworkscharge"
+        },
+        "生のタラ": {
+            "id": 349,
+            "name": "raw_fish"
+        },
+        "釣り竿": {
+            "id": 346,
+            "name": "fishing_rod"
+        },
+        "火打ち石": {
+            "id": 318,
+            "name": "flint"
+        },
+        "火打ち石と打ち金": {
+            "id": 259,
+            "name": "flint_steel"
+        },
+        "植木鉢": {
+            "id": 390,
+            "name": "flower_pot"
+        },
+        "額縁": {
+            "id": 389,
+            "name": "item_frame"
+        },
+        "ガストの涙": {
+            "id": 370,
+            "name": "ghast_tear"
+        },
+        "ガラス": {
+            "id": 20,
+            "name": "glass"
+        },
+        "ガラスビン": {
+            "id": 374,
+            "name": "glass_bottle"
+        },
+        "ガラス板": {
+            "id": 102,
+            "name": "glass_pane"
+        },
+        "輝くスイカ": {
+            "id": 382,
+            "name": "speckled_melon"
+        },
+        "グロウストーン": {
+            "id": 89,
+            "name": "glowstone"
+        },
+        "グロウストーンダスト": {
+            "id": 348,
+            "name": "glowstone_dust"
+        },
+        "金の斧": {
+            "id": 286,
+            "name": "golden_axe"
+        },
+        "金のブロック": {
+            "id": 41,
+            "name": "gold_block"
+        },
+        "金のブーツ": {
+            "id": 317,
+            "name": "golden_boots"
+        },
+        "金の胸当て": {
+            "id": 315,
+            "name": "golden_chestplate"
+        },
+        "金のヘルメット": {
+            "id": 314,
+            "name": "golden_helmet"
+        },
+        "金のくわ": {
+            "id": 294,
+            "name": "golden_hoe"
+        },
+        "金の馬鎧": {
+            "id": 418,
+            "name": "horsearmorgold"
+        },
+        "金の延べ棒": {
+            "id": 266,
+            "name": "gold_ingot"
+        },
+        "金の脚甲": {
+            "id": 316,
+            "name": "golden_leggings"
+        },
+        "金の塊": {
+            "id": 371,
+            "name": "golden_nugget"
+        },
+        "金鉱石": {
+            "id": 14,
+            "name": "gold_ore"
+        },
+        "金のツルハシ": {
+            "id": 285,
+            "name": "golden_pickaxe"
+        },
+        "金のシャベル": {
+            "id": 284,
+            "name": "golden_shovel"
+        },
+        "金の剣": {
+            "id": 283,
+            "name": "golden_sword"
+        },
+        "金のリンゴ": {
+            "id": 322,
+            "name": "golden_apple"
+        },
+        "金のニンジン": {
+            "id": 396,
+            "name": "golden_carrot"
+        },
+        "加速レール": {
+            "id": 27,
+            "name": "powered_rail"
+        },
+        "草ブロック": {
+            "id": 2,
+            "name": "grass"
+        },
+        "未装飾路": {
+            "id": 198,
+            "name": "grass_path"
+        },
+        "砂利": {
+            "id": 13,
+            "name": "gravel"
+        },
+        "灰色の彩釉テラコッタ": {
+            "id": 227,
+            "name": "gray_glazed_terracotta"
+        },
+        "緑の彩釉テラコッタ": {
+            "id": 233,
+            "name": "green_glazed_terracotta"
+        },
+        "火薬": {
+            "id": 289,
+            "name": "gunpowder"
+        },
+        "テラコッタ": {
+            "id": 172,
+            "name": "hardened_clay"
+        },
+        "干し草の俵": {
+            "id": 170,
+            "name": "hay_block"
+        },
+        "海の中心": {
+            "id": 467,
+            "name": "heart_of_the_sea"
+        },
+        "重量感知板(重)": {
+            "id": 148,
+            "name": "heavy_weighted_pressure_plate"
+        },
+        "ホッパー": {
+            "id": 410,
+            "name": "hopper"
+        },
+        "ホッパー付きトロッコ": {
+            "id": 408,
+            "name": "minecart_with_hopper"
+        },
+        "鉄の馬鎧": {
+            "id": 417,
+            "name": "iron_horse_armor"
+        },
+        "革の馬鎧": {
+            "id": 416,
+            "name": "leather_horse_armor"
+        },
+        "氷": {
+            "id": 79,
+            "name": "ice"
+        },
+        "不可視の岩盤": {
+            "id": 95,
+            "name": "invisiblebedrock"
+        },
+        "鉄の斧": {
+            "id": 258,
+            "name": "iron_axe"
+        },
+        "鉄格子": {
+            "id": 101,
+            "name": "iron_bars"
+        },
+        "鉄のブロック": {
+            "id": 42,
+            "name": "iron_block"
+        },
+        "鉄のブーツ": {
+            "id": 309,
+            "name": "iron_boots"
+        },
+        "鉄の胸当て": {
+            "id": 307,
+            "name": "iron_chestplate"
+        },
+        "鉄のドア": {
+            "id": 330,
+            "name": "iron_door"
+        },
+        "鉄のヘルメット": {
+            "id": 306,
+            "name": "iron_helmet"
+        },
+        "鉄のくわ": {
+            "id": 292,
+            "name": "iron_hoe"
+        },
+        "鉄の延べ棒": {
+            "id": 265,
+            "name": "iron_ingot"
+        },
+        "": {
+            "id": 308,
+            "name": "iron_leggings"
+        },
+        "鉄の脚甲": {
+            "id": 452,
+            "name": "iron_nugget"
+        },
+        "鉄鉱石": {
+            "id": 15,
+            "name": "iron_ore"
+        },
+        "鉄のツルハシ": {
+            "id": 257,
+            "name": "iron_pickaxe"
+        },
+        "鉄のシャベル": {
+            "id": 256,
+            "name": "iron_shovel"
+        },
+        "鉄の剣": {
+            "id": 267,
+            "name": "iron_sword"
+        },
+        "鉄のトラップドア": {
+            "id": 167,
+            "name": "iron_trapdoor"
+        },
+        "ジャック・オ・ランタン": {
+            "id": 91,
+            "name": "lit_pumpkin"
+        },
+        "ジュークボックス": {
+            "id": 84,
+            "name": "jukebox"
+        },
+        "ジャングルの木のドア": {
+            "id": 429,
+            "name": "jungle_door"
+        },
+        "ジャングルの木の柵のゲート": {
+            "id": 185,
+            "name": "jungle_fence_gate"
+        },
+        "ジャングルの木の看板": {
+            "id": 474,
+            "name": "jungle_sign"
+        },
+        "ジャングルの木の階段": {
+            "id": 136,
+            "name": "jungle_stairs"
+        },
+        "昆布": {
+            "id": 335,
+            "name": "kelp"
+        },
+        "はしご": {
+            "id": 65,
+            "name": "ladder"
+        },
+        "ラピスラズリのブロック": {
+            "id": 22,
+            "name": "lapis_block"
+        },
+        "ラピスラズリ鉱石": {
+            "id": 21,
+            "name": "lapis_ore"
+        },
+        "首ひも": {
+            "id": 420,
+            "name": "lead"
+        },
+        "革": {
+            "id": 334,
+            "name": "leather"
+        },
+        "革のブーツ": {
+            "id": 301,
+            "name": "leather_boots"
+        },
+        "革の帽子": {
+            "id": 298,
+            "name": "leather_helmet"
+        },
+        "革の服": {
+            "id": 299,
+            "name": "leather_tunic"
+        },
+        "革のパンツ": {
+            "id": 300,
+            "name": "leather_pants"
+        },
+        "樫の葉": {
+            "id": 18,
+            "name": "leaves"
+        },
+        "アカシアの葉": {
+            "id": 161,
+            "name": "leaves2"
+        },
+        "レバー": {
+            "id": 69,
+            "name": "lever"
+        },
+        "空色の彩釉テラコッタ": {
+            "id": 223,
+            "name": "light_blue_glazed_terracotta"
+        },
+        "重量感知板(軽)": {
+            "id": 147,
+            "name": "light_weighted_pressure_plate"
+        },
+        "スイレンの葉": {
+            "id": 111,
+            "name": "waterlily"
+        },
+        "黄緑の彩釉テラコッタ": {
+            "id": 225,
+            "name": "lime_glazed_terracotta"
+        },
+        "残留する水のビン": {
+            "id": 441,
+            "name": "lingering_potion"
+        },
+        "レッドストーンのたいまつ": {
+            "id": 76,
+            "name": "redstone_torch"
+        },
+        "樫の丸太": {
+            "id": 17,
+            "name": "wood"
+        },
+        "アカシアの丸太": {
+            "id": 162,
+            "name": "wood2"
+        },
+        "赤紫の彩釉テラコッタ": {
+            "id": 222,
+            "name": "magenta_glazed_terracotta"
+        },
+        "マグマブロック": {
+            "id": 213,
+            "name": "magma"
+        },
+        "マグマクリーム": {
+            "id": 378,
+            "name": "magma_cream"
+        },
+        "スイカの薄切り": {
+            "id": 360,
+            "name": "melon_slice"
+        },
+        "スイカ": {
+            "id": 103,
+            "name": "melon_block"
+        },
+        "スイカの種": {
+            "id": 362,
+            "name": "melon_seeds"
+        },
+        "トロッコ": {
+            "id": 328,
+            "name": "minecart"
+        },
+        "TNT付きトロッコ": {
+            "id": 407,
+            "name": "tnt_minecart"
+        },
+        "スケルトンの頭": {
+            "id": 397,
+            "name": "skull"
+        },
+        "モンスタースポナー": {
+            "id": 52,
+            "name": "monster_spawner"
+        },
+        "虫食い石": {
+            "id": 94,
+            "name": "powered_repeater"
+        },
+        "苔の生えた丸石": {
+            "id": 48,
+            "name": "mossy_cobblestone"
+        },
+        "きのこシチュー": {
+            "id": 282,
+            "name": "mushroom_stew"
+        },
+        "生の羊肉": {
+            "id": 423,
+            "name": "raw_mutton"
+        },
+        "菌糸": {
+            "id": 110,
+            "name": "mycelium"
+        },
+        "名札": {
+            "id": 421,
+            "name": "nametag"
+        },
+        "オウムガイの殻": {
+            "id": 465,
+            "name": "nautilus_shell"
+        },
+        "ネザーレンガ": {
+            "id": 405,
+            "name": "netherbrick"
+        },
+        "ネザーレンガのブロック": {
+            "id": 112,
+            "name": "nether_brick_block"
+        },
+        "ネザーレンガの柵": {
+            "id": 113,
+            "name": "nether_brick_fence"
+        },
+        "ネザーレンガの階段": {
+            "id": 114,
+            "name": "nether_brick_stairs"
+        },
+        "ネザークォーツ": {
+            "id": 406,
+            "name": "quartz"
+        },
+        "ネザークォーツ鉱石": {
+            "id": 153,
+            "name": "quartz_ore"
+        },
+        "ネザーリアクターコア": {
+            "id": 247,
+            "name": "netherreactor"
+        },
+        "ネザースター": {
+            "id": 399,
+            "name": "netherstar"
+        },
+        "ネザーウォート": {
+            "id": 372,
+            "name": "nether_wart"
+        },
+        "ネザーウォートブロック": {
+            "id": 214,
+            "name": "nether_wart_block"
+        },
+        "ネザーレック": {
+            "id": 87,
+            "name": "netherrack"
+        },
+        "音ブロック": {
+            "id": 25,
+            "name": "noteblock"
+        },
+        "樫の木のドア": {
+            "id": 324,
+            "name": "wooden_door"
+        },
+        "樫の階段": {
+            "id": 53,
+            "name": "wooden_stairs"
+        },
+        "観察者": {
+            "id": 251,
+            "name": "observer"
+        },
+        "黒曜石": {
+            "id": 49,
+            "name": "obsidian"
+        },
+        "オレンジの彩釉テラコッタ": {
+            "id": 221,
+            "name": "orange_glazed_terracotta"
+        },
+        "氷塊": {
+            "id": 174,
+            "name": "packed_ice"
+        },
+        "絵": {
+            "id": 321,
+            "name": "painting"
+        },
+        "紙": {
+            "id": 339,
+            "name": "paper"
+        },
+        "ファントムの皮膜": {
+            "id": 470,
+            "name": "phantom_membrane"
+        },
+        "ピンクの彩釉テラコッタ": {
+            "id": 226,
+            "name": "pink_glazed_terracotta"
+        },
+        "ピストン": {
+            "id": 33,
+            "name": "piston"
+        },
+        "樫の木材": {
+            "id": 5,
+            "name": "planks"
+        },
+        "ポドゾル": {
+            "id": 243,
+            "name": "podzol"
+        },
+        "有毒なジャガイモ": {
+            "id": 394,
+            "name": "poisonous_potato"
+        },
+        "ポピー": {
+            "id": 38,
+            "name": "red_flower"
+        },
+        "生の豚肉": {
+            "id": 319,
+            "name": "raw_porkchop"
+        },
+        "ポータル": {
+            "id": 90,
+            "name": "portal"
+        },
+        "ジャガイモ": {
+            "id": 392,
+            "name": "potato"
+        },
+        "水のビン": {
+            "id": 373,
+            "name": "potion"
+        },
+        "海晶ブロック": {
+            "id": 168,
+            "name": "prismarine"
+        },
+        "海結晶": {
+            "id": 422,
+            "name": "prismarine_crystals"
+        },
+        "暗結晶の破片": {
+            "id": 409,
+            "name": "prismarine_shard"
+        },
+        "フグ": {
+            "id": 462,
+            "name": "pufferfish"
+        },
+        "カボチャ": {
+            "id": 86,
+            "name": "pumpkin"
+        },
+        "パンプキンパイ": {
+            "id": 400,
+            "name": "pumpkin_pie"
+        },
+        "カボチャの種": {
+            "id": 361,
+            "name": "pumpkin_seeds"
+        },
+        "カボチャの茎": {
+            "id": 104,
+            "name": "pumpkin_stem"
+        },
+        "紫の彩釉テラコッタ": {
+            "id": 219,
+            "name": "purple_glazed_terracotta"
+        },
+        "プルプァブロック": {
+            "id": 201,
+            "name": "purpur_block"
+        },
+        "プルプァの階段": {
+            "id": 203,
+            "name": "purpur_stairs"
+        },
+        "クォーツのブロック": {
+            "id": 155,
+            "name": "quartz_block"
+        },
+        "クォーツの階段": {
+            "id": 156,
+            "name": "quartz_stairs"
+        },
+        "生の兎肉": {
+            "id": 411,
+            "name": "raw_rabbit"
+        },
+        "　ウサギの足": {
+            "id": 414,
+            "name": "rabbit_foot"
+        },
+        "ウサギの皮": {
+            "id": 415,
+            "name": "rabbit_hide"
+        },
+        "ウサギシチュー": {
+            "id": 413,
+            "name": "rabbit_stew"
+        },
+        "レール": {
+            "id": 66,
+            "name": "rail"
+        },
+        "RAW_BEEF": {
+            "id": 363,
+            "name": "raw_beef"
+        },
+        "生鮭": {
+            "id": 460,
+            "name": "salmon"
+        },
+        "音楽ディスク": {
+            "id": 509,
+            "name": "record_ward"
+        },
+        "赤の彩釉テラコッタ": {
+            "id": 234,
+            "name": "red_glazed_terracotta"
+        },
+        "キノコ(赤)": {
+            "id": 40,
+            "name": "red_mushroom"
+        },
+        "きのこブロック(赤)": {
+            "id": 100,
+            "name": "red_mushroom_block"
+        },
+        "赤いネザーレンガ": {
+            "id": 215,
+            "name": "red_nether_brick"
+        },
+        "赤砂岩": {
+            "id": 179,
+            "name": "red_sandstone"
+        },
+        "赤砂岩の階段": {
+            "id": 180,
+            "name": "red_sandstone_stairs"
+        },
+        "レッドストーンの粉": {
+            "id": 331,
+            "name": "redstone_dust"
+        },
+        "レッドストーンのブロック": {
+            "id": 152,
+            "name": "redstone_block"
+        },
+        "レッドストーンランプ": {
+            "id": 123,
+            "name": "redstone_lamp"
+        },
+        "レッドストーン鉱石": {
+            "id": 73,
+            "name": "redstone_ore"
+        },
+        "サトウキビ": {
+            "id": 338,
+            "name": "sugarcane"
+        },
+        "レッドストーン反復装置": {
+            "id": 356,
+            "name": "repeater"
+        },
+        "コマンドブロックの反復": {
+            "id": 188,
+            "name": "repeating_command_block"
+        },
+        "腐肉": {
+            "id": 367,
+            "name": "rotten_flesh"
+        },
+        "鞍": {
+            "id": 329,
+            "name": "saddle"
+        },
+        "砂": {
+            "id": 12,
+            "name": "sand"
+        },
+        "砂岩": {
+            "id": 24,
+            "name": "sandstone"
+        },
+        "砂岩の階段": {
+            "id": 128,
+            "name": "sandstone_stairs"
+        },
+        "樫の苗木": {
+            "id": 6,
+            "name": "sapling"
+        },
+        "海のランタン": {
+            "id": 169,
+            "name": "sealantern"
+        },
+        "種": {
+            "id": 295,
+            "name": "wheat_seeds"
+        },
+        "ハサミ": {
+            "id": 359,
+            "name": "shears"
+        },
+        "盾": {
+            "id": 513,
+            "name": "shield"
+        },
+        "白のシュルカーボックス": {
+            "id": 218,
+            "name": "shulker_box"
+        },
+        "シュルカーの殻": {
+            "id": 445,
+            "name": "shulker_shell"
+        },
+        "樫の木の看板": {
+            "id": 323,
+            "name": "sign"
+        },
+        "看板": {
+            "id": 63,
+            "name": "standing_sign"
+        },
+        "薄灰色の彩釉テラコッタ": {
+            "id": 228,
+            "name": "silver_glazed_terracotta"
+        },
+        "スライムブロック": {
+            "id": 165,
+            "name": "slime_block"
+        },
+        "スライムボール": {
+            "id": 341,
+            "name": "slimeball"
+        },
+        "雪": {
+            "id": 80,
+            "name": "snow_block"
+        },
+        "積雪": {
+            "id": 78,
+            "name": "snow_layer"
+        },
+        "雪玉": {
+            "id": 332,
+            "name": "snowball"
+        },
+        "ソウルサンド": {
+            "id": 88,
+            "name": "soul_sand"
+        },
+        "クモの目": {
+            "id": 375,
+            "name": "spider_eye"
+        },
+        "スプラッシュ水のビン": {
+            "id": 438,
+            "name": "splash_potion"
+        },
+        "スポンジ": {
+            "id": 19,
+            "name": "sponge"
+        },
+        "トウヒの木のドア": {
+            "id": 427,
+            "name": "spruce_door"
+        },
+        "トウヒの木の柵のゲート": {
+            "id": 183,
+            "name": "spruce_fence_gate"
+        },
+        "トウヒの看板": {
+            "id": 472,
+            "name": "spruce_sign"
+        },
+        "トウヒの階段": {
+            "id": 134,
+            "name": "spruce_stairs"
+        },
+        "白のテラコッタ": {
+            "id": 159,
+            "name": "terracotta"
+        },
+        "白のステンドグラス": {
+            "id": 241,
+            "name": "stained_glass"
+        },
+        "白のステンドグラス窓": {
+            "id": 160,
+            "name": "stained_glass_pane"
+        },
+        "旗": {
+            "id": 176,
+            "name": "standing_banner"
+        },
+        "棒": {
+            "id": 280,
+            "name": "stick"
+        },
+        "吸着ピストン": {
+            "id": 29,
+            "name": "sticky_piston"
+        },
+        "石": {
+            "id": 1,
+            "name": "stone"
+        },
+        "石の斧": {
+            "id": 275,
+            "name": "stone_axe"
+        },
+        "石レンガ": {
+            "id": 98,
+            "name": "stonebrick"
+        },
+        "石レンガ階段": {
+            "id": 109,
+            "name": "stone_brick_stairs"
+        },
+        "石のボタン": {
+            "id": 77,
+            "name": "stone_button"
+        },
+        "石のくわ": {
+            "id": 291,
+            "name": "stone_hoe"
+        },
+        "石のツルハシ": {
+            "id": 274,
+            "name": "stone_pickaxe"
+        },
+        "石の感圧板": {
+            "id": 70,
+            "name": "stone_pressure_plate"
+        },
+        "石のシャベル": {
+            "id": 273,
+            "name": "stone_shovel"
+        },
+        "なめらかな石ハーフブロック": {
+            "id": 44,
+            "name": "stone_slab"
+        },
+        "石の剣": {
+            "id": 272,
+            "name": "stone_sword"
+        },
+        "ストーンカッター": {
+            "id": 245,
+            "name": "stonecutter"
+        },
+        "糸": {
+            "id": 287,
+            "name": "string"
+        },
+        "ストラクチャーブロック": {
+            "id": 252,
+            "name": "structure_block"
+        },
+        "砂糖": {
+            "id": 353,
+            "name": "sugar"
+        },
+        "スイートベリー": {
+            "id": 477,
+            "name": "sweet_berries"
+        },
+        "TAG_BLOCK_ENTITY_TAG": {
+            "id": "BlockEntityTag",
+            "name": "tag_block_entity_tag"
+        },
+        "シダ": {
+            "id": 31,
+            "name": "tallgrass"
+        },
+        "TNT火薬": {
+            "id": 46,
+            "name": "tnt"
+        },
+        "たいまつ": {
+            "id": 50,
+            "name": "torch"
+        },
+        "不死のトーテム": {
+            "id": 450,
+            "name": "totem"
+        },
+        "樫の木のトラップドア": {
+            "id": 96,
+            "name": "wooden_trapdoor"
+        },
+        "トラップチェスト": {
+            "id": 146,
+            "name": "trapped_chest"
+        },
+        "トライデント": {
+            "id": 455,
+            "name": "trident"
+        },
+        "トリップワイヤー": {
+            "id": 132,
+            "name": "tripwire"
+        },
+        "トリップワイヤーフック": {
+            "id": 131,
+            "name": "tripwire_hook"
+        },
+        "亀の甲羅": {
+            "id": 469,
+            "name": "turtle_helmet"
+        },
+        "甲羅のかけら": {
+            "id": 468,
+            "name": "turtle_shell_piece"
+        },
+        "シュルカーボックス": {
+            "id": 205,
+            "name": "undyed_shulker_box"
+        },
+        "つた": {
+            "id": 106,
+            "name": "vines"
+        },
+        "クモの巣": {
+            "id": 30,
+            "name": "web"
+        },
+        "小麦": {
+            "id": 296,
+            "name": "wheat"
+        },
+        "白の彩釉テラコッタ": {
+            "id": 220,
+            "name": "white_glazed_terracotta"
+        },
+        "木の斧": {
+            "id": 271,
+            "name": "wooden_axe"
+        },
+        "樫の木のボタン": {
+            "id": 143,
+            "name": "wooden_button"
+        },
+        "木のくわ": {
+            "id": 290,
+            "name": "wooden_hoe"
+        },
+        "木のツルハシ": {
+            "id": 270,
+            "name": "wooden_pickaxe"
+        },
+        "樫の木の木材": {
+            "id": 5,
+            "name": "wooden_planks"
+        },
+        "樫の木の重量感知板": {
+            "id": 72,
+            "name": "wooden_pressure_plate"
+        },
+        "木のシャベル": {
+            "id": 269,
+            "name": "wooden_shovel"
+        },
+        "樫のハーフブロック": {
+            "id": 158,
+            "name": "wooden_slab"
+        },
+        "木の剣": {
+            "id": 268,
+            "name": "wooden_sword"
+        },
+        "白のウール": {
+            "id": 35,
+            "name": "wool"
+        },
+        "本と羽ペン": {
+            "id": 386,
+            "name": "writable_book"
+        },
+        "記入済みの本": {
+            "id": 387,
+            "name": "written_book"
+        },
+        "黄色の彩釉テラコッタ": {
+            "id": 224,
+            "name": "yellow_glazed_terracotta"
+        }
+    },
+    "id": {
+        "0": {
+            "en_name": "air",
+            "ja_name": "空気"
+        },
+        "1": {
+            "en_name": "stone",
+            "ja_name": "石"
+        },
+        "2": {
+            "en_name": "grass",
+            "ja_name": "草ブロック"
+        },
+        "3": {
+            "en_name": "dirt",
+            "ja_name": "土"
+        },
+        "4": {
+            "en_name": "cobblestone",
+            "ja_name": "丸石"
+        },
+        "5": {
+            "en_name": "wooden_planks",
+            "ja_name": "樫の木の木材"
+        },
+        "6": {
+            "en_name": "sapling",
+            "ja_name": "樫の苗木"
+        },
+        "7": {
+            "en_name": "bedrock",
+            "ja_name": "岩盤"
+        },
+        "8": {
+            "en_name": "flowing_water",
+            "ja_name": "不明なアイテム"
+        },
+        "9": {
+            "en_name": "water",
+            "ja_name": "不明なアイテム"
+        },
+        "10": {
+            "en_name": "flowing_lava",
+            "ja_name": "不明なアイテム"
+        },
+        "11": {
+            "en_name": "still_lava",
+            "ja_name": "不明なアイテム"
+        },
+        "12": {
+            "en_name": "sand",
+            "ja_name": "砂"
+        },
+        "13": {
+            "en_name": "gravel",
+            "ja_name": "砂利"
+        },
+        "14": {
+            "en_name": "gold_ore",
+            "ja_name": "金鉱石"
+        },
+        "15": {
+            "en_name": "iron_ore",
+            "ja_name": "鉄鉱石"
+        },
+        "16": {
+            "en_name": "coal_ore",
+            "ja_name": "石炭鉱石"
+        },
+        "17": {
+            "en_name": "wood",
+            "ja_name": "樫の丸太"
+        },
+        "18": {
+            "en_name": "leaves",
+            "ja_name": "樫の葉"
+        },
+        "19": {
+            "en_name": "sponge",
+            "ja_name": "スポンジ"
+        },
+        "20": {
+            "en_name": "glass",
+            "ja_name": "ガラス"
+        },
+        "21": {
+            "en_name": "lapis_ore",
+            "ja_name": "ラピスラズリ鉱石"
+        },
+        "22": {
+            "en_name": "lapis_block",
+            "ja_name": "ラピスラズリのブロック"
+        },
+        "23": {
+            "en_name": "dispenser",
+            "ja_name": "発射装置"
+        },
+        "24": {
+            "en_name": "sandstone",
+            "ja_name": "砂岩"
+        },
+        "25": {
+            "en_name": "noteblock",
+            "ja_name": "音ブロック"
+        },
+        "26": {
+            "en_name": "bed_block",
+            "ja_name": "ベッド"
+        },
+        "27": {
+            "en_name": "powered_rail",
+            "ja_name": "加速レール"
+        },
+        "28": {
+            "en_name": "detector_rail",
+            "ja_name": "感知レール"
+        },
+        "29": {
+            "en_name": "sticky_piston",
+            "ja_name": "吸着ピストン"
+        },
+        "30": {
+            "en_name": "web",
+            "ja_name": "クモの巣"
+        },
+        "31": {
+            "en_name": "tallgrass",
+            "ja_name": "シダ"
+        },
+        "32": {
+            "en_name": "deadbush",
+            "ja_name": "枯れ木"
+        },
+        "33": {
+            "en_name": "piston",
+            "ja_name": "ピストン"
+        },
+        "34": {
+            "en_name": "pistonarmcollision",
+            "ja_name": "不明なアイテム"
+        },
+        "35": {
+            "en_name": "wool",
+            "ja_name": "白のウール"
+        },
+        "37": {
+            "en_name": "yellow_flower",
+            "ja_name": "タンポポ"
+        },
+        "38": {
+            "en_name": "red_flower",
+            "ja_name": "ポピー"
+        },
+        "39": {
+            "en_name": "brown_mushroom",
+            "ja_name": "きのこ(茶色)"
+        },
+        "40": {
+            "en_name": "red_mushroom",
+            "ja_name": "キノコ(赤)"
+        },
+        "41": {
+            "en_name": "gold_block",
+            "ja_name": "金のブロック"
+        },
+        "42": {
+            "en_name": "iron_block",
+            "ja_name": "鉄のブロック"
+        },
+        "43": {
+            "en_name": "double_stone_slab",
+            "ja_name": "石ハーフブロック"
+        },
+        "44": {
+            "en_name": "stone_slab",
+            "ja_name": "なめらかな石ハーフブロック"
+        },
+        "45": {
+            "en_name": "brick_block",
+            "ja_name": "レンガブロック"
+        },
+        "46": {
+            "en_name": "tnt",
+            "ja_name": "TNT火薬"
+        },
+        "47": {
+            "en_name": "bookshelf",
+            "ja_name": "本棚"
+        },
+        "48": {
+            "en_name": "mossy_cobblestone",
+            "ja_name": "苔の生えた丸石"
+        },
+        "49": {
+            "en_name": "obsidian",
+            "ja_name": "黒曜石"
+        },
+        "50": {
+            "en_name": "torch",
+            "ja_name": "たいまつ"
+        },
+        "51": {
+            "en_name": "fire",
+            "ja_name": "火"
+        },
+        "52": {
+            "en_name": "monster_spawner",
+            "ja_name": "モンスタースポナー"
+        },
+        "53": {
+            "en_name": "wooden_stairs",
+            "ja_name": "樫の階段"
+        },
+        "54": {
+            "en_name": "chest",
+            "ja_name": "チェスト"
+        },
+        "55": {
+            "en_name": "redstone_wire",
+            "ja_name": "不明なアイテム"
+        },
+        "56": {
+            "en_name": "diamond_ore",
+            "ja_name": "ダイアモンド鉱石"
+        },
+        "57": {
+            "en_name": "diamond_block",
+            "ja_name": "ダイアモンドのブロック"
+        },
+        "58": {
+            "en_name": "workbench",
+            "ja_name": "作業台"
+        },
+        "59": {
+            "en_name": "wheat_block",
+            "ja_name": "不明なアイテム"
+        },
+        "60": {
+            "en_name": "farmland",
+            "ja_name": "農地"
+        },
+        "61": {
+            "en_name": "furnace",
+            "ja_name": "かまど"
+        },
+        "62": {
+            "en_name": "lit_furnace",
+            "ja_name": "不明なアイテム"
+        },
+        "63": {
+            "en_name": "standing_sign",
+            "ja_name": "看板"
+        },
+        "64": {
+            "en_name": "wooden_door_block",
+            "ja_name": "不明なアイテム"
+        },
+        "65": {
+            "en_name": "ladder",
+            "ja_name": "はしご"
+        },
+        "66": {
+            "en_name": "rail",
+            "ja_name": "レール"
+        },
+        "67": {
+            "en_name": "stone_stairs",
+            "ja_name": "丸石の階段"
+        },
+        "68": {
+            "en_name": "wall_sign",
+            "ja_name": "不明なアイテム"
+        },
+        "69": {
+            "en_name": "lever",
+            "ja_name": "レバー"
+        },
+        "70": {
+            "en_name": "stone_pressure_plate",
+            "ja_name": "石の感圧板"
+        },
+        "71": {
+            "en_name": "iron_door_block",
+            "ja_name": "不明なアイテム"
+        },
+        "72": {
+            "en_name": "wooden_pressure_plate",
+            "ja_name": "樫の木の重量感知板"
+        },
+        "73": {
+            "en_name": "redstone_ore",
+            "ja_name": "レッドストーン鉱石"
+        },
+        "74": {
+            "en_name": "lit_redstone_ore",
+            "ja_name": "不明なアイテム"
+        },
+        "75": {
+            "en_name": "unlit_redstone_torch",
+            "ja_name": "不明なアイテム"
+        },
+        "76": {
+            "en_name": "redstone_torch",
+            "ja_name": "レッドストーンのたいまつ"
+        },
+        "77": {
+            "en_name": "stone_button",
+            "ja_name": "石のボタン"
+        },
+        "78": {
+            "en_name": "snow_layer",
+            "ja_name": "積雪"
+        },
+        "79": {
+            "en_name": "ice",
+            "ja_name": "氷"
+        },
+        "80": {
+            "en_name": "snow_block",
+            "ja_name": "雪"
+        },
+        "81": {
+            "en_name": "cactus",
+            "ja_name": "サボテン"
+        },
+        "82": {
+            "en_name": "clay_block",
+            "ja_name": "粘土ブロック"
+        },
+        "83": {
+            "en_name": "sugarcane_block",
+            "ja_name": "不明なアイテム"
+        },
+        "84": {
+            "en_name": "jukebox",
+            "ja_name": "ジュークボックス"
+        },
+        "85": {
+            "en_name": "fence",
+            "ja_name": "樫の木の柵"
+        },
+        "86": {
+            "en_name": "pumpkin",
+            "ja_name": "カボチャ"
+        },
+        "87": {
+            "en_name": "netherrack",
+            "ja_name": "ネザーレック"
+        },
+        "88": {
+            "en_name": "soul_sand",
+            "ja_name": "ソウルサンド"
+        },
+        "89": {
+            "en_name": "glowstone",
+            "ja_name": "グロウストーン"
+        },
+        "90": {
+            "en_name": "portal",
+            "ja_name": "ポータル"
+        },
+        "91": {
+            "en_name": "lit_pumpkin",
+            "ja_name": "ジャック・オ・ランタン"
+        },
+        "92": {
+            "en_name": "cake_block",
+            "ja_name": "ケーキ"
+        },
+        "93": {
+            "en_name": "unpowered_repeater",
+            "ja_name": "不明なアイテム"
+        },
+        "94": {
+            "en_name": "powered_repeater",
+            "ja_name": "虫食い石"
+        },
+        "95": {
+            "en_name": "invisiblebedrock",
+            "ja_name": "不可視の岩盤"
+        },
+        "96": {
+            "en_name": "wooden_trapdoor",
+            "ja_name": "樫の木のトラップドア"
+        },
+        "97": {
+            "en_name": "monster_egg",
+            "ja_name": "虫食い石"
+        },
+        "98": {
+            "en_name": "stonebrick",
+            "ja_name": "石レンガ"
+        },
+        "99": {
+            "en_name": "brown_mushroom_block",
+            "ja_name": "きのこ"
+        },
+        "100": {
+            "en_name": "red_mushroom_block",
+            "ja_name": "きのこブロック(赤)"
+        },
+        "101": {
+            "en_name": "iron_bars",
+            "ja_name": "鉄格子"
+        },
+        "102": {
+            "en_name": "glass_pane",
+            "ja_name": "ガラス板"
+        },
+        "103": {
+            "en_name": "melon_block",
+            "ja_name": "スイカ"
+        },
+        "104": {
+            "en_name": "pumpkin_stem",
+            "ja_name": "カボチャの茎"
+        },
+        "105": {
+            "en_name": "melon_stem",
+            "ja_name": "不明なアイテム"
+        },
+        "106": {
+            "en_name": "vines",
+            "ja_name": "つた"
+        },
+        "107": {
+            "en_name": "oak_fence_gate",
+            "ja_name": "樫の木の柵のゲート"
+        },
+        "108": {
+            "en_name": "brick_stairs",
+            "ja_name": "レンガ階段"
+        },
+        "109": {
+            "en_name": "stone_brick_stairs",
+            "ja_name": "石レンガ階段"
+        },
+        "110": {
+            "en_name": "mycelium",
+            "ja_name": "菌糸"
+        },
+        "111": {
+            "en_name": "waterlily",
+            "ja_name": "スイレンの葉"
+        },
+        "112": {
+            "en_name": "nether_brick_block",
+            "ja_name": "ネザーレンガのブロック"
+        },
+        "113": {
+            "en_name": "nether_brick_fence",
+            "ja_name": "ネザーレンガの柵"
+        },
+        "114": {
+            "en_name": "nether_brick_stairs",
+            "ja_name": "ネザーレンガの階段"
+        },
+        "115": {
+            "en_name": "nether_wart_plant",
+            "ja_name": "不明なアイテム"
+        },
+        "116": {
+            "en_name": "enchantment_table",
+            "ja_name": "エンチャントテーブル"
+        },
+        "117": {
+            "en_name": "brewing_stand_block",
+            "ja_name": "不明なアイテム"
+        },
+        "118": {
+            "en_name": "cauldron_block",
+            "ja_name": "不明なアイテム"
+        },
+        "119": {
+            "en_name": "end_portal",
+            "ja_name": "不明なアイテム"
+        },
+        "120": {
+            "en_name": "end_portal_frame",
+            "ja_name": "エンドポータル"
+        },
+        "121": {
+            "en_name": "end_stone",
+            "ja_name": "エンドストーン"
+        },
+        "122": {
+            "en_name": "dragon_egg",
+            "ja_name": "ドラゴンの卵"
+        },
+        "123": {
+            "en_name": "redstone_lamp",
+            "ja_name": "レッドストーンランプ"
+        },
+        "124": {
+            "en_name": "lit_redstone_lamp",
+            "ja_name": "不明なアイテム"
+        },
+        "125": {
+            "en_name": "dropper",
+            "ja_name": "ドロッパー"
+        },
+        "126": {
+            "en_name": "activator_rail",
+            "ja_name": "アクティベーターレール"
+        },
+        "127": {
+            "en_name": "cocoa_block",
+            "ja_name": "ココア"
+        },
+        "128": {
+            "en_name": "sandstone_stairs",
+            "ja_name": "砂岩の階段"
+        },
+        "129": {
+            "en_name": "emerald_ore",
+            "ja_name": "エメラルド鉱石"
+        },
+        "130": {
+            "en_name": "ender_chest",
+            "ja_name": "エンダーチェスト"
+        },
+        "131": {
+            "en_name": "tripwire_hook",
+            "ja_name": "トリップワイヤーフック"
+        },
+        "132": {
+            "en_name": "tripwire",
+            "ja_name": "トリップワイヤー"
+        },
+        "133": {
+            "en_name": "emerald_block",
+            "ja_name": "エメラルドのブロック"
+        },
+        "134": {
+            "en_name": "spruce_stairs",
+            "ja_name": "トウヒの階段"
+        },
+        "135": {
+            "en_name": "birch_stairs",
+            "ja_name": "樺の階段"
+        },
+        "136": {
+            "en_name": "jungle_stairs",
+            "ja_name": "ジャングルの木の階段"
+        },
+        "137": {
+            "en_name": "command_block",
+            "ja_name": "コマンドブロック"
+        },
+        "138": {
+            "en_name": "beacon",
+            "ja_name": "ビーコン"
+        },
+        "139": {
+            "en_name": "stone_wall",
+            "ja_name": "丸石の壁"
+        },
+        "140": {
+            "en_name": "flower_pot_block",
+            "ja_name": "不明なアイテム"
+        },
+        "141": {
+            "en_name": "carrots",
+            "ja_name": "不明なアイテム"
+        },
+        "142": {
+            "en_name": "potatoes",
+            "ja_name": "不明なアイテム"
+        },
+        "143": {
+            "en_name": "wooden_button",
+            "ja_name": "樫の木のボタン"
+        },
+        "144": {
+            "en_name": "skull_block",
+            "ja_name": "不明なアイテム"
+        },
+        "145": {
+            "en_name": "anvil",
+            "ja_name": "金床"
+        },
+        "146": {
+            "en_name": "trapped_chest",
+            "ja_name": "トラップチェスト"
+        },
+        "147": {
+            "en_name": "light_weighted_pressure_plate",
+            "ja_name": "重量感知板(軽)"
+        },
+        "148": {
+            "en_name": "heavy_weighted_pressure_plate",
+            "ja_name": "重量感知板(重)"
+        },
+        "149": {
+            "en_name": "unpowered_comparator",
+            "ja_name": "不明なアイテム"
+        },
+        "150": {
+            "en_name": "powered_comparator",
+            "ja_name": "不明なアイテム"
+        },
+        "151": {
+            "en_name": "daylight_sensor",
+            "ja_name": "日照センサー"
+        },
+        "152": {
+            "en_name": "redstone_block",
+            "ja_name": "レッドストーンのブロック"
+        },
+        "153": {
+            "en_name": "quartz_ore",
+            "ja_name": "ネザークォーツ鉱石"
+        },
+        "154": {
+            "en_name": "hopper_block",
+            "ja_name": "不明なアイテム"
+        },
+        "155": {
+            "en_name": "quartz_block",
+            "ja_name": "クォーツのブロック"
+        },
+        "156": {
+            "en_name": "quartz_stairs",
+            "ja_name": "クォーツの階段"
+        },
+        "157": {
+            "en_name": "double_wooden_slab",
+            "ja_name": "不明なブロック"
+        },
+        "158": {
+            "en_name": "wooden_slab",
+            "ja_name": "樫のハーフブロック"
+        },
+        "159": {
+            "en_name": "terracotta",
+            "ja_name": "白のテラコッタ"
+        },
+        "160": {
+            "en_name": "stained_glass_pane",
+            "ja_name": "白のステンドグラス窓"
+        },
+        "161": {
+            "en_name": "leaves2",
+            "ja_name": "アカシアの葉"
+        },
+        "162": {
+            "en_name": "wood2",
+            "ja_name": "アカシアの丸太"
+        },
+        "163": {
+            "en_name": "acacia_stairs",
+            "ja_name": "アカシアの木の階段"
+        },
+        "164": {
+            "en_name": "dark_oak_stairs",
+            "ja_name": "黒樫の木の階段"
+        },
+        "165": {
+            "en_name": "slime_block",
+            "ja_name": "スライムブロック"
+        },
+        "167": {
+            "en_name": "iron_trapdoor",
+            "ja_name": "鉄のトラップドア"
+        },
+        "168": {
+            "en_name": "prismarine",
+            "ja_name": "海晶ブロック"
+        },
+        "169": {
+            "en_name": "sealantern",
+            "ja_name": "海のランタン"
+        },
+        "170": {
+            "en_name": "hay_block",
+            "ja_name": "干し草の俵"
+        },
+        "171": {
+            "en_name": "carpet",
+            "ja_name": "白のカーペット"
+        },
+        "172": {
+            "en_name": "hardened_clay",
+            "ja_name": "テラコッタ"
+        },
+        "173": {
+            "en_name": "coal_block",
+            "ja_name": "石炭ブロック"
+        },
+        "174": {
+            "en_name": "packed_ice",
+            "ja_name": "氷塊"
+        },
+        "175": {
+            "en_name": "double_plant",
+            "ja_name": "ヒマワリ"
+        },
+        "176": {
+            "en_name": "standing_banner",
+            "ja_name": "旗"
+        },
+        "177": {
+            "en_name": "wall_banner",
+            "ja_name": "不明なアイテム"
+        },
+        "178": {
+            "en_name": "daylight_sensor_inverted",
+            "ja_name": "不明なアイテム"
+        },
+        "179": {
+            "en_name": "red_sandstone",
+            "ja_name": "赤砂岩"
+        },
+        "180": {
+            "en_name": "red_sandstone_stairs",
+            "ja_name": "赤砂岩の階段"
+        },
+        "181": {
+            "en_name": "double_stone_slab2",
+            "ja_name": "赤砂岩のハーフブロック"
+        },
+        "182": {
+            "en_name": "stone_slab2",
+            "ja_name": "赤砂岩のハーフブロック"
+        },
+        "183": {
+            "en_name": "spruce_fence_gate",
+            "ja_name": "トウヒの木の柵のゲート"
+        },
+        "184": {
+            "en_name": "birch_fence_gate",
+            "ja_name": "樺の木の柵のゲート"
+        },
+        "185": {
+            "en_name": "jungle_fence_gate",
+            "ja_name": "ジャングルの木の柵のゲート"
+        },
+        "186": {
+            "en_name": "dark_oak_fence_gate",
+            "ja_name": "黒樫の木の柵のゲート"
+        },
+        "187": {
+            "en_name": "acacia_fence_gate",
+            "ja_name": "アカシアの木の柵のゲート"
+        },
+        "188": {
+            "en_name": "repeating_command_block",
+            "ja_name": "コマンドブロックの反復"
+        },
+        "189": {
+            "en_name": "chain_command_block",
+            "ja_name": "コマンドブロックのチェーン"
+        },
+        "193": {
+            "en_name": "spruce_door_block",
+            "ja_name": "不明なアイテム"
+        },
+        "194": {
+            "en_name": "birch_door_block",
+            "ja_name": "樺の木のトラップドア"
+        },
+        "195": {
+            "en_name": "jungle_door_block",
+            "ja_name": "不明なアイテム"
+        },
+        "196": {
+            "en_name": "acacia_door_block",
+            "ja_name": "アカシアの木のトラップドア"
+        },
+        "197": {
+            "en_name": "dark_oak_door_block",
+            "ja_name": "不明なアイテム"
+        },
+        "198": {
+            "en_name": "grass_path",
+            "ja_name": "未装飾路"
+        },
+        "199": {
+            "en_name": "item_frame_block",
+            "ja_name": "不明なアイテム"
+        },
+        "200": {
+            "en_name": "chorus_flower",
+            "ja_name": "コーラスの花"
+        },
+        "201": {
+            "en_name": "purpur_block",
+            "ja_name": "プルプァブロック"
+        },
+        "203": {
+            "en_name": "purpur_stairs",
+            "ja_name": "プルプァの階段"
+        },
+        "205": {
+            "en_name": "undyed_shulker_box",
+            "ja_name": "シュルカーボックス"
+        },
+        "206": {
+            "en_name": "end_bricks",
+            "ja_name": "エンドストーンレンガ"
+        },
+        "207": {
+            "en_name": "frosted_ice",
+            "ja_name": "不明なアイテム"
+        },
+        "208": {
+            "en_name": "end_rod",
+            "ja_name": "果てのロッド"
+        },
+        "209": {
+            "en_name": "end_gateway",
+            "ja_name": "不明なアイテム"
+        },
+        "213": {
+            "en_name": "magma",
+            "ja_name": "マグマブロック"
+        },
+        "214": {
+            "en_name": "nether_wart_block",
+            "ja_name": "ネザーウォートブロック"
+        },
+        "215": {
+            "en_name": "red_nether_brick",
+            "ja_name": "赤いネザーレンガ"
+        },
+        "216": {
+            "en_name": "bone_block",
+            "ja_name": "骨ブロック"
+        },
+        "218": {
+            "en_name": "shulker_box",
+            "ja_name": "白のシュルカーボックス"
+        },
+        "219": {
+            "en_name": "purple_glazed_terracotta",
+            "ja_name": "紫の彩釉テラコッタ"
+        },
+        "220": {
+            "en_name": "white_glazed_terracotta",
+            "ja_name": "白の彩釉テラコッタ"
+        },
+        "221": {
+            "en_name": "orange_glazed_terracotta",
+            "ja_name": "オレンジの彩釉テラコッタ"
+        },
+        "222": {
+            "en_name": "magenta_glazed_terracotta",
+            "ja_name": "赤紫の彩釉テラコッタ"
+        },
+        "223": {
+            "en_name": "light_blue_glazed_terracotta",
+            "ja_name": "空色の彩釉テラコッタ"
+        },
+        "224": {
+            "en_name": "yellow_glazed_terracotta",
+            "ja_name": "黄色の彩釉テラコッタ"
+        },
+        "225": {
+            "en_name": "lime_glazed_terracotta",
+            "ja_name": "黄緑の彩釉テラコッタ"
+        },
+        "226": {
+            "en_name": "pink_glazed_terracotta",
+            "ja_name": "ピンクの彩釉テラコッタ"
+        },
+        "227": {
+            "en_name": "gray_glazed_terracotta",
+            "ja_name": "灰色の彩釉テラコッタ"
+        },
+        "228": {
+            "en_name": "silver_glazed_terracotta",
+            "ja_name": "薄灰色の彩釉テラコッタ"
+        },
+        "229": {
+            "en_name": "cyan_glazed_terracotta",
+            "ja_name": "水色の彩釉テラコッタ"
+        },
+        "231": {
+            "en_name": "blue_glazed_terracotta",
+            "ja_name": "青の彩釉テラコッタ"
+        },
+        "232": {
+            "en_name": "brown_glazed_terracotta",
+            "ja_name": "茶色の彩釉テラコッタ"
+        },
+        "233": {
+            "en_name": "green_glazed_terracotta",
+            "ja_name": "緑の彩釉テラコッタ"
+        },
+        "234": {
+            "en_name": "red_glazed_terracotta",
+            "ja_name": "赤の彩釉テラコッタ"
+        },
+        "235": {
+            "en_name": "black_glazed_terracotta",
+            "ja_name": "黒の彩釉テラコッタ"
+        },
+        "236": {
+            "en_name": "concrete",
+            "ja_name": "白のコンクリート"
+        },
+        "237": {
+            "en_name": "concretepowder",
+            "ja_name": "白のコンクリートパウダー"
+        },
+        "240": {
+            "en_name": "chorus_plant",
+            "ja_name": "コーラスプラント"
+        },
+        "241": {
+            "en_name": "stained_glass",
+            "ja_name": "白のステンドグラス"
+        },
+        "243": {
+            "en_name": "podzol",
+            "ja_name": "ポドゾル"
+        },
+        "244": {
+            "en_name": "beetroot_block",
+            "ja_name": "不明なアイテム"
+        },
+        "245": {
+            "en_name": "stonecutter",
+            "ja_name": "ストーンカッター"
+        },
+        "246": {
+            "en_name": "glowingobsidian",
+            "ja_name": "不明なアイテム"
+        },
+        "247": {
+            "en_name": "netherreactor",
+            "ja_name": "ネザーリアクターコア"
+        },
+        "248": {
+            "en_name": "info_update",
+            "ja_name": "不明なアイテム"
+        },
+        "249": {
+            "en_name": "info_update2",
+            "ja_name": "不明なアイテム"
+        },
+        "250": {
+            "en_name": "movingblock",
+            "ja_name": "不明なアイテム"
+        },
+        "251": {
+            "en_name": "observer",
+            "ja_name": "観察者"
+        },
+        "252": {
+            "en_name": "structure_block",
+            "ja_name": "ストラクチャーブロック"
+        },
+        "255": {
+            "en_name": "reserved6",
+            "ja_name": "不明なアイテム"
+        },
+        "256": {
+            "en_name": "iron_shovel",
+            "ja_name": "鉄のシャベル"
+        },
+        "257": {
+            "en_name": "iron_pickaxe",
+            "ja_name": "鉄のツルハシ"
+        },
+        "258": {
+            "en_name": "iron_axe",
+            "ja_name": "鉄の斧"
+        },
+        "259": {
+            "en_name": "flint_steel",
+            "ja_name": "火打ち石と打ち金"
+        },
+        "260": {
+            "en_name": "apple",
+            "ja_name": "リンゴ"
+        },
+        "261": {
+            "en_name": "bow",
+            "ja_name": "弓"
+        },
+        "262": {
+            "en_name": "arrow",
+            "ja_name": "矢"
+        },
+        "263": {
+            "en_name": "coal",
+            "ja_name": "石炭"
+        },
+        "264": {
+            "en_name": "diamond",
+            "ja_name": "ダイアモンド"
+        },
+        "265": {
+            "en_name": "iron_ingot",
+            "ja_name": "鉄の延べ棒"
+        },
+        "266": {
+            "en_name": "gold_ingot",
+            "ja_name": "金の延べ棒"
+        },
+        "267": {
+            "en_name": "iron_sword",
+            "ja_name": "鉄の剣"
+        },
+        "268": {
+            "en_name": "wooden_sword",
+            "ja_name": "木の剣"
+        },
+        "269": {
+            "en_name": "wooden_shovel",
+            "ja_name": "木のシャベル"
+        },
+        "270": {
+            "en_name": "wooden_pickaxe",
+            "ja_name": "木のツルハシ"
+        },
+        "271": {
+            "en_name": "wooden_axe",
+            "ja_name": "木の斧"
+        },
+        "272": {
+            "en_name": "stone_sword",
+            "ja_name": "石の剣"
+        },
+        "273": {
+            "en_name": "stone_shovel",
+            "ja_name": "石のシャベル"
+        },
+        "274": {
+            "en_name": "stone_pickaxe",
+            "ja_name": "石のツルハシ"
+        },
+        "275": {
+            "en_name": "stone_axe",
+            "ja_name": "石の斧"
+        },
+        "276": {
+            "en_name": "diamond_sword",
+            "ja_name": "ダイアモンドの剣"
+        },
+        "277": {
+            "en_name": "diamond_shovel",
+            "ja_name": "ダイアモンドのシャベル"
+        },
+        "278": {
+            "en_name": "diamond_pickaxe",
+            "ja_name": "ダイアモンドのツルハシ"
+        },
+        "279": {
+            "en_name": "diamond_axe",
+            "ja_name": "ダイアモンドの斧"
+        },
+        "280": {
+            "en_name": "stick",
+            "ja_name": "棒"
+        },
+        "281": {
+            "en_name": "bowl",
+            "ja_name": "おわん"
+        },
+        "282": {
+            "en_name": "mushroom_stew",
+            "ja_name": "きのこシチュー"
+        },
+        "283": {
+            "en_name": "golden_sword",
+            "ja_name": "金の剣"
+        },
+        "284": {
+            "en_name": "golden_shovel",
+            "ja_name": "金のシャベル"
+        },
+        "285": {
+            "en_name": "golden_pickaxe",
+            "ja_name": "金のツルハシ"
+        },
+        "286": {
+            "en_name": "golden_axe",
+            "ja_name": "金の斧"
+        },
+        "287": {
+            "en_name": "string",
+            "ja_name": "糸"
+        },
+        "288": {
+            "en_name": "feather",
+            "ja_name": "羽根"
+        },
+        "289": {
+            "en_name": "gunpowder",
+            "ja_name": "火薬"
+        },
+        "290": {
+            "en_name": "wooden_hoe",
+            "ja_name": "木のくわ"
+        },
+        "291": {
+            "en_name": "stone_hoe",
+            "ja_name": "石のくわ"
+        },
+        "292": {
+            "en_name": "iron_hoe",
+            "ja_name": "鉄のくわ"
+        },
+        "293": {
+            "en_name": "diamond_hoe",
+            "ja_name": "ダイアモンドのくわ"
+        },
+        "294": {
+            "en_name": "golden_hoe",
+            "ja_name": "金のくわ"
+        },
+        "295": {
+            "en_name": "wheat_seeds",
+            "ja_name": "種"
+        },
+        "296": {
+            "en_name": "wheat",
+            "ja_name": "小麦"
+        },
+        "297": {
+            "en_name": "bread",
+            "ja_name": "パン"
+        },
+        "298": {
+            "en_name": "leather_helmet",
+            "ja_name": "革の帽子"
+        },
+        "299": {
+            "en_name": "leather_tunic",
+            "ja_name": "革の服"
+        },
+        "300": {
+            "en_name": "leather_pants",
+            "ja_name": "革のパンツ"
+        },
+        "301": {
+            "en_name": "leather_boots",
+            "ja_name": "革のブーツ"
+        },
+        "302": {
+            "en_name": "chainmail_helmet",
+            "ja_name": "チェーンヘルメット"
+        },
+        "303": {
+            "en_name": "chainmail_chestplate",
+            "ja_name": "胸当て"
+        },
+        "304": {
+            "en_name": "chainmail_leggings",
+            "ja_name": "チェーンレギンス"
+        },
+        "305": {
+            "en_name": "chainmail_boots",
+            "ja_name": "チェーンブーツ"
+        },
+        "306": {
+            "en_name": "iron_helmet",
+            "ja_name": "鉄のヘルメット"
+        },
+        "307": {
+            "en_name": "iron_chestplate",
+            "ja_name": "鉄の胸当て"
+        },
+        "308": {
+            "en_name": "iron_leggings",
+            "ja_name": ""
+        },
+        "309": {
+            "en_name": "iron_boots",
+            "ja_name": "鉄のブーツ"
+        },
+        "310": {
+            "en_name": "diamond_helmet",
+            "ja_name": "ダイアモンドのヘルメット"
+        },
+        "311": {
+            "en_name": "diamond_chestplate",
+            "ja_name": "ダイアモンドの胸当て"
+        },
+        "312": {
+            "en_name": "diamond_leggings",
+            "ja_name": "ダイアモンドの脚甲"
+        },
+        "313": {
+            "en_name": "diamond_boots",
+            "ja_name": "ダイアモンドのブーツ"
+        },
+        "314": {
+            "en_name": "golden_helmet",
+            "ja_name": "金のヘルメット"
+        },
+        "315": {
+            "en_name": "golden_chestplate",
+            "ja_name": "金の胸当て"
+        },
+        "316": {
+            "en_name": "golden_leggings",
+            "ja_name": "金の脚甲"
+        },
+        "317": {
+            "en_name": "golden_boots",
+            "ja_name": "金のブーツ"
+        },
+        "318": {
+            "en_name": "flint",
+            "ja_name": "火打ち石"
+        },
+        "319": {
+            "en_name": "raw_porkchop",
+            "ja_name": "生の豚肉"
+        },
+        "320": {
+            "en_name": "cooked_porkchop",
+            "ja_name": "調理した豚肉"
+        },
+        "321": {
+            "en_name": "painting",
+            "ja_name": "絵"
+        },
+        "322": {
+            "en_name": "golden_apple",
+            "ja_name": "金のリンゴ"
+        },
+        "323": {
+            "en_name": "sign",
+            "ja_name": "樫の木の看板"
+        },
+        "324": {
+            "en_name": "wooden_door",
+            "ja_name": "樫の木のドア"
+        },
+        "325": {
+            "en_name": "bucket",
+            "ja_name": "バケツ"
+        },
+        "328": {
+            "en_name": "minecart",
+            "ja_name": "トロッコ"
+        },
+        "329": {
+            "en_name": "saddle",
+            "ja_name": "鞍"
+        },
+        "330": {
+            "en_name": "iron_door",
+            "ja_name": "鉄のドア"
+        },
+        "331": {
+            "en_name": "redstone_dust",
+            "ja_name": "レッドストーンの粉"
+        },
+        "332": {
+            "en_name": "snowball",
+            "ja_name": "雪玉"
+        },
+        "333": {
+            "en_name": "boat",
+            "ja_name": "樫の木のボート"
+        },
+        "334": {
+            "en_name": "leather",
+            "ja_name": "革"
+        },
+        "335": {
+            "en_name": "kelp",
+            "ja_name": "昆布"
+        },
+        "336": {
+            "en_name": "brick",
+            "ja_name": "レンガ"
+        },
+        "337": {
+            "en_name": "clay_ball",
+            "ja_name": "粘土"
+        },
+        "338": {
+            "en_name": "sugarcane",
+            "ja_name": "サトウキビ"
+        },
+        "339": {
+            "en_name": "paper",
+            "ja_name": "紙"
+        },
+        "340": {
+            "en_name": "book",
+            "ja_name": "本"
+        },
+        "341": {
+            "en_name": "slimeball",
+            "ja_name": "スライムボール"
+        },
+        "342": {
+            "en_name": "minecart_with_chest",
+            "ja_name": "チェスト付きトロッコ"
+        },
+        "344": {
+            "en_name": "egg",
+            "ja_name": "タマゴ"
+        },
+        "345": {
+            "en_name": "compass",
+            "ja_name": "コンパス"
+        },
+        "346": {
+            "en_name": "fishing_rod",
+            "ja_name": "釣り竿"
+        },
+        "347": {
+            "en_name": "clock",
+            "ja_name": "時計"
+        },
+        "348": {
+            "en_name": "glowstone_dust",
+            "ja_name": "グロウストーンダスト"
+        },
+        "349": {
+            "en_name": "raw_fish",
+            "ja_name": "生のタラ"
+        },
+        "350": {
+            "en_name": "cooked_fish",
+            "ja_name": "焼いたタラ"
+        },
+        "351": {
+            "en_name": "dye",
+            "ja_name": "墨袋"
+        },
+        "352": {
+            "en_name": "bone",
+            "ja_name": "骨"
+        },
+        "353": {
+            "en_name": "sugar",
+            "ja_name": "砂糖"
+        },
+        "354": {
+            "en_name": "cake",
+            "ja_name": "ケーキ"
+        },
+        "355": {
+            "en_name": "bed",
+            "ja_name": "白のベッド"
+        },
+        "356": {
+            "en_name": "repeater",
+            "ja_name": "レッドストーン反復装置"
+        },
+        "357": {
+            "en_name": "cookie",
+            "ja_name": "クッキー"
+        },
+        "358": {
+            "en_name": "filled_map",
+            "ja_name": "地図"
+        },
+        "359": {
+            "en_name": "shears",
+            "ja_name": "ハサミ"
+        },
+        "360": {
+            "en_name": "melon_slice",
+            "ja_name": "スイカの薄切り"
+        },
+        "361": {
+            "en_name": "pumpkin_seeds",
+            "ja_name": "カボチャの種"
+        },
+        "362": {
+            "en_name": "melon_seeds",
+            "ja_name": "スイカの種"
+        },
+        "363": {
+            "en_name": "raw_beef",
+            "ja_name": "RAW_BEEF"
+        },
+        "364": {
+            "en_name": "steak",
+            "ja_name": "調理した牛肉"
+        },
+        "365": {
+            "en_name": "raw_chicken",
+            "ja_name": "生の牛肉"
+        },
+        "366": {
+            "en_name": "cooked_chicken",
+            "ja_name": "焼き鳥"
+        },
+        "367": {
+            "en_name": "rotten_flesh",
+            "ja_name": "腐肉"
+        },
+        "368": {
+            "en_name": "ender_pearl",
+            "ja_name": "エンダーパール"
+        },
+        "369": {
+            "en_name": "blaze_rod",
+            "ja_name": "ブレイズロッド"
+        },
+        "370": {
+            "en_name": "ghast_tear",
+            "ja_name": "ガストの涙"
+        },
+        "371": {
+            "en_name": "golden_nugget",
+            "ja_name": "金の塊"
+        },
+        "372": {
+            "en_name": "nether_wart",
+            "ja_name": "ネザーウォート"
+        },
+        "373": {
+            "en_name": "potion",
+            "ja_name": "水のビン"
+        },
+        "374": {
+            "en_name": "glass_bottle",
+            "ja_name": "ガラスビン"
+        },
+        "375": {
+            "en_name": "spider_eye",
+            "ja_name": "クモの目"
+        },
+        "376": {
+            "en_name": "fermented_spider_eye",
+            "ja_name": "発酵したクモの目"
+        },
+        "377": {
+            "en_name": "blaze_powder",
+            "ja_name": "ブレイズパウダー"
+        },
+        "378": {
+            "en_name": "magma_cream",
+            "ja_name": "マグマクリーム"
+        },
+        "379": {
+            "en_name": "brewing_stand",
+            "ja_name": "調合台"
+        },
+        "380": {
+            "en_name": "cauldron",
+            "ja_name": "大釜"
+        },
+        "381": {
+            "en_name": "ender_eye",
+            "ja_name": "エンダーアイ"
+        },
+        "382": {
+            "en_name": "speckled_melon",
+            "ja_name": "輝くスイカ"
+        },
+        "383": {
+            "en_name": "spawn_egg",
+            "ja_name": "不明なアイテム"
+        },
+        "384": {
+            "en_name": "experience_bottle",
+            "ja_name": "エンチャントのビン"
+        },
+        "385": {
+            "en_name": "fireball",
+            "ja_name": "発火剤"
+        },
+        "386": {
+            "en_name": "writable_book",
+            "ja_name": "本と羽ペン"
+        },
+        "387": {
+            "en_name": "written_book",
+            "ja_name": "記入済みの本"
+        },
+        "388": {
+            "en_name": "emerald",
+            "ja_name": "エメラルド"
+        },
+        "389": {
+            "en_name": "item_frame",
+            "ja_name": "額縁"
+        },
+        "390": {
+            "en_name": "flower_pot",
+            "ja_name": "植木鉢"
+        },
+        "391": {
+            "en_name": "carrot",
+            "ja_name": "ニンジン"
+        },
+        "392": {
+            "en_name": "potato",
+            "ja_name": "ジャガイモ"
+        },
+        "393": {
+            "en_name": "baked_potato",
+            "ja_name": "ベイクドポテト"
+        },
+        "394": {
+            "en_name": "poisonous_potato",
+            "ja_name": "有毒なジャガイモ"
+        },
+        "395": {
+            "en_name": "map",
+            "ja_name": "空っぽの地図"
+        },
+        "396": {
+            "en_name": "golden_carrot",
+            "ja_name": "金のニンジン"
+        },
+        "397": {
+            "en_name": "skull",
+            "ja_name": "スケルトンの頭"
+        },
+        "398": {
+            "en_name": "carrotonastick",
+            "ja_name": "ニンジン付きの棒"
+        },
+        "399": {
+            "en_name": "netherstar",
+            "ja_name": "ネザースター"
+        },
+        "400": {
+            "en_name": "pumpkin_pie",
+            "ja_name": "パンプキンパイ"
+        },
+        "401": {
+            "en_name": "fireworks",
+            "ja_name": "ロケット花火"
+        },
+        "402": {
+            "en_name": "fireworkscharge",
+            "ja_name": "花火の星"
+        },
+        "403": {
+            "en_name": "enchanted_book",
+            "ja_name": "エンチャントした本"
+        },
+        "404": {
+            "en_name": "comparator",
+            "ja_name": "レッドストーンコンパレーター"
+        },
+        "405": {
+            "en_name": "netherbrick",
+            "ja_name": "ネザーレンガ"
+        },
+        "406": {
+            "en_name": "quartz",
+            "ja_name": "ネザークォーツ"
+        },
+        "407": {
+            "en_name": "tnt_minecart",
+            "ja_name": "TNT付きトロッコ"
+        },
+        "408": {
+            "en_name": "minecart_with_hopper",
+            "ja_name": "ホッパー付きトロッコ"
+        },
+        "409": {
+            "en_name": "prismarine_shard",
+            "ja_name": "暗結晶の破片"
+        },
+        "410": {
+            "en_name": "hopper",
+            "ja_name": "ホッパー"
+        },
+        "411": {
+            "en_name": "raw_rabbit",
+            "ja_name": "生の兎肉"
+        },
+        "412": {
+            "en_name": "cooked_rabbit",
+            "ja_name": "調理した兎肉"
+        },
+        "413": {
+            "en_name": "rabbit_stew",
+            "ja_name": "ウサギシチュー"
+        },
+        "414": {
+            "en_name": "rabbit_foot",
+            "ja_name": "　ウサギの足"
+        },
+        "415": {
+            "en_name": "rabbit_hide",
+            "ja_name": "ウサギの皮"
+        },
+        "416": {
+            "en_name": "leather_horse_armor",
+            "ja_name": "革の馬鎧"
+        },
+        "417": {
+            "en_name": "iron_horse_armor",
+            "ja_name": "鉄の馬鎧"
+        },
+        "418": {
+            "en_name": "horsearmorgold",
+            "ja_name": "金の馬鎧"
+        },
+        "419": {
+            "en_name": "horsearmordiamond",
+            "ja_name": "ダイアモンドの馬鎧"
+        },
+        "420": {
+            "en_name": "lead",
+            "ja_name": "首ひも"
+        },
+        "421": {
+            "en_name": "nametag",
+            "ja_name": "名札"
+        },
+        "422": {
+            "en_name": "prismarine_crystals",
+            "ja_name": "海結晶"
+        },
+        "423": {
+            "en_name": "raw_mutton",
+            "ja_name": "生の羊肉"
+        },
+        "424": {
+            "en_name": "muttoncooked",
+            "ja_name": "調理した羊肉"
+        },
+        "425": {
+            "en_name": "armor_stand",
+            "ja_name": "防具立て"
+        },
+        "426": {
+            "en_name": "end_crystal",
+            "ja_name": "果てのクリスタル"
+        },
+        "427": {
+            "en_name": "spruce_door",
+            "ja_name": "トウヒの木のドア"
+        },
+        "428": {
+            "en_name": "birch_door",
+            "ja_name": "樺の木のドア"
+        },
+        "429": {
+            "en_name": "jungle_door",
+            "ja_name": "ジャングルの木のドア"
+        },
+        "430": {
+            "en_name": "acacia_door",
+            "ja_name": "アカシアのドア"
+        },
+        "431": {
+            "en_name": "dark_oak_door",
+            "ja_name": "黒樫の木のドア"
+        },
+        "432": {
+            "en_name": "chorus_fruit",
+            "ja_name": "コーラスフルーツ"
+        },
+        "433": {
+            "en_name": "chorus_fruit_popped",
+            "ja_name": "焼いたコーラスフルーツ"
+        },
+        "434": {
+            "en_name": "banner_pattern",
+            "ja_name": "旗の模様"
+        },
+        "437": {
+            "en_name": "dragon_breath",
+            "ja_name": "ドラゴンの息"
+        },
+        "438": {
+            "en_name": "splash_potion",
+            "ja_name": "スプラッシュ水のビン"
+        },
+        "441": {
+            "en_name": "lingering_potion",
+            "ja_name": "残留する水のビン"
+        },
+        "442": {
+            "en_name": "sparkler",
+            "ja_name": "不明なアイテム"
+        },
+        "443": {
+            "en_name": "minecart_with_command_block",
+            "ja_name": "コマンドブロック付きトロッコ"
+        },
+        "444": {
+            "en_name": "elytra",
+            "ja_name": "エリトラ"
+        },
+        "445": {
+            "en_name": "shulker_shell",
+            "ja_name": "シュルカーの殻"
+        },
+        "446": {
+            "en_name": "banner",
+            "ja_name": "黒の旗"
+        },
+        "447": {
+            "en_name": "medicine",
+            "ja_name": "不明なアイテム"
+        },
+        "448": {
+            "en_name": "balloon",
+            "ja_name": "不明なアイテム"
+        },
+        "449": {
+            "en_name": "rapid_fertilizer",
+            "ja_name": "不明なアイテム"
+        },
+        "450": {
+            "en_name": "totem",
+            "ja_name": "不死のトーテム"
+        },
+        "451": {
+            "en_name": "bleach",
+            "ja_name": "不明なアイテム"
+        },
+        "452": {
+            "en_name": "iron_nugget",
+            "ja_name": "鉄の脚甲"
+        },
+        "453": {
+            "en_name": "ice_bomb",
+            "ja_name": "不明なアイテム"
+        },
+        "455": {
+            "en_name": "trident",
+            "ja_name": "トライデント"
+        },
+        "457": {
+            "en_name": "beetroot",
+            "ja_name": "ビートルート"
+        },
+        "458": {
+            "en_name": "beetroot_seeds",
+            "ja_name": "ビートルートの種"
+        },
+        "459": {
+            "en_name": "beetroot_soup",
+            "ja_name": "ビートルートスープ"
+        },
+        "460": {
+            "en_name": "salmon",
+            "ja_name": "生鮭"
+        },
+        "461": {
+            "en_name": "clownfish",
+            "ja_name": "熱帯魚"
+        },
+        "462": {
+            "en_name": "pufferfish",
+            "ja_name": "フグ"
+        },
+        "463": {
+            "en_name": "cooked_salmon",
+            "ja_name": "調理した鮭"
+        },
+        "464": {
+            "en_name": "dried_kelp",
+            "ja_name": "乾燥昆布"
+        },
+        "465": {
+            "en_name": "nautilus_shell",
+            "ja_name": "オウムガイの殻"
+        },
+        "466": {
+            "en_name": "enchanted_golden_apple",
+            "ja_name": "エンチャントされたリンゴ"
+        },
+        "467": {
+            "en_name": "heart_of_the_sea",
+            "ja_name": "海の中心"
+        },
+        "468": {
+            "en_name": "turtle_shell_piece",
+            "ja_name": "甲羅のかけら"
+        },
+        "469": {
+            "en_name": "turtle_helmet",
+            "ja_name": "亀の甲羅"
+        },
+        "470": {
+            "en_name": "phantom_membrane",
+            "ja_name": "ファントムの皮膜"
+        },
+        "471": {
+            "en_name": "crossbow",
+            "ja_name": "クロスボウ"
+        },
+        "472": {
+            "en_name": "spruce_sign",
+            "ja_name": "トウヒの看板"
+        },
+        "473": {
+            "en_name": "birch_sign",
+            "ja_name": "樺の看板"
+        },
+        "474": {
+            "en_name": "jungle_sign",
+            "ja_name": "ジャングルの木の看板"
+        },
+        "475": {
+            "en_name": "acacia_sign",
+            "ja_name": "アカシアの看板"
+        },
+        "476": {
+            "en_name": "darkoak_sign",
+            "ja_name": "黒樫の看板"
+        },
+        "477": {
+            "en_name": "sweet_berries",
+            "ja_name": "スイートベリー"
+        },
+        "499": {
+            "en_name": "compound",
+            "ja_name": "不明なアイテム"
+        },
+        "500": {
+            "en_name": "record_13",
+            "ja_name": "音楽ディスク"
+        },
+        "501": {
+            "en_name": "record_cat",
+            "ja_name": "音楽ディスク"
+        },
+        "502": {
+            "en_name": "record_blocks",
+            "ja_name": "音楽ディスク"
+        },
+        "503": {
+            "en_name": "record_chirp",
+            "ja_name": "音楽ディスク"
+        },
+        "504": {
+            "en_name": "record_far",
+            "ja_name": "音楽ディスク"
+        },
+        "505": {
+            "en_name": "record_mall",
+            "ja_name": "音楽ディスク"
+        },
+        "506": {
+            "en_name": "record_mellohi",
+            "ja_name": "音楽ディスク"
+        },
+        "507": {
+            "en_name": "record_stal",
+            "ja_name": "音楽ディスク"
+        },
+        "508": {
+            "en_name": "record_strad",
+            "ja_name": "音楽ディスク"
+        },
+        "509": {
+            "en_name": "record_ward",
+            "ja_name": "音楽ディスク"
+        },
+        "510": {
+            "en_name": "record_11",
+            "ja_name": "音楽ディスク"
+        },
+        "511": {
+            "en_name": "record_wait",
+            "ja_name": "音楽ディスク"
+        },
+        "513": {
+            "en_name": "shield",
+            "ja_name": "盾"
+        },
+        "BlockEntityTag": {
+            "en_name": "tag_block_entity_tag",
+            "ja_name": "TAG_BLOCK_ENTITY_TAG"
+        }
+    }
+}
