@@ -2,19 +2,38 @@
 
 declare(strict_types=1);
 
-namespace Ken_Cir0909\OutiServerPlugin\Utils;
+namespace OutiServerPlugin\Utils;
+
+use SQLite3;
 
 class Database
 {
-    public \SQLite3 $db;
+    public SQLite3 $db;
 
-    public function __construct(string $dir)
+    public function __construct(string $dir, array $DefaultItemCategory)
     {
-        $this->db = new \SQLite3($dir);
+        $this->db = new SQLite3($dir);
+        $this->db->exec("DROP TABLE itemcategorys");
         $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (xuid TEXT PRIMARY KEY, money INTEGER)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS shops (id INTEGER PRIMARY KEY AUTOINCREMENT, ownerxuid TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER)");
+        $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
+        $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+
+        if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'adminshops'")->execute()->fetchArray()["sql"], "categoryid")) {
+            $this->db->exec("ALTER TABLE adminshops ADD COLUMN categoryid INTEGER");
+        }
+
+        foreach ($DefaultItemCategory as $key) {
+            $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
+            $sql->bindValue(':name', $key, SQLITE3_TEXT);
+            $result = $sql->execute();
+            if(!$result->fetchArray()) {
+                $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
+                $sql->bindValue(':name', $key, SQLITE3_TEXT);
+                $sql->execute();
+            }
+        }
     }
 
     public function close()
@@ -98,7 +117,7 @@ class Database
     }
 
     // チェストショップのチェスト存在確認
-    public function isChestShopExits($block, $levelname)
+    public function isChestShopExits($block, $levelname): bool
     {
         $sql = $this->db->prepare("SELECT * FROM shops WHERE chestx = :x AND chesty = :y AND chestz = :z AND levelname = :levelname");
         $sql->bindValue(':x', $block->x, SQLITE3_INTEGER);
@@ -141,26 +160,28 @@ class Database
     }
 
     // AdminShop設定
-    public function SetAdminShop($item, $buy, $sell)
+    public function SetAdminShop($item, $buy, $sell, $categoryid)
     {
-        $sql = $this->db->prepare("INSERT INTO adminshops VALUES (:id, :itemid, :itemmeta, :buyprice, :sellprice)");
+        $sql = $this->db->prepare("INSERT INTO adminshops VALUES (:id, :itemid, :itemmeta, :buyprice, :sellprice, :categoryid)");
         $sql->bindValue(':id', $item->getId() . "-" . $item->getDamage(), SQLITE3_TEXT);
         $sql->bindValue(':itemid', $item->getId(), SQLITE3_INTEGER);
         $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
         $sql->bindValue(':buyprice', $buy, SQLITE3_INTEGER);
         $sql->bindValue(':sellprice', $sell, SQLITE3_INTEGER);
+        $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
         $sql->execute();
     }
 
     // AdminShop設定更新
-    public function UpdateAdminShop($item, $buy, $sell)
+    public function UpdateAdminShop($item, $buy, $sell, $categoryid)
     {
-        $sql = $this->db->prepare("UPDATE adminshops SET buyprice = :buyprice, sellprice = :sellprice WHERE itemid = :itemid AND itemmeta = :itemmeta");
+        $sql = $this->db->prepare("UPDATE adminshops SET buyprice = :buyprice, sellprice = :sellprice, categoryid = :categoryid WHERE itemid = :itemid AND itemmeta = :itemmeta");
         $sql->bindValue(':itemid', $item->getId(), SQLITE3_INTEGER);
         $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
         $sql->bindValue(':buyprice', $buy, SQLITE3_INTEGER);
         $sql->bindValue(':sellprice', $sell, SQLITE3_INTEGER);
-        $result = $sql->execute();
+        $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
+        $sql->execute();
     }
 
     // AdminShop取得
@@ -178,18 +199,16 @@ class Database
     }
 
     // AdminShopに登録されているItem全取得
-    public function AllAdminShop()
+    public function AllAdminShop(int $CategoryId)
     {
         $alldata = [];
-        $sql = $this->db->prepare("SELECT * FROM adminshops");
+        $sql = $this->db->prepare("SELECT * FROM adminshops WHERE categoryid = $CategoryId");
         $result = $sql->execute();
         while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
             $alldata[] = $d;
         }
 
-        if (count($alldata) < 1) {
-            return false;
-        }
+        if (count($alldata) < 1) return false;
 
         return $alldata;
     }
@@ -321,5 +340,33 @@ class Database
         if(!$landdata) return null;
         elseif ($landdata["protection"] === 1) return true;
         else return false;
+    }
+
+    public function GetAllItemCategory()
+    {
+        $alldata = [];
+        $sql = $this->db->prepare("SELECT * FROM itemcategorys");
+        $result = $sql->execute();
+        while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+            $alldata[] = $d;
+        }
+
+        if (count($alldata) < 1) return false;
+
+        return $alldata;
+    }
+
+    public function AddItemCategory(string $name)
+    {
+        $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
+        $sql->bindValue(':name', $name, SQLITE3_TEXT);
+        $sql->execute();
+    }
+
+    public function RemoveItemCategory(int $id)
+    {
+        $sql = $this->db->prepare("DELETE FROM itemcategorys WHERE id = :id");
+        $sql->bindValue(':id', $id, SQLITE3_INTEGER);
+        $sql->execute();
     }
 }

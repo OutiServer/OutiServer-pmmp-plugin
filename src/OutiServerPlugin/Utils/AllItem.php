@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ken_Cir0909\OutiServerPlugin\Utils;
+namespace OutiServerPlugin\Utils;
 
 class AllItem
 {
-    private array $items = array();
+    private array $items;
 
     public function __construct(string $path)
     {
