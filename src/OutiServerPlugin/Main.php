@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ken_Cir0909\OutiServerPlugin;
+namespace OutiServerPlugin;
 
-use Ken_Cir0909\OutiServerPlugin\Tasks\discord;
-use Ken_Cir0909\OutiServerPlugin\Utils\Database;
-use Ken_Cir0909\OutiServerPlugin\Utils\AllItem;
+use Exception;
+use OutiServerPlugin\Tasks\Discord;
+use OutiServerPlugin\Utils\Database;
+use OutiServerPlugin\Utils\AllItem;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent};
@@ -35,20 +36,17 @@ class Main extends PluginBase implements Listener
     public function onEnable()
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML,
-            array(
-                "token" => "Nzg0MDQzNTg4NDI2MDA2NTQ4.X8jjfg._LMfjeEw6K5p8UMhAGvCKzzFP_M",
-                "chat_channel_id" => "834317763769925632",
-                "log_channel_id" => "833626570270572584",
-                "ban_worlds" => array()
-            ));
-        $token = $this->config->get('token');
+        $this->saveResource("config.yml");
+        $this->saveResource("allitemdata.json");
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
         if ($token === 'DISCORD_TOKEN') {
-            $this->getLogger()->info("config.yml: tokenが設定されていません");
+            $this->getLogger()->error("config.yml: DiscordBot_Tokenが設定されていません");
             $this->getServer()->getPluginManager()->disablePlugin($this);
+            return;
         }
-        $this->db = new Database($this->getDataFolder() . 'outiserver.db');
-        $this->client = new discord($this->getFile(), $token, $this->getDataFolder() . 'outiserver.db', $this->config->get('chat_channel_id'), $this->config->get('log_channel_id'));
+        $this->db = new Database($this->getDataFolder() . 'outiserver.db', $this->config->get("Default_Item_Category", array()));
+        $this->client = new Discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get('Discord_Guild_Id', ''), $this->config->get('DiscordChat_Channel_Id', ''), $this->config->get('DiscordLog_Channel_Id', ''));
         unset($token);
 
         $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
@@ -85,18 +83,15 @@ class Main extends PluginBase implements Listener
             }
         ), 5, 1);
 
-        $this->allItem = new AllItem($this->getFile() . "resource/allitemdata.json");
+        $this->allItem = new AllItem($this->getDataFolder() . "allitemdata.json");
         $this->client->sendChatMessage('サーバーが起動しました！');
     }
 
     public function onDisable()
     {
-        $this->client->sendChatMessage('サーバーが停止しました');
-
+        if (!$this->started) return;
         $this->db->close();
-        if (!$this->started) {
-            return;
-        }
+        $this->client->sendChatMessage('サーバーが停止しました');
         $this->getLogger()->info("出力バッファリングを終了しています...");
         $this->client->shutdown();
         ob_flush();
@@ -270,6 +265,8 @@ class Main extends PluginBase implements Listener
             } else {
                 $player->sendMessage('申し訳ありませんが、在庫が足りていないようです。');
             }
+
+            return true;
         });
 
         $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"], 0);
@@ -307,6 +304,8 @@ class Main extends PluginBase implements Listener
                     $player->sendMessage("購入しませんでした");
                     break;
             }
+
+            return true;
         });
 
         $itemname = $this->allItem->GetItemJaNameById($item->getId());
@@ -343,6 +342,8 @@ class Main extends PluginBase implements Listener
                 $sign->setText("shop", "shop主: " . $player->getName(), "販売しているItem: " . $itemname, "お値段: " . $data[2] . "円");
                 $player->sendMessage("shopを作成しました！");
             }
+
+            return true;
         });
 
         $form->setTitle("shop作成");
@@ -407,17 +408,28 @@ class Main extends PluginBase implements Listener
                     $this->AdminSetMoney($player);
                     break;
                 case 3:
-                    $this->KenCir0909DB($player);
+                    $this->AddItemCategory($player);
+                    break;
                 case 4:
+                    $this->RemoveItemCategory($player);
+                    break;
+                case 5:
+                    $this->KenCir0909DB($player);
+                    break;
+                case 6:
                     $this->client->sendDB();
                     break;
             }
+
+            return true;
         });
 
         $form->setTitle("iPhone-管理");
         $form->addButton("プレイヤーにお金を追加");
         $form->addButton("プレイヤーからお金を剥奪");
         $form->addButton("プレイヤーのお金を設定");
+        $form->addButton("アイテムカテゴリーの追加");
+        $form->addButton("アイテムカテゴリーの削除");
         if (strtolower($player->getName()) === 'kencir0909') {
             $form->addButton("db接続");
             $form->addButton("db送信");
@@ -437,7 +449,7 @@ class Main extends PluginBase implements Listener
                     foreach ($this->config->get('ban_worlds') as $key => $i) {
                         if ($i === $player->getLevel()->getName()) {
                             $player->sendMessage("このワールドの土地は購入できません");
-                            return;
+                            return true;
                         }
                     }
                     $this->startlands[$player->getXuid()] = true;
@@ -456,6 +468,8 @@ class Main extends PluginBase implements Listener
                     $this->MoveLandOwner($player);
                     break;
             }
+
+            return true;
         });
 
         $form->setTitle("iPhone-土地");
@@ -475,12 +489,14 @@ class Main extends PluginBase implements Listener
             }
             switch ($data) {
                 case 0:
-                    $this->AdminShopMenu($player);
+                    $this->AdminShopMenuCategory($player);
                     break;
                 case 1:
                     $this->AdminShopSetprice($player);
                     break;
             }
+
+            return true;
         });
 
         $form->setTitle("iPhone-AdminShop");
@@ -495,12 +511,18 @@ class Main extends PluginBase implements Listener
 
     private function AdminShopSetprice(Player $player)
     {
-        $form = new CustomForm(function (Player $player, $data) {
+        $ItemCategorys = $this->db->GetAllItemCategory();
+        $allCategorys = [];
+        foreach ($ItemCategorys as $key) {
+            $allCategorys[] = $key["name"];
+        }
+
+        $form = new CustomForm(function (Player $player, $data) use ($ItemCategorys) {
             if ($data === null) {
                 return true;
             }
 
-            if (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[0])) {
+            if (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[0]) or !is_numeric($data[3])) {
                 return true;
             }
             $itemid = $this->allItem->GetItemIdByJaName($data[0]);
@@ -508,34 +530,65 @@ class Main extends PluginBase implements Listener
                 $player->sendMessage("アイテムが見つかりませんでした");
                 return true;
             }
-            $item = Item::get($itemid, 0, 1);
+            $item = Item::get($itemid);
             if (!$item) {
                 return true;
             }
 
             $itemdata = $this->db->GetAdminShop($item);
             if ($itemdata === false) {
-                $this->db->SetAdminShop($item, $data[1], $data[2]);
+                $this->db->SetAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
             } else {
-                $this->db->UpdateAdminShop($item, $data[1], $data[2]);
+                $this->db->UpdateAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
             }
 
             $player->sendMessage("設定しました");
+
+            return true;
         });
 
         $form->setTitle("iPhone-AdminShop-値段設定");
         $form->addInput("値段設定するアイテム名", "itemname", "");
         $form->addInput("値段", "buyprice", "1");
         $form->addInput("売却値段", "sellprice", "1");
+        $form->addDropdown("アイテムカテゴリー", $allCategorys);
         $player->sendForm($form);
     }
 
     // AdminShop処理機構
-    private function AdminShopMenu(Player $player)
+    private function AdminShopMenuCategory(Player $player)
     {
-        $alldata = $this->db->AllAdminShop();
+        $alldata = $this->db->GetAllItemCategory();
         if ($alldata === false) {
             $player->sendMessage("現在AdminShopでは何も売られていないようです");
+            return;
+        }
+
+        $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
+            if ($data === null) {
+                return;
+            }
+
+            $Categoryid = $alldata[(int)$data]["id"];
+
+            $this->AdminShopMenu($player, $Categoryid);
+        });
+
+        $form->setTitle("iPhone");
+        $form->setContent("AdminShop-カテゴリー");
+
+        for ($i = 0; $i < count($alldata); $i++) {
+            $form->addButton($alldata[$i]["name"]);
+        }
+
+        $player->sendForm($form);
+    }
+
+    private function AdminShopMenu(Player $player, int $CategoryId)
+    {
+        $alldata = $this->db->AllAdminShop($CategoryId);
+        if ($alldata === false) {
+            $player->sendMessage("現在そのカテゴリーでは何も売られていないようです");
             return;
         }
 
@@ -550,12 +603,12 @@ class Main extends PluginBase implements Listener
         });
 
         $form->setTitle("iPhone");
-        $form->setContent("メニュー");
+        $form->setContent("AdminShop-メニュー");
 
         for ($i = 0; $i < count($alldata); $i++) {
             $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"], 1);
             $itemname = $this->allItem->GetItemJaNameById($item->getId());
-            $form->addButton($itemname . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円", 0, "textures/items/" . $item->getName());
+            $form->addButton($itemname . ": " . $alldata[$i]["buyprice"] . "円 売却値段: " . $alldata[$i]["sellprice"] . "円");
         }
 
         $player->sendForm($form);
@@ -716,8 +769,6 @@ class Main extends PluginBase implements Listener
             $form->setTitle("iPhone-土地-保護");
             $form->setContent("現在立っている土地の保護を有効にしますか？");
             $form->setButton1("有効にする");
-            $form->setButton2("やめる");
-            $player->sendForm($form);
         } else {
             $form = new ModalForm(function (Player $player, $data) use ($landid) {
                 if ($data === null) {
@@ -731,9 +782,9 @@ class Main extends PluginBase implements Listener
             $form->setTitle("iPhone-土地-購入");
             $form->setContent("現在立っている土地の保護を無効にしますか？");
             $form->setButton1("無効にする");
-            $form->setButton2("やめる");
-            $player->sendForm($form);
         }
+        $form->setButton2("やめる");
+        $player->sendForm($form);
     }
 
     private function inviteland(Player $player)
@@ -769,6 +820,8 @@ class Main extends PluginBase implements Listener
                 $this->db->AddLandInvite($landid, $data[0]);
                 $player->sendMessage("$data[0]を土地番号$landid に招待しました");
             }
+
+            return true;
         });
 
         $form->setTitle("iPhone-土地-招待");
@@ -826,6 +879,7 @@ class Main extends PluginBase implements Listener
             }
 
             $this->CheckMoveLandOwner($player, $landid, $data[0]);
+            return true;
         });
 
         $form->setTitle("iPhone-土地-所有権譲渡");
@@ -918,6 +972,44 @@ class Main extends PluginBase implements Listener
 
         $form->setTitle("iPhone-管理-db接続");
         $form->addInput("クエリ", "query", "");
+        $player->sendForm($form);
+    }
+
+    private function AddItemCategory(Player $player)
+    {
+        $form = new CustomForm(function (Player $player, $data) {
+            if($data === null) return true;
+            else if(!isset($data[0])) return true;
+
+            $this->db->AddItemCategory($data[0]);
+            $player->sendMessage($data[0] . "をアイテムカテゴリーに追加しました");
+
+            return true;
+        });
+
+        $form->setTitle("Admin-アイテムカテゴリー追加");
+        $form->addInput("追加するアイテムカテゴリーの名前", "additemcategoryname", "");
+        $player->sendForm($form);
+    }
+
+    private function RemoveItemCategory(Player $player)
+    {
+        $ItemCategorys = $this->db->GetAllItemCategory();
+        $allCategorys = [];
+        foreach ($ItemCategorys as $key) {
+            $allCategorys[] = $key["name"];
+        }
+
+        $form = new CustomForm(function (Player $player, $data) use ($allCategorys) {
+            if($data === null) return true;
+            else if(!is_numeric($data[0])) return true;
+
+            $this->db->RemoveItemCategory((int)$data[0] + 1);
+            $player->sendMessage($allCategorys[(int)$data[0]] . "をアイテムカテゴリーから削除しました");
+        });
+
+        $form->setTitle("Admin-アイテムカテゴリー追加");
+        $form->addDropdown("アイテムカテゴリー", $allCategorys);
         $player->sendForm($form);
     }
 }
