@@ -77,7 +77,7 @@ class Database
         }
         $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
         $sql->bindValue(':money', ($oldmoney["money"] - $removemoney), SQLITE3_INTEGER);
-        $sql->bindValue(':name', $name, SQLITE3_TEXT);
+        $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
         $sql->execute();
     }
 
@@ -87,13 +87,13 @@ class Database
         $data = $this->GetMoney($name);
         if(!$data) {
             $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, :money)");
-            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             $sql->bindValue(':money', $money, SQLITE3_INTEGER);
         }
         else {
             $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
             $sql->bindValue(':money', $money, SQLITE3_INTEGER);
-            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
         }
 
         $sql->execute();
@@ -103,7 +103,7 @@ class Database
     public function SetChestShop(string $name, $chest, $signboard, $item, $price)
     {
         $sql = $this->db->prepare('INSERT INTO chestshops (owner, chestx, chesty, chestz, signboardx, signboardy, signboardz, itemid, itemmeta, price, maxcount, levelname) VALUES (:owner, :chestx, :chesty, :chestz, :signboardx, :signboardy, :signboardz, :itemid, :itemmeta, :price, :maxcount, :levelname)');
-        $sql->bindValue(':owner', $name, SQLITE3_TEXT);
+        $sql->bindValue(':owner', strtolower($name), SQLITE3_TEXT);
         $sql->bindValue(':chestx', $chest->x, SQLITE3_INTEGER);
         $sql->bindValue(':chesty', $chest->y, SQLITE3_INTEGER);
         $sql->bindValue(':chestz', $chest->z, SQLITE3_INTEGER);
