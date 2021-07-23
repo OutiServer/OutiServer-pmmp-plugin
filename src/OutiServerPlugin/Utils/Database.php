@@ -13,16 +13,11 @@ class Database
     public function __construct(string $dir, array $DefaultItemCategory)
     {
         $this->db = new SQLite3($dir);
-        $this->db->exec("DROP TABLE itemcategorys");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (xuid TEXT PRIMARY KEY, money INTEGER)");
-        $this->db->exec("CREATE TABLE IF NOT EXISTS shops (id INTEGER PRIMARY KEY AUTOINCREMENT, ownerxuid TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
+        $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (name TEXT PRIMARY KEY, money INTEGER)");
+        $this->db->exec("CREATE TABLE IF NOT EXISTS chestshops (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
         $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
-
-        if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'adminshops'")->execute()->fetchArray()["sql"], "categoryid")) {
-            $this->db->exec("ALTER TABLE adminshops ADD COLUMN categoryid INTEGER");
-        }
 
         foreach ($DefaultItemCategory as $key) {
             $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -42,66 +37,73 @@ class Database
     }
 
     // プレイヤー所持金設定
-    public function SetMoney(string $xuid)
+    public function SetMoney(string $name)
     {
-        $sql = $this->db->prepare("INSERT INTO moneys VALUES (:xuid, 1000)");
-        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, 1000)");
+        $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
         $sql->execute();
     }
 
     // プレイヤー所持金取得
-    public function GetMoney(string $xuid)
+    public function GetMoney(string $name)
     {
-        $sql = $this->db->prepare("SELECT * FROM moneys WHERE xuid = :xuid");
-        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql = $this->db->prepare("SELECT * FROM moneys WHERE name = :name");
+        $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
         $result = $sql->execute();
         $data = $result->fetchArray();
-        if (!$data) {
-            return false;
-        }
+        if (!$data) return false;
         return $data;
     }
 
-    public function AddMoney(string $xuid, int $addmoney)
+    public function AddMoney(string $name, int $addmoney)
     {
-        $oldmoney = $this->GetMoney($xuid);
+        $oldmoney = $this->GetMoney($name);
         if(!$oldmoney) {
-            $this->SetMoney($xuid);
-            $oldmoney = $this->GetMoney($xuid);
+            $this->SetMoney($name);
+            $oldmoney = $this->GetMoney($name);
         }
-        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE xuid = :xuid");
-        $sql->bindValue(':money', $oldmoney["money"] + $addmoney, SQLITE3_INTEGER);
-        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
+        $sql->bindValue(':money', ($oldmoney["money"] + $addmoney), SQLITE3_INTEGER);
+        $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
         $sql->execute();
     }
 
-    public function RemoveMoney(string $xuid, int $removemoney)
+    public function RemoveMoney(string $name, int $removemoney)
     {
-        $oldmoney = $this->GetMoney($xuid);
+        $oldmoney = $this->GetMoney($name);
         if(!$oldmoney) {
-            $this->SetMoney($xuid);
-            $oldmoney = $this->GetMoney($xuid);
+            $this->SetMoney($name);
+            $oldmoney = $this->GetMoney($name);
         }
-        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE xuid = :xuid");
-        $sql->bindValue(':money', $oldmoney["money"] - $removemoney, SQLITE3_INTEGER);
-        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
+        $sql->bindValue(':money', ($oldmoney["money"] - $removemoney), SQLITE3_INTEGER);
+        $sql->bindValue(':name', $name, SQLITE3_TEXT);
         $sql->execute();
     }
 
     // プレイヤー所持金更新
-    public function UpdateMoney(string $xuid, int $money)
+    public function UpdateMoney(string $name, int $money)
     {
-        $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE xuid = :xuid");
-        $sql->bindValue(':money', $money, SQLITE3_INTEGER);
-        $sql->bindValue(':xuid', $xuid, SQLITE3_TEXT);
+        $data = $this->GetMoney($name);
+        if(!$data) {
+            $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, :money)");
+            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(':money', $money, SQLITE3_INTEGER);
+        }
+        else {
+            $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
+            $sql->bindValue(':money', $money, SQLITE3_INTEGER);
+            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+        }
+
         $sql->execute();
     }
 
     // チェストショップ設定
-    public function SetChestShop($xuid, $chest, $signboard, $item, $price)
+    public function SetChestShop(string $name, $chest, $signboard, $item, $price)
     {
-        $sql = $this->db->prepare('INSERT INTO shops (ownerxuid, chestx, chesty, chestz, signboardx, signboardy, signboardz, itemid, itemmeta, price, maxcount, levelname) VALUES (:ownerxuid, :chestx, :chesty, :chestz, :signboardx, :signboardy, :signboardz, :itemid, :itemmeta, :price, :maxcount, :levelname)');
-        $sql->bindValue(':ownerxuid', $xuid, SQLITE3_TEXT);
+        $sql = $this->db->prepare('INSERT INTO chestshops (owner, chestx, chesty, chestz, signboardx, signboardy, signboardz, itemid, itemmeta, price, maxcount, levelname) VALUES (:owner, :chestx, :chesty, :chestz, :signboardx, :signboardy, :signboardz, :itemid, :itemmeta, :price, :maxcount, :levelname)');
+        $sql->bindValue(':owner', $name, SQLITE3_TEXT);
         $sql->bindValue(':chestx', $chest->x, SQLITE3_INTEGER);
         $sql->bindValue(':chesty', $chest->y, SQLITE3_INTEGER);
         $sql->bindValue(':chestz', $chest->z, SQLITE3_INTEGER);
@@ -119,39 +121,29 @@ class Database
     // チェストショップのチェスト存在確認
     public function isChestShopExits($block, $levelname): bool
     {
-        $sql = $this->db->prepare("SELECT * FROM shops WHERE chestx = :x AND chesty = :y AND chestz = :z AND levelname = :levelname");
-        $sql->bindValue(':x', $block->x, SQLITE3_INTEGER);
-        $sql->bindValue(':y', $block->y, SQLITE3_INTEGER);
-        $sql->bindValue(':z', $block->z, SQLITE3_INTEGER);
-        $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
-        $result = $sql->execute();
-        $data = $result->fetchArray();
-        if (!$data) {
-            return false;
-        }
-        return true;
+        $data = $this->GetChestShop($block, $levelname);
+        if(!$data) return false;
+        else return true;
     }
 
     // チェストショップ取得
     public function GetChestShop($block, $levelname)
     {
-        $sql = $this->db->prepare("SELECT * FROM shops WHERE ((signboardx = :x AND signboardy = :y AND signboardz = :z) OR (chestx = :x AND chesty = :y AND chestz = :z)) AND levelname = :levelname");
+        $sql = $this->db->prepare("SELECT * FROM chestshops WHERE ((signboardx = :x AND signboardy = :y AND signboardz = :z) OR (chestx = :x AND chesty = :y AND chestz = :z)) AND levelname = :levelname");
         $sql->bindValue(':x', $block->x, SQLITE3_INTEGER);
         $sql->bindValue(':y', $block->y, SQLITE3_INTEGER);
         $sql->bindValue(':z', $block->z, SQLITE3_INTEGER);
         $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
         $result = $sql->execute();
         $data = $result->fetchArray();
-        if (!$data) {
-            return false;
-        }
+        if (!$data) return false;
         return $data;
     }
 
     // チェストショップ削除
     public function DeleteChestShop($shopdata)
     {
-        $sql = $this->db->prepare("DELETE FROM shops WHERE signboardx = :x AND signboardy = :y AND signboardz = :z AND levelname = :levelname");
+        $sql = $this->db->prepare("DELETE FROM chestshops WHERE signboardx = :x AND signboardy = :y AND signboardz = :z AND levelname = :levelname");
         $sql->bindValue(':x', $shopdata["signboardx"], SQLITE3_INTEGER);
         $sql->bindValue(':y', $shopdata["signboardy"], SQLITE3_INTEGER);
         $sql->bindValue(':z', $shopdata["signboardz"], SQLITE3_INTEGER);
