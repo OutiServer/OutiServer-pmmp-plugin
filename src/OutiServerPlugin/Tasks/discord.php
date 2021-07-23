@@ -25,6 +25,8 @@ class Discord extends Thread
     protected Threaded $serverchat_Queue;
     protected Threaded $log_Queue;
     protected Threaded $chat_Queue;
+    protected Threaded $command_Queue;
+    protected Threaded $command_response_Queue;
 
     public function __construct(string $file, string $dir, string $token, string $guild_id, string $chat_channel_id, string $log_channel_id)
     {
@@ -38,6 +40,8 @@ class Discord extends Thread
         $this->serverchat_Queue = new Threaded;
         $this->log_Queue = new Threaded;
         $this->chat_Queue = new Threaded;
+        $this->command_Queue = new Threaded;
+        $this->command_response_Queue = new Threaded;
 
         $this->start();
     }
@@ -75,7 +79,7 @@ class Discord extends Thread
             $this->task($discord);
         });
 
-        $discord->on('ready', function ($discord) {
+        $discord->on('ready', function () use ($discord) {
             $this->started = true;
             echo "Bot is ready.", PHP_EOL;
             $discord->on('message', function (Message $message) use ($discord) {
@@ -91,8 +95,16 @@ class Discord extends Thread
                         'content' => $message->content
                     ]);
                 }
+
+                if(str_starts_with(strtolower($message->content), "?unkoserver")) {
+                    $this->command_Queue[] = serialize([
+                        "name" => "server",
+                        "channelid" => $message->channel_id
+                        ]);
+                }
             });
         });
+
         $discord->run();
     }
 
@@ -140,6 +152,13 @@ class Discord extends Thread
             $chatchannel->sendMessage($chatsend);
         }
 
+        while (count($this->command_response_Queue) > 0) {
+            $cmd_response = unserialize($this->command_response_Queue->shift());
+            $guild = $discord->guilds->get('id', $this->guild_id);
+            $channel = $guild->channels->get('id', $cmd_response["channelid"]);
+            $channel->sendMessage($cmd_response["response"]);
+        }
+
         if($this->db_send)  {
             $db_channel->sendFile($this->dir . "outiserver.db");
             $this->db_send = false;
@@ -182,5 +201,22 @@ class Discord extends Thread
     public function sendDB()
     {
         $this->db_send = true;
+    }
+
+    public function sendCommand(string $channelid, string $response)
+    {
+        $this->command_response_Queue[] = serialize([
+            "channelid" => $channelid,
+            "response" => $response
+        ]);
+    }
+
+    public function GetCommand(): array
+    {
+        $commands = [];
+        while (count($this->command_Queue) > 0) {
+            $commands[] = unserialize($this->command_Queue->shift());
+        }
+        return $commands;
     }
 }
