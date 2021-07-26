@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace OutiServerPlugin;
 
+use ArgumentCountError;
 use jojoe77777\FormAPI\{CustomForm, ModalForm, SimpleForm};
+use Error;
+use ErrorException;
+use Exception;
+use InvalidArgumentException;
 use pocketmine\Player;
+use TypeError;
 
 class Land
 {
@@ -15,288 +21,322 @@ class Land
 
     public function __construct(Main $plugin)
     {
-        $this->plugin = $plugin;
+            $this->plugin = $plugin;
     }
 
    public function land(Player $player)
     {
-        $form = new SimpleForm(function (Player $player, $data) {
-            if ($data === null) return true;
+        try {
+            $form = new SimpleForm(function (Player $player, $data) {
+                if ($data === null) return true;
 
-            switch ($data) {
-                case 0:
-                    foreach ($this->plugin->config->get('Land_Buy_Bans', array()) as $key) {
-                        if ($key === $player->getLevel()->getName()) {
-                            $player->sendMessage("このワールドの土地は購入できません");
-                            return true;
-                        }
-                    }
-
-                    $x = (int)floor($player->x);
-                    $z = (int)floor($player->z);
-                    $levelname = $player->getLevel()->getName();
-                    $name = $player->getName();
-
-                    if(isset($this->startlands[$name])) {
-                        if($this->startlands[$name]["level"] !== $levelname) {
-                            $player->sendMessage("土地保護の開始地点とワールドが違います");
-                            unset($this->startlands[$name], $this->endlands[$name]);
-                            return true;
+                switch ($data) {
+                    case 0:
+                        foreach ($this->plugin->config->get('Land_Buy_Bans', array()) as $key) {
+                            if ($key === $player->getLevel()->getName()) {
+                                $player->sendMessage("このワールドの土地は購入できません");
+                                return true;
+                            }
                         }
 
-                        $this->endlands[$name] = array("x" => $x, "z" => $z, "level" => $levelname);
-                        $this->buyland($player);
+                        $x = (int)floor($player->x);
+                        $z = (int)floor($player->z);
+                        $levelname = $player->getLevel()->getName();
+                        $name = $player->getName();
 
-                    }
-                    else {
-                        $this->startlands[$name] = array("x" => $x, "z" => $z, "level" => $levelname);
-                        $player->sendMessage("土地購入の開始地点を設定しました");
-                    }
+                        if(isset($this->startlands[$name])) {
+                            if($this->startlands[$name]["level"] !== $levelname) {
+                                $player->sendMessage("土地保護の開始地点とワールドが違います");
+                                unset($this->startlands[$name], $this->endlands[$name]);
+                                return true;
+                            }
+
+                            $this->endlands[$name] = array("x" => $x, "z" => $z, "level" => $levelname);
+                            $this->buyland($player);
+
+                        }
+                        else {
+                            $this->startlands[$name] = array("x" => $x, "z" => $z, "level" => $levelname);
+                            $player->sendMessage("土地購入の開始地点を設定しました");
+                        }
 
 
-                    break;
-                case 1:
-                    $this->protectionland($player);
-                    break;
-                case 2:
-                    $this->inviteland($player);
-                    break;
-                case 3:
-                    $this->allinvitesland($player);
-                    break;
-                case 4:
-                    $this->MoveLandOwner($player);
-                    break;
-            }
+                        break;
+                    case 1:
+                        $this->protectionland($player);
+                        break;
+                    case 2:
+                        $this->inviteland($player);
+                        break;
+                    case 3:
+                        $this->allinvitesland($player);
+                        break;
+                    case 4:
+                        $this->MoveLandOwner($player);
+                        break;
+                }
 
-            return true;
-        });
+                return true;
+            });
 
-        $form->setTitle("iPhone-土地");
-        $form->addButton("土地購入の開始地点・終了地点の設定");
-        $form->addButton("現在立っている土地を保護・保護解除");
-        $form->addButton("現在立っている土地に招待・招待取り消し");
-        $form->addButton("現在立っている土地に招待されている人一覧");
-        $form->addButton("現在立っている土地の所有権の移行");
-        $player->sendForm($form);
+            $form->setTitle("iPhone-土地");
+            $form->addButton("土地購入の開始地点・終了地点の設定");
+            $form->addButton("現在立っている土地を保護・保護解除");
+            $form->addButton("現在立っている土地に招待・招待取り消し");
+            $form->addButton("現在立っている土地に招待されている人一覧");
+            $form->addButton("現在立っている土地の所有権の移行");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 
     public function buyland(Player $player)
     {
-        $name = $player->getName();
-        $levelname = $this->startlands[$name]["level"];
-        $l = $this->startlands[$name];
-        $endp = $this->endlands[$name];
-        $startX = (int)floor($l["x"]);
-        $endX = (int)floor($endp["x"]);
-        $startZ = (int)floor($l["z"]);
-        $endZ = (int)floor($endp["z"]);
-        if ($startX > $endX) {
-            $backup = $startX;
-            $startX = $endX;
-            $endX = $backup;
-        }
-        if ($startZ > $endZ) {
-            $backup = $startZ;
-            $startZ = $endZ;
-            $endZ = $backup;
-        }
-
-        if($landid = $this->plugin->db->GetLandId($levelname, $startX, $startZ) or $landid = $this->plugin->db->GetLandId($levelname, $endX, $endZ)) {
-            $landdata = $this->plugin->db->GetLandData($landid);
-            $player->sendMessage("選択された土地は既に" . $landdata["owner"] . "が所有しています");
-            return;
-        }
-
-        $blockcount = ((($endX + 1) - ($startX - 1)) - 1) * ((($endZ + 1) - ($startZ - 1)) - 1);
-        $price = $blockcount * 1;
-
-        $form = new ModalForm(function (Player $player, $data) use ($levelname, $price, $startX, $startZ, $endX, $endZ) {
+        try {
             $name = $player->getName();
-            if ($data === true) {
-                $playerdata = $this->plugin->db->GetMoney($name);
-                if ($price > $playerdata["money"]) {
-                    $player->sendMessage("お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
-                    return;
-                }
-
-                $this->plugin->db->UpdateMoney($name, $playerdata["money"] - $price);
-                $this->plugin->db->SetLand($name, $levelname, $startX, $startZ, $endX, $endZ);
-                $player->sendMessage("購入しました");
-            } elseif ($data === false) {
-                $player->sendMessage("購入しませんでした");
+            $levelname = $this->startlands[$name]["level"];
+            $l = $this->startlands[$name];
+            $endp = $this->endlands[$name];
+            $startX = (int)floor($l["x"]);
+            $endX = (int)floor($endp["x"]);
+            $startZ = (int)floor($l["z"]);
+            $endZ = (int)floor($endp["z"]);
+            if ($startX > $endX) {
+                $backup = $startX;
+                $startX = $endX;
+                $endX = $backup;
+            }
+            if ($startZ > $endZ) {
+                $backup = $startZ;
+                $startZ = $endZ;
+                $endZ = $backup;
             }
 
-            unset($this->startlands[$name], $this->endlands[$name]);
-        });
+            if($landid = $this->plugin->db->GetLandId($levelname, $startX, $startZ) or $landid = $this->plugin->db->GetLandId($levelname, $endX, $endZ)) {
+                $landdata = $this->plugin->db->GetLandData($landid);
+                $player->sendMessage("選択された土地は既に" . $landdata["owner"] . "が所有しています");
+                return;
+            }
 
-        $form->setTitle("iPhone-土地-購入");
-        $form->setContent("土地を" . $blockcount . "ブロック購入しますか？\n" . $price . "円です");
-        $form->setButton1("購入する");
-        $form->setButton2("やめる");
-        $player->sendForm($form);
+            $blockcount = ((($endX + 1) - ($startX - 1)) - 1) * ((($endZ + 1) - ($startZ - 1)) - 1);
+            $price = $blockcount * $this->plugin->config->get("Land_Price", 200);
+
+            $form = new ModalForm(function (Player $player, $data) use ($levelname, $price, $startX, $startZ, $endX, $endZ) {
+                $name = $player->getName();
+                if ($data === true) {
+                    $playerdata = $this->plugin->db->GetMoney($name);
+                    if ($price > $playerdata["money"]) {
+                        $player->sendMessage("お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
+                        return;
+                    }
+
+                    $this->plugin->db->UpdateMoney($name, $playerdata["money"] - $price);
+                    $this->plugin->db->SetLand($name, $levelname, $startX, $startZ, $endX, $endZ);
+                    $player->sendMessage("購入しました");
+                } elseif ($data === false) {
+                    $player->sendMessage("購入しませんでした");
+                }
+
+                unset($this->startlands[$name], $this->endlands[$name]);
+            });
+
+            $form->setTitle("iPhone-土地-購入");
+            $form->setContent("土地を" . $blockcount . "ブロック購入しますか？\n" . $price . "円です");
+            $form->setButton1("購入する");
+            $form->setButton2("やめる");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 
     public function protectionland(Player $player)
     {
-        $name = $player->getName();
-        $levelname = $player->getLevel()->getName();
-        $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
-        if ($landid === false) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
+        try {
+            $name = $player->getName();
+            $levelname = $player->getLevel()->getName();
+            $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
+            if ($landid === false) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            }
+
+            if (!$this->plugin->db->CheckLandOwner($landid, $name)) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            }
+            if (!$this->plugin->db->CheckLandProtection($landid)) {
+                $form = new ModalForm(function (Player $player, $data) use ($landid) {
+                    if ($data === null) {
+                        return;
+                    }
+
+                    $this->plugin->db->UpdateLandProtection($landid, 1);
+                    $player->sendMessage("土地保護を有効にしました");
+                });
+
+                $form->setTitle("iPhone-土地-保護");
+                $form->setContent("現在立っている土地の保護を有効にしますか？");
+                $form->setButton1("有効にする");
+            } else {
+                $form = new ModalForm(function (Player $player, $data) use ($landid) {
+                    if ($data === null) return true;
+
+                    $this->plugin->db->UpdateLandProtection($landid, 0);
+                    $player->sendMessage("土地保護を無効にしました");
+                    return true;
+                });
+
+                $form->setTitle("iPhone-土地-購入");
+                $form->setContent("現在立っている土地の保護を無効にしますか？");
+                $form->setButton1("無効にする");
+            }
+
+            $form->setButton2("やめる");
+            $player->sendForm($form);
         }
-
-        if (!$this->plugin->db->CheckLandOwner($landid, $name)) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
         }
-        if (!$this->plugin->db->CheckLandProtection($landid)) {
-            $form = new ModalForm(function (Player $player, $data) use ($landid) {
-                if ($data === null) {
-                    return;
-                }
-
-                $this->plugin->db->UpdateLandProtection($landid, 1);
-                $player->sendMessage("土地保護を有効にしました");
-            });
-
-            $form->setTitle("iPhone-土地-保護");
-            $form->setContent("現在立っている土地の保護を有効にしますか？");
-            $form->setButton1("有効にする");
-        } else {
-            $form = new ModalForm(function (Player $player, $data) use ($landid) {
-                if ($data === null) {
-                    return;
-                }
-
-                $this->plugin->db->UpdateLandProtection($landid, 0);
-                $player->sendMessage("土地保護を無効にしました");
-            });
-
-            $form->setTitle("iPhone-土地-購入");
-            $form->setContent("現在立っている土地の保護を無効にしますか？");
-            $form->setButton1("無効にする");
-        }
-
-        $form->setButton2("やめる");
-        $player->sendForm($form);
     }
 
     public function inviteland(Player $player)
     {
-        $name = $player->getName();
-        $levelname = $player->getLevel()->getName();
-        $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
-        if ($landid === false) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        }
-
-        $form = new CustomForm(function (Player $player, $data) use ($landid) {
-            if ($data === null) return true;
-            else if (!isset($data[0])) return true;
-            else if (!Player::isValidUserName($data[0])) {
-                $player->sendMessage("不正なプレイヤー名です");
-                return true;
+        try {
+            $name = $player->getName();
+            $levelname = $player->getLevel()->getName();
+            $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
+            if ($landid === false) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
             }
 
-            if ($this->plugin->db->checkInvite($landid, $data[0])) {
-                if ($this->plugin->db->RemoveLandInvite($landid, $data[0])) {
-                    $player->sendMessage("$data[0]の土地番号$landid の招待を削除しました");
+            $form = new CustomForm(function (Player $player, $data) use ($landid) {
+                if ($data === null) return true;
+                else if (!isset($data[0])) return true;
+                else if (!Player::isValidUserName($data[0])) {
+                    $player->sendMessage("不正なプレイヤー名です");
+                    return true;
                 }
-            } else {
-                $this->plugin->db->AddLandInvite($landid, $data[0]);
-                $player->sendMessage("$data[0]を土地番号$landid に招待しました");
-            }
 
-            return true;
-        });
+                if ($this->plugin->db->checkInvite($landid, $data[0])) {
+                    if ($this->plugin->db->RemoveLandInvite($landid, $data[0])) {
+                        $player->sendMessage("$data[0]の土地番号$landid の招待を削除しました");
+                    }
+                } else {
+                    $this->plugin->db->AddLandInvite($landid, $data[0]);
+                    $player->sendMessage("$data[0]を土地番号$landid に招待しました");
+                }
 
-        $form->setTitle("iPhone-土地-招待");
-        $form->addInput("招待する・招待を取り消すプレイヤー名", "playername", "");
-        $player->sendForm($form);
+                return true;
+            });
+
+            $form->setTitle("iPhone-土地-招待");
+            $form->addInput("招待する・招待を取り消すプレイヤー名", "playername", "");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 
     public function allinvitesland(Player $player)
     {
-        $levelname = $player->getLevel()->getName();
-        $name = $player->getName();
-        $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
-        if ($landid === false) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        }
+        try {
+            $levelname = $player->getLevel()->getName();
+            $name = $player->getName();
+            $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
+            if ($landid === false) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            }
 
-        $invites = $this->plugin->db->GetLandInvites($landid);
-        if ($invites === null) {
-            $player->sendMessage("この土地には誰も招待されていません");
-            return;
-        }
-        $invitestext = "土地ID$landid に招待されている人数: " . count($invites);
-        for ($i = 0; $i < count($invites); $i++) {
-            $invitestext .= "\n$invites[$i]";
-        }
+            $invites = $this->plugin->db->GetLandInvites($landid);
+            if ($invites === null) {
+                $player->sendMessage("この土地には誰も招待されていません");
+                return;
+            }
+            $invitestext = "土地ID$landid に招待されている人数: " . count($invites);
+            for ($i = 0; $i < count($invites); $i++) {
+                $invitestext .= "\n$invites[$i]";
+            }
 
-        $player->sendMessage($invitestext);
+            $player->sendMessage($invitestext);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 
     public function MoveLandOwner(Player $player)
     {
-        $levelname = $player->getLevel()->getName();
-        $name = $player->getName();
-        $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
-        if ($landid === false) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
-            $player->sendMessage("この土地はあなたが所有していません");
-            return;
-        }
-
-        $form = new CustomForm(function (Player $player, $data) use ($landid) {
-            if ($data === null) return true;
-            else if (!isset($data[0])) return true;
-            else if (!Player::isValidUserName($data[0])) {
-                $player->sendMessage("不正なプレイヤー名です");
-                return true;
+        try {
+            $levelname = $player->getLevel()->getName();
+            $name = $player->getName();
+            $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
+            if ($landid === false) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
+            } elseif (!$this->plugin->db->CheckLandOwner($landid, $name)) {
+                $player->sendMessage("この土地はあなたが所有していません");
+                return;
             }
 
-            $this->CheckMoveLandOwner($player, $landid, $data[0]);
-            return true;
-        });
+            $form = new CustomForm(function (Player $player, $data) use ($landid) {
+                if ($data === null) return true;
+                else if (!isset($data[0])) return true;
+                else if (!Player::isValidUserName($data[0])) {
+                    $player->sendMessage("不正なプレイヤー名です");
+                    return true;
+                }
 
-        $form->setTitle("iPhone-土地-所有権譲渡");
-        $form->addInput("所有権を渡すプレイヤー名", "playername", "");
-        $player->sendForm($form);
+                $this->CheckMoveLandOwner($player, $landid, $data[0]);
+                return true;
+            });
+
+            $form->setTitle("iPhone-土地-所有権譲渡");
+            $form->addInput("所有権を渡すプレイヤー名", "playername", "");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 
     public function CheckMoveLandOwner(Player $player, int $landid, string $name)
     {
-        $form = new ModalForm(function (Player $player, $data) use ($landid, $name) {
-            if ($data === null) {
-                return;
-            }
+        try {
+            $form = new ModalForm(function (Player $player, $data) use ($landid, $name) {
+                if ($data === null) {
+                    return;
+                }
 
-            if($data === true) {
-                $this->plugin->db->ChangeLandOwner($landid, $name);
-                $player->sendMessage("所有権を$name に譲渡しました");
-            }
-            else {
-                $player->sendMessage("キャンセルしました");
-            }
-        });
+                if($data === true) {
+                    $this->plugin->db->ChangeLandOwner($landid, $name);
+                    $player->sendMessage("所有権を$name に譲渡しました");
+                }
+                else {
+                    $player->sendMessage("キャンセルしました");
+                }
+            });
 
-        $form->setTitle("iPhone-土地-所有権譲渡");
-        $form->setContent("現在立っている土地の所有権を$name に譲渡しますか？");
-        $form->setButton1("譲渡する");
-        $form->setButton2("やめる");
-        $player->sendForm($form);
+            $form->setTitle("iPhone-土地-所有権譲渡");
+            $form->setContent("現在立っている土地の所有権を$name に譲渡しますか？");
+            $form->setButton1("譲渡する");
+            $form->setButton2("やめる");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
     }
 }
