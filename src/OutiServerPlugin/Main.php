@@ -9,22 +9,19 @@ use DateTime;
 use Error;
 use ErrorException;
 use Exception;
+use TypeError;
 use InvalidArgumentException;
-use OutiServerPlugin\Tasks\Discord;
-use OutiServerPlugin\Utils\Database;
-use OutiServerPlugin\Utils\AllItem;
-use OutiServerPlugin\Utils\ErrorHandler;
+use OutiServerPlugin\Tasks\discord;
+use OutiServerPlugin\Utils\{Database, AllItem, ErrorHandler};
 use pocketmine\plugin\PluginBase;
-use pocketmine\utils\Config;
+use pocketmine\utils\{Config, TextFormat};
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\Server;
 use pocketmine\scheduler\ClosureTask;
-use pocketmine\utils\TextFormat;
-use TypeError;
 
 class Main extends PluginBase
 {
-    public Discord $client;
+    public discord $client;
     public bool $started = false;
     public Database $db;
     public Config $config;
@@ -35,6 +32,7 @@ class Main extends PluginBase
     public Admin $admin;
     public Teleport $teleport;
     public Announce $announce;
+    public Money $money;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -50,6 +48,7 @@ class Main extends PluginBase
                 $this->getServer()->getPluginManager()->disablePlugin($this);
                 return;
             }
+            $this->errorHandler = new ErrorHandler($this);
             $this->db = new Database($this, $this->getDataFolder() . 'outiserver.db', $this->config->get("Default_Item_Category", array()));
             $this->allItem = new AllItem($this, $this->getDataFolder() . "allitemdata.json");
             $this->land = new Land($this);
@@ -58,8 +57,8 @@ class Main extends PluginBase
             $this->admin = new Admin($this);
             $this->teleport = new Teleport($this);
             $this->announce = new Announce($this);
-            $this->errorHandler = new ErrorHandler($this);
-            $this->client = new Discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
+            $this->money = new Money($this);
+            $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
 
             $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);

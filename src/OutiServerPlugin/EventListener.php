@@ -207,10 +207,7 @@ class EventListener implements Listener
 
                 switch ($data) {
                     case 0:
-                        $name = $player->getName();
-                        $playerdata = $this->plugin->db->GetMoney($name);
-                        if (!$playerdata) break;
-                        $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
+                        $this->plugin->money->Form($player);
                         break;
                     case 1:
                         $this->plugin->adminshop->AdminShop($player);
@@ -232,7 +229,7 @@ class EventListener implements Listener
             });
 
             $form->setTitle("iPhone");
-            $form->addButton("所持金の確認");
+            $form->addButton("お金関連");
             $form->addButton("AdminShop");
             $form->addButton("土地");
             $form->addButton("テレポート");
