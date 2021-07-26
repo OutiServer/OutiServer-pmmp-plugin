@@ -11,6 +11,7 @@ use ErrorException;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
 use pocketmine\item\Item;
+use pocketmine\level\Position;
 use SQLite3;
 use SQLiteException;
 use TypeError;
@@ -31,6 +32,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -557,6 +559,68 @@ class Database
             $sql->bindValue(':itemid', $item->getId(), SQLITE3_INTEGER);
             $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
             $sql->execute();
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function SetWorldTeleport(string $name, Position $position)
+    {
+        try {
+            $sql = $this->db->prepare("INSERT INTO worldteleports (name, levelname, x, y, z) VALUES (:name, :levelname, :x, :y, :z)");
+            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(':levelname', $position->getLevel()->getName(), SQLITE3_TEXT);
+            $sql->bindValue(':x', (int)$position->x, SQLITE3_INTEGER);
+            $sql->bindValue(':y', (int)$position->y, SQLITE3_INTEGER);
+            $sql->bindValue(':z', (int)$position->z, SQLITE3_INTEGER);
+            $sql->execute();
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function DeleteWorldTeleport(int $id)
+    {
+        try {
+            $sql = $this->db->prepare("DELETE FROM worldteleports WHERE id = :id");
+            $sql->bindValue(':id', $id, SQLITE3_INTEGER);
+            $sql->execute();
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetAllWorldTeleport()
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM worldteleports");
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = $d;
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetWorldTeleport(int $id)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM worldteleports WHERE id = :id");
+            $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+            $result = $sql->execute();
+            $data = $result->fetchArray();
+            if(!$data) return false;
+            return $data;
         }
         catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

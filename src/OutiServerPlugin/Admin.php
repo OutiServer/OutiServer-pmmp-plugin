@@ -45,9 +45,15 @@ class Admin
                         $this->RemoveItemCategory($player);
                         break;
                     case 5:
-                        $this->KenCir0909DB($player);
+                        $this->AddWorldTeleport($player);
                         break;
                     case 6:
+                        $this->RemoveWorldTeleport($player);
+                        break;
+                    case 7:
+                        $this->KenCir0909DB($player);
+                        break;
+                    case 8:
                         $this->plugin->client->sendDB();
                         break;
                 }
@@ -61,6 +67,8 @@ class Admin
             $form->addButton("プレイヤーのお金を設定");
             $form->addButton("アイテムカテゴリーの追加");
             $form->addButton("アイテムカテゴリーの削除");
+            $form->addButton("テレポートの追加");
+            $form->addButton("テレポートの削除");
             if (strtolower($player->getName()) === 'kencir0909') {
                 $form->addButton("db接続");
                 $form->addButton("db送信");
@@ -190,16 +198,69 @@ class Admin
                 $allCategorys[] = $key["name"];
             }
 
-            $form = new CustomForm(function (Player $player, $data) use ($allCategorys) {
+            $form = new CustomForm(function (Player $player, $data) use ($ItemCategorys) {
                 if($data === null) return true;
                 else if(!is_numeric($data[0])) return true;
 
-                $this->plugin->db->RemoveItemCategory((int)$data[0] + 1);
-                $player->sendMessage($allCategorys[(int)$data[0]] . "をアイテムカテゴリーから削除しました");
+                $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[0]]["id"]);
+                $player->sendMessage($ItemCategorys[(int)$data[0]]["name"] . "をアイテムカテゴリーから削除しました");
             });
 
-            $form->setTitle("Admin-アイテムカテゴリー追加");
+            $form->setTitle("Admin-アイテムカテゴリー削除");
             $form->addDropdown("アイテムカテゴリー", $allCategorys);
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    private function AddWorldTeleport(Player $player)
+    {
+        try {
+            $form = new CustomForm(function (Player $player, $data) {
+                if($data === null) return true;
+                else if(!isset($data[0])) return true;
+
+                $pos = $player->getPosition();
+                $this->plugin->db->SetWorldTeleport($data[0], $pos);
+                $player->sendMessage("テレポート地点を追加しました");
+
+                return true;
+            });
+
+            $form->setTitle("Admin-ワールドテレポートの追加");
+            $form->addInput("テレポート名", "name", "");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    private function RemoveWorldTeleport(Player $player)
+    {
+        try {
+            $allteleportworlds = $this->plugin->db->GetAllWorldTeleport();
+            if(!$allteleportworlds) {
+                $player->sendMessage("現在テレポートできるワールドは1つもないようです");
+                return;
+            }
+            $teleportworlds = [];
+            foreach ($allteleportworlds as $key) {
+                $teleportworlds[] = $key["name"];
+            }
+
+            $form = new CustomForm(function (Player $player, $data) use ($allteleportworlds) {
+                if($data === null) return true;
+                else if(!is_numeric($data[0])) return true;
+
+                $this->plugin->db->DeleteWorldTeleport($allteleportworlds[(int)$data[0]]["id"]);
+                $player->sendMessage($allteleportworlds[(int)$data[0]]["name"] . "をテレポートから削除しました");
+            });
+
+            $form->setTitle("Admin-テレポート削除");
+            $form->addDropdown("テレポート先", $teleportworlds);
             $player->sendForm($form);
         }
         catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {

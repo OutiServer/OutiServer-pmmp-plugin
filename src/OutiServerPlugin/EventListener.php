@@ -187,6 +187,18 @@ class EventListener implements Listener
         }
     }
 
+    public function onPlayerKick(PlayerKickEvent $event)
+    {
+        try {
+            $name = $event->getPlayer()->getName();
+            $reason = $event->getReason();
+            $this->plugin->client->sendChatMessage("**$name**がサーバーから追放されました\nReason: $reason\n");
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
     private function iPhone(Player $player)
     {
         try {
@@ -207,6 +219,9 @@ class EventListener implements Listener
                         $this->plugin->land->land($player);
                         break;
                     case 3:
+                        $this->plugin->teleport->Form($player);
+                        break;
+                    case 4:
                         $this->plugin->admin->AdminForm($player);
                         break;
                 }
@@ -217,22 +232,11 @@ class EventListener implements Listener
             $form->addButton("所持金の確認");
             $form->addButton("AdminShop");
             $form->addButton("土地");
+            $form->addButton("テレポート");
             if ($player->isOp()) {
                 $form->addButton("管理系");
             }
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
-        }
-    }
-
-    public function onPlayerKick(PlayerKickEvent $event)
-    {
-        try {
-            $name = $event->getPlayer()->getName();
-            $reason = $event->getReason();
-            $this->plugin->client->sendChatMessage("**$name**がサーバーから追放されました\nReason: $reason\n");
         }
         catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
