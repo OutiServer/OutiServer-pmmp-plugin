@@ -32,6 +32,7 @@ class Main extends PluginBase
     public ChestShop $chestshop;
     public AdminShop $adminshop;
     public Admin $admin;
+    public Teleport $teleport;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -53,6 +54,7 @@ class Main extends PluginBase
             $this->chestshop = new ChestShop($this);
             $this->adminshop = new AdminShop($this);
             $this->admin = new Admin($this);
+            $this->teleport = new Teleport($this);
             $this->errorHandler = new ErrorHandler($this);
             $this->client = new Discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
