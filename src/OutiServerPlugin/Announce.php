@@ -10,8 +10,7 @@ use Error;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
-use jojoe77777\FormAPI\ModalForm;
-use jojoe77777\FormAPI\SimpleForm;
+use jojoe77777\FormAPI\{ModalForm, SimpleForm};
 use pocketmine\Player;
 use TypeError;
 

@@ -12,7 +12,6 @@ use InvalidArgumentException;
 use OutiServerPlugin\Main;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
-use SQLiteException;
 use TypeError;
 
 class ErrorHandler

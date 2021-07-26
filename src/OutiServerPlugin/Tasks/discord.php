@@ -4,15 +4,13 @@ namespace OutiServerPlugin\Tasks;
 
 use Discord\Exceptions\IntentException;
 use Discord\Parts\Channel\{Channel, Message};
-use Discord\Parts\Embed\Embed;
 use Discord\Parts\User\Member;
 use pocketmine\utils\TextFormat;
 use React\EventLoop\Factory;
 use Thread;
 use Threaded;
-use function RingCentral\Psr7\str;
 
-class Discord extends Thread
+class discord extends Thread
 {
     public string $file;
     public bool $stopped = false;
