@@ -3,6 +3,7 @@
         "team-reflex/discord-php": "^5.1",
       "ext-sqlite3": "*",
       "ext-pthreads": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+      "ext-sqlite": "*"
     }
 }

@@ -1,6 +1,6 @@
 ---
 # DiscordBotのTOKEN
-DiscordBot_Token: "Nzg0MDQzNTg4NDI2MDA2NTQ4.X8jjfg.eYnvoSWnffnj13253rSuHXhJhDQ"
+DiscordBot_Token: "DISCORD_TOKEN"
 
 # DiscordギルドID
 Discord_Guild_Id: "706452606918066237"
@@ -11,8 +11,17 @@ DiscordChat_Channel_Id: "834317763769925632"
 # DiscordのLog用チャンネルID
 DiscordLog_Channel_Id: "833626570270572584"
 
+# Discordのdbを送信する用チャンネルID
+DiscordDB_Channel_Id: "863124612429381699"
+
+# DiscordのErrorLog用チャンネルID
+DiscordErrorLog_Channel_id: "868787060394307604"
+
 # 土地購入を禁止するワールド
 Land_Buy_Bans: []
+
+# 1ブロックあたりの値段
+Land_Price: 200
 
 # デフォルトアイテムカテゴリー
 Default_Item_Category: ["チート", "建材", "鉱石", "ツール", "防具", "エンチャント", "装飾", "食材", "醸造", "その他"]

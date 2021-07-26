@@ -18,6 +18,8 @@ class Discord extends Thread
     private string $guild_id;
     private string $chat_id;
     private string $log_id;
+    private string $db_id;
+    private string $errorlog_id;
     private string $dir;
     private string $token;
     private bool $db_send;
@@ -27,8 +29,9 @@ class Discord extends Thread
     protected Threaded $chat_Queue;
     protected Threaded $command_Queue;
     protected Threaded $command_response_Queue;
+    protected Threaded $errorlog_Queue;
 
-    public function __construct(string $file, string $dir, string $token, string $guild_id, string $chat_channel_id, string $log_channel_id)
+    public function __construct(string $file, string $dir, string $token, string $guild_id, string $chat_channel_id, string $log_channel_id, string $db_channel_id, string $errorlog_channel_id)
     {
         $this->file = $file;
         $this->dir = $dir;
@@ -36,12 +39,15 @@ class Discord extends Thread
         $this->guild_id = $guild_id;
         $this->chat_id = $chat_channel_id;
         $this->log_id = $log_channel_id;
+        $this->db_id = $db_channel_id;
+        $this->errorlog_id = $errorlog_channel_id;
         $this->console_Queue = new Threaded;
         $this->serverchat_Queue = new Threaded;
         $this->log_Queue = new Threaded;
         $this->chat_Queue = new Threaded;
         $this->command_Queue = new Threaded;
         $this->command_response_Queue = new Threaded;
+        $this->errorlog_Queue = new Threaded;
 
         $this->start();
     }
@@ -117,11 +123,13 @@ class Discord extends Thread
         $guild = $discord->guilds->get('id', $this->guild_id);
         $chatchannel = $guild->channels->get('id', $this->chat_id);
         $logchannel = $guild->channels->get('id', $this->log_id);
-        $db_channel = $guild->channels->get('id', '863124612429381699');
+        $db_channel = $guild->channels->get('id', $this->db_id);
+        $errorlogchannel = $guild->channels->get('id', $this->errorlog_id);
 
 
         $logsend = "";
         $chatsend = "";
+        $errorlogsend = "";
 
         while (count($this->log_Queue) > 0) {
             $message = unserialize($this->log_Queue->shift());
@@ -157,6 +165,20 @@ class Discord extends Thread
             $guild = $discord->guilds->get('id', $this->guild_id);
             $channel = $guild->channels->get('id', $cmd_response["channelid"]);
             $channel->sendMessage($cmd_response["response"]);
+        }
+
+        while (count($this->errorlog_Queue) > 0) {
+            $message = unserialize($this->errorlog_Queue->shift());
+            if ($message === "") {
+                continue;
+            }
+            $errorlogsend .= $message;
+            if (strlen($errorlogsend) >= 1800) {
+                break;
+            }
+        }
+        if ($errorlogsend !== "") {
+            $errorlogchannel->sendMessage($errorlogsend);
         }
 
         if($this->db_send)  {
@@ -218,5 +240,10 @@ class Discord extends Thread
             $commands[] = unserialize($this->command_Queue->shift());
         }
         return $commands;
+    }
+
+    public function sendErrorLogMessage(string $message)
+    {
+        $this->errorlog_Queue[] = serialize($message);
     }
 }
