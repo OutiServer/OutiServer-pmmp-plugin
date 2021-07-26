@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OutiServerPlugin;
 
 use ArgumentCountError;
+use DateTime;
 use Error;
 use ErrorException;
 use Exception;
@@ -33,6 +34,7 @@ class Main extends PluginBase
     public AdminShop $adminshop;
     public Admin $admin;
     public Teleport $teleport;
+    public Announce $announce;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -55,8 +57,9 @@ class Main extends PluginBase
             $this->adminshop = new AdminShop($this);
             $this->admin = new Admin($this);
             $this->teleport = new Teleport($this);
+            $this->announce = new Announce($this);
             $this->errorHandler = new ErrorHandler($this);
-            $this->client = new Discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
+            $this->client = new Discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
 
             $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
@@ -97,7 +100,16 @@ class Main extends PluginBase
                         switch ($command["name"]) {
                             case "server":
                                 $server = Server::getInstance();
-                                $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " .$server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```");
+                                $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " .$server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
+                                break;
+                            case "announce":
+                                $time = new DateTime('now');
+                                $title = array_shift($command["args"]);
+                                $content = join("\n", $command["args"]);
+                                $this->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $title, $content);
+                                $this->client->sendCommand($command["channelid"], "アナウンスに" . $title . "を追加しました\n");
+                                Server::getInstance()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
+                                $this->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
                                 break;
                         }
                     }

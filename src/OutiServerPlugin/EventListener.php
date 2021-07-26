@@ -222,6 +222,9 @@ class EventListener implements Listener
                         $this->plugin->teleport->Form($player);
                         break;
                     case 4:
+                        $this->plugin->announce->Form($player);
+                        break;
+                    case 5:
                         $this->plugin->admin->AdminForm($player);
                         break;
                 }
@@ -233,6 +236,7 @@ class EventListener implements Listener
             $form->addButton("AdminShop");
             $form->addButton("土地");
             $form->addButton("テレポート");
+            $form->addButton("運営からのお知らせ");
             if ($player->isOp()) {
                 $form->addButton("管理系");
             }

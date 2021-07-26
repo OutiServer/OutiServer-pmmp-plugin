@@ -4,11 +4,13 @@ namespace OutiServerPlugin\Tasks;
 
 use Discord\Exceptions\IntentException;
 use Discord\Parts\Channel\{Channel, Message};
+use Discord\Parts\Embed\Embed;
 use Discord\Parts\User\Member;
 use pocketmine\utils\TextFormat;
 use React\EventLoop\Factory;
 use Thread;
 use Threaded;
+use function RingCentral\Psr7\str;
 
 class Discord extends Thread
 {
@@ -23,6 +25,7 @@ class Discord extends Thread
     private string $dir;
     private string $token;
     private bool $db_send;
+    private string $prefix;
     protected Threaded $console_Queue;
     protected Threaded $serverchat_Queue;
     protected Threaded $log_Queue;
@@ -31,11 +34,12 @@ class Discord extends Thread
     protected Threaded $command_response_Queue;
     protected Threaded $errorlog_Queue;
 
-    public function __construct(string $file, string $dir, string $token, string $guild_id, string $chat_channel_id, string $log_channel_id, string $db_channel_id, string $errorlog_channel_id)
+    public function __construct(string $file, string $dir, string $token, string $prefix, string $guild_id, string $chat_channel_id, string $log_channel_id, string $db_channel_id, string $errorlog_channel_id)
     {
         $this->file = $file;
         $this->dir = $dir;
         $this->token = $token;
+        $this->prefix = $prefix;
         $this->guild_id = $guild_id;
         $this->chat_id = $chat_channel_id;
         $this->log_id = $log_channel_id;
@@ -102,11 +106,25 @@ class Discord extends Thread
                     ]);
                 }
 
-                if(str_starts_with(strtolower($message->content), "?unkoserver")) {
+                if(!str_starts_with(strtolower($message->content), $this->prefix)) return;
+                $args = preg_split("/ +/", trim(mb_substr($message->content, strlen($this->prefix))));
+                $command = strtolower(array_shift($args));
+                if($command === "help") {
+                    $message->channel->sendMessage("```\n" . "Command Prefix: " . $this->prefix . "\n\nhelp: このコマンド\nserver: サーバーの状態を表示\nannounce [title] [content]: (管理者専用)運営からのお知らせを追加する\n```");
+                }
+                else if($command === "server") {
                     $this->command_Queue[] = serialize([
-                        "name" => "server",
+                        "name" => $command,
                         "channelid" => $message->channel_id
                         ]);
+                }
+                else if($command === "announce") {
+                    if(count($args) < 2) return;
+                    $this->command_Queue[] = serialize([
+                        "name" => $command,
+                        "channelid" => $message->channel_id,
+                        "args" => $args
+                    ]);
                 }
             });
         });
