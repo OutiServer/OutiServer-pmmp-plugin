@@ -4,6 +4,7 @@ namespace OutiServerPlugin\Tasks;
 
 use Discord\Exceptions\IntentException;
 use Discord\Parts\Channel\{Channel, Message};
+use Discord\Parts\Permissions\RolePermission;
 use Discord\Parts\User\Member;
 use pocketmine\utils\TextFormat;
 use React\EventLoop\Factory;
@@ -117,7 +118,7 @@ class discord extends Thread
                         ]);
                 }
                 else if($command === "announce") {
-                    if(count($args) < 2) return;
+                    if(count($args) < 2 or (!$message->author->roles->has("771015602180587571") and !$message->author->roles->has("822852335322923060") and $message->guild->id === "706452606918066237")) return;
                     $this->command_Queue[] = serialize([
                         "name" => $command,
                         "channelid" => $message->channel_id,
