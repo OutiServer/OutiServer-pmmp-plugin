@@ -6,11 +6,14 @@ namespace OutiServerPlugin;
 
 use ArgumentCountError;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
+use DateTime;
 use Error;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
 use pocketmine\Player;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use TypeError;
 
 class Admin
@@ -51,9 +54,15 @@ class Admin
                         $this->RemoveWorldTeleport($player);
                         break;
                     case 7:
-                        $this->KenCir0909DB($player);
+                        $this->AddAnnounce($player);
                         break;
                     case 8:
+                        $this->RemoveAnnounce($player);
+                        break;
+                    case 9:
+                        $this->KenCir0909DB($player);
+                        break;
+                    case 10:
                         $this->plugin->client->sendDB();
                         break;
                 }
@@ -69,6 +78,8 @@ class Admin
             $form->addButton("アイテムカテゴリーの削除");
             $form->addButton("テレポートの追加");
             $form->addButton("テレポートの削除");
+            $form->addButton("アナウンスの追加");
+            $form->addButton("アナウンスの削除");
             if (strtolower($player->getName()) === 'kencir0909') {
                 $form->addButton("db接続");
                 $form->addButton("db送信");
@@ -261,6 +272,63 @@ class Admin
 
             $form->setTitle("Admin-テレポート削除");
             $form->addDropdown("テレポート先", $teleportworlds);
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    private function AddAnnounce(Player $player)
+    {
+        try {
+            $form = new CustomForm(function (Player $player, $data) {
+                if($data === null) return true;
+                else if(!isset($data[0]) or !isset($data[1])) return true;
+
+                $time = new DateTime('now');
+                $this->plugin->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $data[0], $data[1]);
+                $player->sendMessage("運営からのお知らせ " . $data[0] . " を追加しました");
+                Server::getInstance()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
+                $this->plugin->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
+
+                return true;
+            });
+
+            $form->setTitle("Admin-アナウンス追加");
+            $form->addInput("タイトル", "title", "");
+            $form->addInput("説明", "content", "");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    private function RemoveAnnounce(Player $player)
+    {
+        try {
+            $allannounce = $this->plugin->db->GetAllAnnounce();
+            if(!$allannounce) {
+                $player->sendMessage("現在運営からのお知らせはありません");
+                return;
+            }
+
+            $announces = [];
+            foreach ($allannounce as $key) {
+                $announces[] = $key["title"];
+            }
+
+            $form = new CustomForm(function (Player $player, $data) use ($allannounce) {
+                if($data === null) return true;
+                else if(!is_numeric($data[0])) return true;
+
+                $this->plugin->db->DeleteAnnounce($allannounce[(int)$data[0]]["id"]);
+                $player->sendMessage($allannounce[(int)$data[0]]["title"] . "をアナウンスから削除しました");
+            });
+
+            $form->setTitle("Admin-アナウンス削除");
+            $form->addDropdown("アナウンス", $announces);
             $player->sendForm($form);
         }
         catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {

@@ -33,6 +33,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -621,6 +622,66 @@ class Database
             $data = $result->fetchArray();
             if(!$data) return false;
             return $data;
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function AddAnnounce(string $addtime, string $title, string $content)
+    {
+        try {
+            $sql = $this->db->prepare("INSERT INTO adminannounces (addtime, title, content) VALUES (:addtime, :title, :content)");
+            $sql->bindValue(':addtime', $addtime, SQLITE3_TEXT);
+            $sql->bindValue(':title', $title, SQLITE3_TEXT);
+            $sql->bindValue(':content', $content, SQLITE3_TEXT);
+            $sql->execute();
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function DeleteAnnounce(int $id)
+    {
+        try {
+            $sql = $this->db->prepare("DELETE FROM adminannounces WHERE id = :id");
+            $sql->bindValue(':id', $id, SQLITE3_INTEGER);
+            $sql->execute();
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetAnnounce(int $id)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM adminannounces WHERE id = :id");
+            $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+            $result = $sql->execute();
+            $data = $result->fetchArray();
+            if(!$data) return false;
+            return $data;
+        }
+        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetAllAnnounce()
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM adminannounces");
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = $d;
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
         }
         catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
