@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OutiServerPlugin;
+namespace OutiServerPlugin\plugins;
 
 use ArgumentCountError;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
@@ -11,6 +11,7 @@ use Error;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
+use OutiServerPlugin\Main;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
