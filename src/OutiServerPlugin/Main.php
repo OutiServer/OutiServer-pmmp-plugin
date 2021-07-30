@@ -9,6 +9,8 @@ use DateTime;
 use Error;
 use ErrorException;
 use Exception;
+use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, ChestShop, Land, Money, Teleport, Casino};
+use pocketmine\item\Item;
 use TypeError;
 use InvalidArgumentException;
 use OutiServerPlugin\Tasks\discord;
@@ -33,6 +35,7 @@ class Main extends PluginBase
     public Teleport $teleport;
     public Announce $announce;
     public Money $money;
+    public Casino $casino;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -58,6 +61,8 @@ class Main extends PluginBase
             $this->teleport = new Teleport($this);
             $this->announce = new Announce($this);
             $this->money = new Money($this);
+            $this->casino = new Casino($this);
+
             $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
 
