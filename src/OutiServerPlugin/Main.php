@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, Casino, ChestShop, Land, Money, Teleport};
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
+use OutiServerPlugin\Tasks\PlayerStatus;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
@@ -117,6 +118,8 @@ class Main extends PluginBase
                     }
                 }
             ), 5, 1);
+
+            $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
