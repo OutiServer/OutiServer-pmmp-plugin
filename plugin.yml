@@ -4,7 +4,3 @@ author: Ken_Cir
 version: 3.0.0
 api: 3.0.0
 main: OutiServerPlugin\Main
-depend:
-  - FormAPI
-extensions:
-  - sqlite3
