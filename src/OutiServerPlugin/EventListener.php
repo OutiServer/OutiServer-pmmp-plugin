@@ -60,10 +60,7 @@ class EventListener implements Listener
         try {
             $name = $event->getPlayer()->getName();
             $this->plugin->client->sendChatMessage("**$name**がサーバーから退出しました\n");
-            unset($this->plugin->casino->slot->sloted[$name]);
-            unset($this->plugin->casino->slot->effect[$name]);
-            unset($this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name]);
-            unset($this->checkiPhone[$name]);
+            unset($this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name], $this->plugin->casino->slot->sloted[$name], $this->plugin->casino->slot->effect[$name], $this->checkiPhone[$name]);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -99,7 +96,7 @@ class EventListener implements Listener
             if ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
                 $landid = $this->plugin->db->GetLandId($levelname, $block->x, $block->z);
                 if ($landid) {
-                    if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid)) {
+                    if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                         $event->setCancelled();
                     }
                 }
@@ -168,7 +165,7 @@ class EventListener implements Listener
 
             $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
             if ($landid !== false) {
-                if (!$this->plugin->db->CheckLandOwner($landid, $player->getName()) and !$this->plugin->db->checkInvite($landid, $player->getName()) and $this->plugin->db->CheckLandProtection($landid)) {
+                if (!$this->plugin->db->CheckLandOwner($landid, $player->getName()) and !$this->plugin->db->checkInvite($landid, $player->getName()) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                     $event->setCancelled();
                 }
             }
@@ -176,11 +173,11 @@ class EventListener implements Listener
             $slotid = $this->plugin->db->GetSlotId($block);
             if ($slotid) {
                 if (!$player->isOp()) {
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
                     $event->setCancelled();
                 } else {
                     $this->plugin->db->DeleteSlot($slotid);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §aこのスロットを削除しました");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §aこのスロットを削除しました");
                 }
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {

@@ -71,7 +71,7 @@ class Slot
                                 $player->getLevel()->addParticle($this->ftps[$player->getLevel()->getName()]);
                             }
                             $this->slotinfo();
-                            $player->sendMessage("§bおうちカジノ(スロット) >> 設定しました");
+                            $player->sendMessage("§b[おうちカジノ(スロット)] >> 設定しました");
                             break;
                     }
 
@@ -131,7 +131,7 @@ class Slot
         try {
             $slotdata = $this->plugin->db->GetSlot($id);
             if (!$slotdata) {
-                $player->sendMessage(TextFormat::RED . "スロットデータが見つかりませんでした。");
+                $player->sendMessage("§b[おうちカジノ(スロット)] >> " . TextFormat::RED . "スロットデータが見つかりませんでした。");
                 return;
             }
 
@@ -164,7 +164,7 @@ class Slot
                     $money = $this->plugin->db->GetMoney($name);
                     if($money["money"] < ($slotdata["bet"] * (int)$data[1])) {
                         unset($this->sloted[$name]);
-                        $player->sendMessage("[§bおうちカジノ(スロット)] >> §rカジノコインがあと" . (($slotdata["bet"] * (int)$data[1]) - $money["money"]) . "コイン足りていませんよ？");
+                        $player->sendMessage("§b[おうちカジノ(スロット)] >> §rカジノコインがあと" . (($slotdata["bet"] * (int)$data[1]) - $money["money"]) . "コイン足りていませんよ？");
                         return true;
                     }
                     $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_1"], [$player, $tile, $slotdata, (int)$data[1]]), 30);
@@ -283,17 +283,17 @@ class Slot
                     $pk->data = 0;
                     $pk->position = $player->asVector3();
                     $player->dataPacket($pk);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
                     $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
                     $this->plugin->db->AddMoney($name, $addedmoney);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ゾロ目！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
                 }
             } // 縦枠
@@ -308,17 +308,17 @@ class Slot
                     $pk->data = 0;
                     $pk->position = $player->asVector3();
                     $player->dataPacket($pk);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
                     $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
                     $this->plugin->db->AddMoney($name, $addedmoney);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ゾロ目！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
                 }
             } // 斜め枠
@@ -333,22 +333,22 @@ class Slot
                     $pk->data = 0;
                     $pk->position = $player->asVector3();
                     $player->dataPacket($pk);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
-                    $this->plugin->getServer()->broadcastMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
-                    $this->plugin->client->sendChatMessage("[§bおうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ジャックポット§bおめでとうございます！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6{$slotsettings["jp"]}円手に入れた！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！");
+                    $this->plugin->getServer()->broadcastMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> " . $name . "さんがJPを当て、" . $slotsettings["jp"] . "カジノコイン入手しました！\nおめでとうございます！\n");
+                    $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
                     $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
                     $this->plugin->db->AddMoney($name, $addedmoney);
-                    $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ゾロ目！");
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
                 }
             } else {
                 $this->oto($player, "bad");
-                $player->sendMessage("[§bおうちカジノ(スロット)] >> §cハズレ");
+                $player->sendMessage("§b[おうちカジノ(スロット)] >> §cハズレ");
                 $this->plugin->db->RemoveMoney($name, (int)$slotdata["bet"] * $rate);
                 $this->plugin->db->AddSlotJP($slotdata["levelname"], (int)$slotdata["bet"] * $rate);
             }
