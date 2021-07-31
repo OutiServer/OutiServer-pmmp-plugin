@@ -64,7 +64,7 @@ class Teleport
         try {
             $worlddata = $this->plugin->db->GetWorldTeleport($id);
             if (!$this->plugin->getServer()->isLevelGenerated($worlddata["levelname"])) {
-                $player->sendMessage("§b[ワールドテレポート] §f>> §6指定されたワールドが見つかりませんでした\nデータが破壊されているか、存在しません");
+                $player->sendMessage("§b[ワールドテレポート] >> §6指定されたワールドが見つかりませんでした\nデータが破壊されているか、存在しません");
                 return;
             }
             if (!$this->plugin->getServer()->isLevelLoaded($worlddata["levelname"])) {
