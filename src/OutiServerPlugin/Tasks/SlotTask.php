@@ -15,18 +15,19 @@ use TypeError;
 class SlotTask extends Task
 {
     private $callable;
-    private array $args = [];
+    private array $args;
 
-    public function __construct(callable $callable, array $args = []){
+    public function __construct(callable $callable, array $args = [])
+    {
         $this->callable = $callable;
         $this->args = $args;
     }
 
-    public function onRun(int $tick){
+    public function onRun(int $currentTick)
+    {
         try {
             call_user_func_array($this->callable, $this->args);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e)  {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             echo "Error: " . $e->getMessage();
         }
     }

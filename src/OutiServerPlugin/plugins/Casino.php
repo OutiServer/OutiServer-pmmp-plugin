@@ -39,8 +39,7 @@ class Casino
                             break;
                     }
                     return true;
-                }
-                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
                 }
 
@@ -50,8 +49,7 @@ class Casino
             $form->setTitle("iPhone-Casino");
             $form->addButton("スロット");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

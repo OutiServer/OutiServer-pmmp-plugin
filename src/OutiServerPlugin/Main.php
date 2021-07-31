@@ -7,19 +7,17 @@ namespace OutiServerPlugin;
 use ArgumentCountError;
 use DateTime;
 use Error;
-use ErrorException;
 use Exception;
-use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, ChestShop, Land, Money, Teleport, Casino};
-use pocketmine\item\Item;
-use TypeError;
 use InvalidArgumentException;
+use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, Casino, ChestShop, Land, Money, Teleport};
 use OutiServerPlugin\Tasks\discord;
-use OutiServerPlugin\Utils\{Database, AllItem, ErrorHandler};
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\{Config, TextFormat};
+use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
 use pocketmine\command\ConsoleCommandSender;
-use pocketmine\Server;
+use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\Server;
+use pocketmine\utils\{Config, TextFormat};
+use TypeError;
 
 class Main extends PluginBase
 {
@@ -104,7 +102,7 @@ class Main extends PluginBase
                         switch ($command["name"]) {
                             case "server":
                                 $server = Server::getInstance();
-                                $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " .$server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
+                                $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " . $server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
                                 break;
                             case "announce":
                                 $time = new DateTime('now');
@@ -121,8 +119,7 @@ class Main extends PluginBase
             ), 5, 1);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->getLogger()->info(TextFormat::RED . "プラグイン読み込み中にエラーが発生しました\nプラグインを無効化します");
             $this->getLogger()->error($e->getMessage());
             $this->getServer()->getPluginManager()->disablePlugin($this);
@@ -141,8 +138,7 @@ class Main extends PluginBase
             ob_end_clean();
             $this->getLogger()->info("discordBotの終了を待機しております...");
             $this->client->join();
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->getLogger()->info(TextFormat::RED . "プラグイン無効化中にエラーが発生しました\nプラグインが正常に無効化できていない可能性があります");
             $this->getLogger()->error($e->getMessage());
         }

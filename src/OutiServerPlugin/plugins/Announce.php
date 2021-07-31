@@ -33,9 +33,14 @@ class Announce
             }
 
             $form = new SimpleForm(function (Player $player, $data) use ($allannounce) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                $this->Check($player, $allannounce[(int)$data]["id"]);
+                    $this->Check($player, $allannounce[(int)$data]["id"]);
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -46,7 +51,7 @@ class Announce
             }
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -65,7 +70,7 @@ class Announce
             $form->setButton2("確認");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

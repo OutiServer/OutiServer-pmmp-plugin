@@ -6,7 +6,6 @@ namespace OutiServerPlugin\plugins;
 
 use ArgumentCountError;
 use Error;
-use ErrorException;
 use Exception;
 use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
@@ -27,19 +26,26 @@ class Money
     {
         try {
             $form = new SimpleForm(function (Player $player, $data) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                switch ($data) {
-                    case 0:
-                        $name = $player->getName();
-                        $playerdata = $this->plugin->db->GetMoney($name);
-                        if (!$playerdata) break;
-                        $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
-                        break;
-                    case 1:
-                        $this->MoveMoney($player);
-                        break;
+                    switch ($data) {
+                        case 0:
+                            $name = $player->getName();
+                            $playerdata = $this->plugin->db->GetMoney($name);
+                            if (!$playerdata) break;
+                            $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
+                            break;
+                        case 1:
+                            $this->MoveMoney($player);
+                            break;
+                    }
+                    return true;
                 }
+                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onErrorNotPlayer($e);
+                }
+
                 return true;
             });
 
@@ -48,7 +54,7 @@ class Money
             $form->addButton("他playerにお金を転送");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -59,13 +65,20 @@ class Money
             $name = $player->getName();
             $playermoney = $this->plugin->db->GetMoney($name);
             $form = new CustomForm(function (Player $player, $data) {
-                if($data === null) return true;
-                else if(!isset($data[0]) or !is_numeric($data[1])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!isset($data[0]) or !is_numeric($data[1])) return true;
 
-                $name = $player->getName();
-                $this->plugin->db->AddMoney($data[0], (int)$data[1]);
-                $this->plugin->db->RemoveMoney($name, (int)$data[1]);
-                $player->sendMessage($data[0] . "に" . $data[1] . "円転送しました");
+                    $name = $player->getName();
+                    $this->plugin->db->AddMoney($data[0], (int)$data[1]);
+                    $this->plugin->db->RemoveMoney($name, (int)$data[1]);
+                    $player->sendMessage($data[0] . "に" . $data[1] . "円転送しました");
+                    return true;
+                }
+                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onErrorNotPlayer($e);
+                }
+
                 return true;
             });
 
@@ -74,7 +87,7 @@ class Money
             $form->addSlider("転送するお金", 1, $playermoney["money"]);
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
