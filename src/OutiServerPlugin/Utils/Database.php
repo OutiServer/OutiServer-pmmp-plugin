@@ -31,12 +31,15 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (name TEXT PRIMARY KEY, money INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS chestshops (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER)");
-            $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, y INTEGER, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
+            if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "y")) {
+                $this->db->exec("ALTER TABLE lands ADD COLUMN y INTEGER");
+            }
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -293,12 +296,13 @@ class Database
     }
 
     // 土地保護設定
-    public function SetLand($owner, $levelname, $startx, $startz, $endx, $endz)
+    public function SetLand($owner, $levelname, $y, $startx, $startz, $endx, $endz)
     {
         try {
-            $sql = $this->db->prepare("INSERT INTO lands (owner, levelname, startx, startz, endx, endz, invites, protection) VALUES (:owner, :levelname, :startx, :startz, :endx, :endz, :invites, :protection)");
+            $sql = $this->db->prepare("INSERT INTO lands (owner, levelname, y, startx, startz, endx, endz, invites, protection) VALUES (:owner, :levelname, :y, :startx, :startz, :endx, :endz, :invites, :protection)");
             $sql->bindValue(':owner', strtolower($owner), SQLITE3_TEXT);
             $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
+            $sql->bindValue(':y', $y, SQLITE3_INTEGER);
             $sql->bindValue(':startx', $startx, SQLITE3_INTEGER);
             $sql->bindValue(':startz', $startz, SQLITE3_INTEGER);
             $sql->bindValue(':endx', $endx, SQLITE3_INTEGER);
@@ -306,9 +310,12 @@ class Database
             $sql->bindValue(':invites', serialize(array()), SQLITE3_TEXT);
             $sql->bindValue(':protection', 0, SQLITE3_INTEGER);
             $sql->execute();
+            return $this->db->query("SELECT seq FROM sqlite_sequence WHERE name = 'lands'")->fetchArray()["seq"];
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+
+        return false;
     }
 
     // ID取得
@@ -343,6 +350,75 @@ class Database
                 return false;
             }
             return $data;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    // nameが所有している土地ID全取得
+    public function GetAllLandOwnerData(string $name)
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM lands WHERE owner = :owner");
+            $sql->bindValue(":owner", strtolower($name), SQLITE3_TEXT);
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = "{$d["id"]}";
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function GetAllLandOwnerInviteData(string $name)
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM lands WHERE owner = :owner");
+            $sql->bindValue(":owner", strtolower($name), SQLITE3_TEXT);
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = "{$d["id"]}";
+            }
+
+            foreach ($this->GetAllLand() as $data) {
+                if(!$this->checkInvite($data["id"], $name)) continue;
+
+                $alldata[] = "{$data["id"]}";
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function GetAllLand()
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM lands");
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = $d;
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -442,7 +518,7 @@ class Database
     {
         try {
             $sql = $this->db->prepare("UPDATE lands SET owner = :owner WHERE id = :id");
-            $sql->bindValue(":owner", $name, SQLITE3_TEXT);
+            $sql->bindValue(":owner", strtolower($name), SQLITE3_TEXT);
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
