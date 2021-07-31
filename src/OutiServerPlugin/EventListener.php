@@ -10,14 +10,13 @@ use ErrorException;
 use Exception;
 use InvalidArgumentException;
 use jojoe77777\FormAPI\SimpleForm;
+use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, SignChangeEvent};
 use pocketmine\event\Listener;
-use pocketmine\event\player\{PlayerJoinEvent, PlayerInteractEvent, PlayerChatEvent, PlayerKickEvent, PlayerQuitEvent};
+use pocketmine\event\player\{PlayerChatEvent, PlayerInteractEvent, PlayerJoinEvent, PlayerKickEvent, PlayerQuitEvent};
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
-use pocketmine\utils\TextFormat;
-use pocketmine\event\block\{SignChangeEvent, BlockBreakEvent, BlockBurnEvent};
-use pocketmine\item\Item;
 use TypeError;
 
 class EventListener implements Listener
@@ -51,8 +50,7 @@ class EventListener implements Listener
             }
 
             $this->plugin->client->sendChatMessage("**$name**がサーバーに参加しました\n");
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -64,8 +62,9 @@ class EventListener implements Listener
             $this->plugin->client->sendChatMessage("**$name**がサーバーから退出しました\n");
             unset($this->plugin->casino->slot->sloted[$name]);
             unset($this->plugin->casino->slot->effect[$name]);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+            unset($this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name]);
+            unset($this->checkiPhone[$name]);
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -87,11 +86,11 @@ class EventListener implements Listener
             }
 
             if ($shopdata) {
-                if ($this->plugin->db->isChestShopExits($block, $levelname) and $shopdata["owner"] !== $name and $event->getAction() === 1) {
+                if ($this->plugin->db->isChestShopChestExits($block, $levelname) and $shopdata["owner"] !== strtolower($name) and $event->getAction() === 1 and !$player->isOp()) {
                     $event->setCancelled();
-                    $player->sendMessage("このチェストをオープンできるのはSHOP作成者のみです。");
-                } elseif ($shopdata["owner"] === $name and $event->getAction() === 1) {
-                    $player->sendMessage("自分のSHOPで購入することはできません");
+                    $player->sendMessage("§b[チェストショップ] §f>> §6このチェストをオープンできるのはSHOP作成者・OPのみです");
+                } elseif ($shopdata["owner"] === strtolower($name) and $event->getAction() === 1) {
+                    $player->sendMessage("§b[チェストショップ] §f>> §6自分のSHOPで購入することはできません");
                 } else {
                     $this->plugin->chestshop->BuyChestShop($player, $shopdata);
                 }
@@ -106,17 +105,16 @@ class EventListener implements Listener
                 }
             }
 
-            if($slotid and $event->getAction() === 1 and !isset($this->plugin->casino->slot->sloted[$name])) {
+            if ($slotid and $event->getAction() === 1 and !isset($this->plugin->casino->slot->sloted[$name])) {
                 $pos = new Vector3($block->x, $block->y, $block->z);
                 $sign = $block->getLevel()->getTile($pos);
-                if($sign instanceof Tile) {
+                if ($sign instanceof Tile) {
                     $this->plugin->casino->slot->Start($player, $slotid, $sign);
                     $this->plugin->casino->slot->sloted[$name] = true;
                 }
             }
 
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -142,12 +140,10 @@ class EventListener implements Listener
                     return;
                 }
                 $this->plugin->chestshop->CreateChestShop($player, $chestdata, $block);
-            }
-            else if($lines[0] === "slot") {
+            } else if ($lines[0] === "slot") {
                 $this->plugin->casino->slot->Create($player, $block);
             }
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -161,12 +157,12 @@ class EventListener implements Listener
             $name = $player->getName();
             $shopdata = $this->plugin->db->GetChestShop($block, $levelname);
             if ($shopdata) {
-                if ($shopdata["owner"] !== $name) {
-                    $player->sendMessage("このShopを閉店させることができるのはSHOP作成者のみです");
+                if ($shopdata["owner"] !== strtolower($name) and !$player->isOp()) {
+                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店させることができるのはSHOP作成者・OPのみです");
                     $event->setCancelled();
                 } else {
                     $this->plugin->db->DeleteChestShop($shopdata);
-                    $player->sendMessage("このShopを閉店しました");
+                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店しました");
                 }
             }
 
@@ -178,19 +174,16 @@ class EventListener implements Listener
             }
 
             $slotid = $this->plugin->db->GetSlotId($block);
-            $slotdata = $this->plugin->db->GetSlot($slotid);
-            if($slotdata) {
-                if(!$player->isOp()) {
+            if ($slotid) {
+                if (!$player->isOp()) {
                     $player->sendMessage("[§bおうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
                     $event->setCancelled();
-                }
-                else {
+                } else {
                     $this->plugin->db->DeleteSlot($slotid);
                     $player->sendMessage("[§bおうちカジノ(スロット)] >> §aこのスロットを削除しました");
                 }
             }
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -203,8 +196,7 @@ class EventListener implements Listener
             $message = $event->getMessage();
 
             $this->plugin->client->sendChatMessage("**$name** >> $message \n");
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -216,8 +208,7 @@ class EventListener implements Listener
             if ($this->plugin->db->CheckLandProtection($landid)) {
                 $event->setCancelled();
             }
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -228,8 +219,7 @@ class EventListener implements Listener
             $name = $event->getPlayer()->getName();
             $reason = $event->getReason();
             $this->plugin->client->sendChatMessage("**$name**がサーバーから追放されました\nReason: $reason\n");
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -238,32 +228,38 @@ class EventListener implements Listener
     {
         try {
             $form = new SimpleForm(function (Player $player, $data) {
-                unset($this->checkiPhone[$player->getName()]);
-                if ($data === null) return true;
+                try {
+                    unset($this->checkiPhone[$player->getName()]);
+                    if ($data === null) return true;
 
-                switch ($data) {
-                    case 0:
-                        $this->plugin->money->Form($player);
-                        break;
-                    case 1:
-                        $this->plugin->adminshop->AdminShop($player);
-                        break;
-                    case 2:
-                        $this->plugin->land->land($player);
-                        break;
-                    case 3:
-                        $this->plugin->teleport->Form($player);
-                        break;
-                    case 4:
-                        $this->plugin->announce->Form($player);
-                        break;
-                    case 5:
-                        $this->plugin->casino->Form($player);
-                        break;
-                    case 6:
-                        $this->plugin->admin->AdminForm($player);
-                        break;
+                    switch ($data) {
+                        case 0:
+                            $this->plugin->money->Form($player);
+                            break;
+                        case 1:
+                            $this->plugin->adminshop->AdminShop($player);
+                            break;
+                        case 2:
+                            $this->plugin->land->land($player);
+                            break;
+                        case 3:
+                            $this->plugin->teleport->Form($player);
+                            break;
+                        case 4:
+                            $this->plugin->announce->Form($player);
+                            break;
+                        case 5:
+                            $this->plugin->casino->Form($player);
+                            break;
+                        case 6:
+                            $this->plugin->admin->AdminForm($player);
+                            break;
+                    }
+                    return true;
+                } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
+
                 return true;
             });
 
@@ -278,8 +274,7 @@ class EventListener implements Listener
                 $form->addButton("管理系");
             }
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }

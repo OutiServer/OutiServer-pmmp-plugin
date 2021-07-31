@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace OutiServerPlugin\plugins;
 
 use ArgumentCountError;
-use jojoe77777\FormAPI\{CustomForm, ModalForm, SimpleForm};
 use Error;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
+use jojoe77777\FormAPI\{CustomForm, ModalForm, SimpleForm};
 use OutiServerPlugin\Main;
 use pocketmine\item\Item;
 use pocketmine\Player;
@@ -28,18 +28,22 @@ class AdminShop
     {
         try {
             $form = new SimpleForm(function (Player $player, $data) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                switch ($data) {
-                    case 0:
-                        $this->AdminShopMenuCategory($player);
-                        break;
-                    case 1:
-                        $this->AdminShopSetprice($player);
-                        break;
-                    case 2:
-                        $this->DeleteItemCategory($player);
-                        break;
+                    switch ($data) {
+                        case 0:
+                            $this->AdminShopMenuCategory($player);
+                            break;
+                        case 1:
+                            $this->AdminShopSetprice($player);
+                            break;
+                        case 2:
+                            $this->DeleteItemCategory($player);
+                            break;
+                    }
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
 
                 return true;
@@ -52,8 +56,7 @@ class AdminShop
                 $form->addButton("アイテム削除");
             }
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -68,24 +71,28 @@ class AdminShop
             }
 
             $form = new CustomForm(function (Player $player, $data) use ($ItemCategorys) {
-                if ($data === null) return true;
-                else if (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[0]) or !is_numeric($data[3])) return true;
-                $itemid = $this->plugin->allItem->GetItemIdByJaName($data[0]);
-                if (!$itemid) {
-                    $player->sendMessage("アイテムが見つかりませんでした");
-                    return true;
-                }
-                $item = Item::get($itemid);
-                if (!$item) return true;
+                try {
+                    if ($data === null) return true;
+                    else if (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[0]) or !is_numeric($data[3])) return true;
+                    $itemid = $this->plugin->allItem->GetItemIdByJaName($data[0]);
+                    if (!$itemid) {
+                        $player->sendMessage("アイテムが見つかりませんでした");
+                        return true;
+                    }
+                    $item = Item::get($itemid);
+                    if (!$item) return true;
 
-                $itemdata = $this->plugin->db->GetAdminShop($item);
-                if (!$itemdata) {
-                    $this->plugin->db->SetAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
-                } else {
-                    $this->plugin->db->UpdateAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
-                }
+                    $itemdata = $this->plugin->db->GetAdminShop($item);
+                    if (!$itemdata) {
+                        $this->plugin->db->SetAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
+                    } else {
+                        $this->plugin->db->UpdateAdminShop($item, $data[1], $data[2], (int)$data[3] + 1);
+                    }
 
-                $player->sendMessage("設定しました");
+                    $player->sendMessage("設定しました");
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -96,8 +103,7 @@ class AdminShop
             $form->addInput("売却値段", "sellprice", "1");
             $form->addDropdown("アイテムカテゴリー", $allCategorys);
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -112,9 +118,14 @@ class AdminShop
             }
 
             $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
-                if ($data === null) return true;
-                $Categoryid = $alldata[(int)$data]["id"];
-                $this->AdminShopMenu($player, $Categoryid);
+                try {
+                    if ($data === null) return true;
+                    $Categoryid = $alldata[(int)$data]["id"];
+                    $this->AdminShopMenu($player, $Categoryid);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
                 return true;
             });
 
@@ -126,8 +137,7 @@ class AdminShop
             }
 
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -142,11 +152,15 @@ class AdminShop
             }
 
             $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                $itemdata = $alldata[$data];
+                    $itemdata = $alldata[$data];
 
-                $this->SelectAdminShop($player, $itemdata);
+                    $this->SelectAdminShop($player, $itemdata);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -161,8 +175,7 @@ class AdminShop
             }
 
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -171,21 +184,25 @@ class AdminShop
     {
         try {
             $form = new CustomForm(function (Player $player, $data) use ($itemdata) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                $item = Item::get($itemdata["itemid"], $itemdata["itemmeta"], (int)$data[1]);
-                if ($data[0] === 0) {
-                    if ($player->getInventory()->canAddItem($item)) {
-                        $this->AdminShopBuyCheck($player, $item, $itemdata);
-                    } else {
-                        $player->sendMessage("インベントリの空き容量が足りません");
+                    $item = Item::get($itemdata["itemid"], $itemdata["itemmeta"], (int)$data[1]);
+                    if ($data[0] === 0) {
+                        if ($player->getInventory()->canAddItem($item)) {
+                            $this->AdminShopBuyCheck($player, $item, $itemdata);
+                        } else {
+                            $player->sendMessage("インベントリの空き容量が足りません");
+                        }
+                    } elseif ($data[0] === 1) {
+                        if ($player->getInventory()->contains($item)) {
+                            $this->AdminShopSellCheck($player, $item, $itemdata);
+                        } else {
+                            $player->sendMessage("自分の所持しているアイテム以上のアイテムを売却することはできません");
+                        }
                     }
-                } elseif ($data[0] === 1) {
-                    if ($player->getInventory()->contains($item)) {
-                        $this->AdminShopSellCheck($player, $item, $itemdata);
-                    } else {
-                        $player->sendMessage("自分の所持しているアイテム以上のアイテムを売却することはできません");
-                    }
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
 
                 return true;
@@ -195,8 +212,7 @@ class AdminShop
             $form->addDropdown("購入・売却", ["購入", "売却"]);
             $form->addSlider("購入・売却する個数", 1, 64);
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -207,20 +223,26 @@ class AdminShop
             $price = $item->getCount() * $itemdata["buyprice"];
 
             $form = new ModalForm(function (Player $player, $data) use ($item, $price) {
-                if ($data === true) {
-                    $name = $player->getName();
-                    $playerdata = $this->plugin->db->GetMoney($name);
-                    if ($price > $playerdata["money"]) {
-                        $player->sendMessage("お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
-                        return;
-                    }
+                try {
+                    if ($data === true) {
+                        $name = $player->getName();
+                        $playerdata = $this->plugin->db->GetMoney($name);
+                        if ($price > $playerdata["money"]) {
+                            $player->sendMessage("お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
+                            return true;
+                        }
 
-                    $this->plugin->db->RemoveMoney($name, $price);
-                    $player->getInventory()->addItem($item);
-                    $player->sendMessage("購入しました");
-                } elseif ($data === false) {
-                    $player->sendMessage("購入しませんでした");
+                        $this->plugin->db->RemoveMoney($name, $price);
+                        $player->getInventory()->addItem($item);
+                        $player->sendMessage("購入しました");
+                    } elseif ($data === false) {
+                        $player->sendMessage("購入しませんでした");
+                    }
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
+
+                return true;
             });
 
             $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
@@ -229,8 +251,7 @@ class AdminShop
             $form->setButton1("購入する");
             $form->setButton2("やめる");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -241,14 +262,20 @@ class AdminShop
             $price = $item->getCount() * $itemdata["sellprice"];
 
             $form = new ModalForm(function (Player $player, $data) use ($item, $price) {
-                if ($data === true) {
-                    $name = $player->getName();
-                    $this->plugin->db->AddMoney($name, $price);
-                    $player->getInventory()->removeItem($item);
-                    $player->sendMessage("売却しました");
-                } elseif ($data === false) {
-                    $player->sendMessage("売却しませんでした");
+                try {
+                    if ($data === true) {
+                        $name = $player->getName();
+                        $this->plugin->db->AddMoney($name, $price);
+                        $player->getInventory()->removeItem($item);
+                        $player->sendMessage("売却しました");
+                    } elseif ($data === false) {
+                        $player->sendMessage("売却しませんでした");
+                    }
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
+
+                return true;
             });
 
             $form->setTitle("iPhone-AdminShop-売却最終確認");
@@ -256,8 +283,7 @@ class AdminShop
             $form->setButton1("売却する");
             $form->setButton2("やめる");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -272,9 +298,14 @@ class AdminShop
             }
 
             $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
-                if ($data === null) return true;
-                $Categoryid = $alldata[(int)$data]["id"];
-                $this->DeleteItemSelect($player, $Categoryid);
+                try {
+                    if ($data === null) return true;
+                    $Categoryid = $alldata[(int)$data]["id"];
+                    $this->DeleteItemSelect($player, $Categoryid);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
                 return true;
             });
 
@@ -286,8 +317,7 @@ class AdminShop
             }
 
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -304,23 +334,27 @@ class AdminShop
             $allitems = [];
             foreach ($allitem as $key) {
                 $item = Item::get($key["itemid"], $key["itemmeta"]);
-                if(!$item) continue;
+                if (!$item) continue;
                 $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                if(!$itemname) continue;
+                if (!$itemname) continue;
                 $allitems[] = $itemname;
             }
 
             $form = new CustomForm(function (Player $player, $data) use ($allitem) {
-                if($data === null) return true;
-                else if(!is_numeric($data[0])) return true;
+                try {
+                    if ($data === null) return true;
+                    else if (!is_numeric($data[0])) return true;
 
-                $item = Item::get($allitem[$data[0]]["itemid"], $allitem[$data[0]]["itemmeta"]);
-                if(!$item) return true;
-                $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                if(!$itemname) return true;
+                    $item = Item::get($allitem[$data[0]]["itemid"], $allitem[$data[0]]["itemmeta"]);
+                    if (!$item) return true;
+                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    if (!$itemname) return true;
 
-                $this->plugin->db->DeleteAdminShopItem($item);
-                $player->sendMessage($itemname . "をAdminShopから削除しました");
+                    $this->plugin->db->DeleteAdminShopItem($item);
+                    $player->sendMessage($itemname . "をAdminShopから削除しました");
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -328,8 +362,7 @@ class AdminShop
             $form->setTitle("Admin-アイテム削除");
             $form->addDropdown("アイテム", $allitems);
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

@@ -103,7 +103,7 @@ class Slot
                     $sign = $block->getLevel()->getTile($pos);
                     if ($sign instanceof Tile) {
                         $this->plugin->db->SetSlot($data[0], (int)$data[1], (int)$data[2], 3, $block);
-                        $sign->setText("SLOT: " . $data[0], "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]", "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]", "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]");
+                        $sign->setText("§bSLOT: " . $data[0], "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]", "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]", "§f[§6§k?§r§f]-[§a§k?§r§f]-[§c§k?§r§f]");
                         $player->sendMessage("Slot: " . $data[0] . "を作成しました");
                     }
 
@@ -137,12 +137,12 @@ class Slot
 
             $form = new CustomForm(function (Player $player, $data) use ($slotdata, $tile) {
                 try {
+                    $name = $player->getName();
                     if ($data === null) {
-                        unset($this->sloted[$player->getName()]);
+                        unset($this->sloted[$name]);
                         return true;
-                    }
-                    else if (!is_numeric($data[1])) {
-                        unset($this->sloted[$player->getName()]);
+                    } else if (!is_numeric($data[1])) {
+                        unset($this->sloted[$name]);
                         return true;
                     }
 
@@ -161,7 +161,12 @@ class Slot
                         }
                     }
                     */
-
+                    $money = $this->plugin->db->GetMoney($name);
+                    if($money["money"] < ($slotdata["bet"] * (int)$data[1])) {
+                        unset($this->sloted[$name]);
+                        $player->sendMessage("[§bおうちカジノ(スロット)] >> §rカジノコインがあと" . (($slotdata["bet"] * (int)$data[1]) - $money["money"]) . "コイン足りていませんよ？");
+                        return true;
+                    }
                     $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_1"], [$player, $tile, $slotdata, (int)$data[1]]), 30);
                     $player->sendTitle("§f[§e?§f]-[§e?§f]-[§e?§f]\n§f[§e?§f]-[§e?§f]-[§e?§f]\n§f[§e?§f]-[§e?§f]-[§e?§f]", "§6スロットを開始します");
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -240,7 +245,7 @@ class Slot
             } else {
                 $this->sendslot($player, $tile, $slotdata, $s1, $s2, $s3);
                 $this->oto($player, "pop");
-                $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_end"], [$player, $tile, $slotdata, $rate, $s1, $s2, $s3]), 20);
+                $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_end"], [$player, $slotdata, $rate, $s1, $s2, $s3]), 20);
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
@@ -253,13 +258,13 @@ class Slot
         try {
             $this->sendslot($player, $tile, $slotdata, $s1, $s2, $s3);
             $this->oto($player, "pop");
-            $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_end"], [$player, $tile, $slotdata, $rate, $s1, $s2, $s3]), 20);
+            $this->plugin->getScheduler()->scheduleDelayedTask(new SlotTask([$this, "slot_end"], [$player, $slotdata, $rate, $s1, $s2, $s3]), 20);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
 
-    public function slot_end(Player $player, Tile $tile, array $slotdata, int $rate, array $s1, array $s2, array $s3)
+    public function slot_end(Player $player, array $slotdata, int $rate, array $s1, array $s2, array $s3)
     {
         try {
             $name = $player->getName();
@@ -341,8 +346,7 @@ class Slot
                     $player->sendMessage("[§bおうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
                 }
-            }
-            else {
+            } else {
                 $this->oto($player, "bad");
                 $player->sendMessage("[§bおうちカジノ(スロット)] >> §cハズレ");
                 $this->plugin->db->RemoveMoney($name, (int)$slotdata["bet"] * $rate);
@@ -367,10 +371,9 @@ class Slot
 
                 $pos = new Vector3($data["x"], $data["y"], $data["z"]);
                 $slots = $this->plugin->db->GetAllSlot();
-                if($slots) {
+                if ($slots) {
                     $count = count($slots);
-                }
-                else {
+                } else {
                     $count = 0;
                 }
                 $this->ftps[$level->getName()] = new FloatingTextParticle($pos, "§b現在のジャックポット: §6" . $data["jp"] . "§fカジノコイン\n§b過去最高ジャックポット当選者: §d" . $data["highplayer"] . " §6" . $data["highjp"] . "§fカジノコイン\n" . "§b最後のジャックポット当選者: §a" . $data["lastplayer"] . " §6" . $data["lastjp"] . "§fカジノコイン\n§2稼働しているスロット台数: " . $count . "台", "§3現在のおうちサーバーカジノ(スロット)の状態");
@@ -384,7 +387,7 @@ class Slot
     private function sendslot(Player $player, Tile $tile, array $slotdata, array $s1, $s2 = array("§k?§r", "§k?§r", "§k?§r"), $s3 = array("§k?§r", "§k?§r", "§k?§r"))
     {
         try {
-            $tile->setText("SLOT: " . $slotdata["name"], "§f[§6$s1[0]§f]-[§a$s2[0]§f]-[§c$s3[0]§f]", "§f[§6$s1[1]§f]-[§a$s2[1]§f]-[§c$s3[1]§f]", "§f[§6$s1[2]§f]-[§a$s2[2]§f]-[§c$s3[2]§f]");
+            $tile->setText("§bSLOT: " . $slotdata["name"], "§f[§6$s1[0]§f]-[§a$s2[0]§f]-[§c$s3[0]§f]", "§f[§6$s1[1]§f]-[§a$s2[1]§f]-[§c$s3[1]§f]", "§f[§6$s1[2]§f]-[§a$s2[2]§f]-[§c$s3[2]§f]");
             if (is_numeric($s2[0])) {
                 if (($s1[0] === $s2[0] or $s1[1] === $s2[1] or $s1[2] === $s2[2] or $s1[0] === $s2[1] or $s3[0] === $s2[1]) and !isset($this->effect[$player->getName()])) {
                     $this->effect[$player->getName()] = array(

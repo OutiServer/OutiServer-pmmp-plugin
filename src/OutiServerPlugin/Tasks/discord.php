@@ -4,7 +4,6 @@ namespace OutiServerPlugin\Tasks;
 
 use Discord\Exceptions\IntentException;
 use Discord\Parts\Channel\{Channel, Message};
-use Discord\Parts\Permissions\RolePermission;
 use Discord\Parts\User\Member;
 use pocketmine\utils\TextFormat;
 use React\EventLoop\Factory;
@@ -92,7 +91,7 @@ class discord extends Thread
             $this->started = true;
             echo "Bot is ready.", PHP_EOL;
             $discord->on('message', function (Message $message) use ($discord) {
-                if($message->author instanceof Member ? $message->author->user->bot : $message->author->bot or $message->type !== Message::TYPE_NORMAL or $message->channel->type !== Channel::TYPE_TEXT or $message->content === "" or !$message->author instanceof Member) return;
+                if ($message->author instanceof Member ? $message->author->user->bot : $message->author->bot or $message->type !== Message::TYPE_NORMAL or $message->channel->type !== Channel::TYPE_TEXT or $message->content === "" or !$message->author instanceof Member) return;
                 if ($message->channel_id === $this->log_id) {
                     $this->console_Queue[] = serialize([
                         'username' => $message->author->username,
@@ -105,20 +104,18 @@ class discord extends Thread
                     ]);
                 }
 
-                if(!str_starts_with(strtolower($message->content), $this->prefix)) return;
+                if (!str_starts_with(strtolower($message->content), $this->prefix)) return;
                 $args = preg_split("/ +/", trim(mb_substr($message->content, strlen($this->prefix))));
                 $command = strtolower(array_shift($args));
-                if($command === "help") {
+                if ($command === "help") {
                     $message->channel->sendMessage("```\n" . "Command Prefix: " . $this->prefix . "\n\nhelp: このコマンド\nserver: サーバーの状態を表示\nannounce [title] [content]: (管理者専用)運営からのお知らせを追加する\n```");
-                }
-                else if($command === "server") {
+                } else if ($command === "server") {
                     $this->command_Queue[] = serialize([
                         "name" => $command,
                         "channelid" => $message->channel_id
-                        ]);
-                }
-                else if($command === "announce") {
-                    if(count($args) < 2 or (!$message->author->roles->has("771015602180587571") and !$message->author->roles->has("822852335322923060") and $message->guild->id === "706452606918066237")) return;
+                    ]);
+                } else if ($command === "announce") {
+                    if (count($args) < 2 or (!$message->author->roles->has("771015602180587571") and !$message->author->roles->has("822852335322923060") and !$message->author->roles->has("852190591830982677"))) return;
                     $this->command_Queue[] = serialize([
                         "name" => $command,
                         "channelid" => $message->channel_id,
@@ -198,7 +195,7 @@ class discord extends Thread
             $errorlogchannel->sendMessage($errorlogsend);
         }
 
-        if($this->db_send)  {
+        if ($this->db_send) {
             $db_channel->sendFile($this->dir . "outiserver.db");
             $this->db_send = false;
         }

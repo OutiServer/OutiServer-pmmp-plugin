@@ -6,8 +6,8 @@ namespace OutiServerPlugin\Utils;
 
 use ArgumentCountError;
 use Error;
-use Exception;
 use ErrorException;
+use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
 use pocketmine\block\Block;
@@ -42,14 +42,13 @@ class Database
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
                 $sql->bindValue(':name', $key, SQLITE3_TEXT);
                 $result = $sql->execute();
-                if(!$result->fetchArray()) {
+                if (!$result->fetchArray()) {
                     $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
                     $sql->bindValue(':name', $key, SQLITE3_TEXT);
                     $sql->execute();
                 }
             }
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -58,8 +57,7 @@ class Database
     {
         try {
             $this->db->close();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -71,8 +69,7 @@ class Database
             $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, 1000)");
             $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -87,8 +84,7 @@ class Database
             $data = $result->fetchArray();
             if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -99,7 +95,7 @@ class Database
     {
         try {
             $oldmoney = $this->GetMoney($name);
-            if(!$oldmoney) {
+            if (!$oldmoney) {
                 $this->SetMoney($name);
                 $oldmoney = $this->GetMoney($name);
             }
@@ -107,8 +103,7 @@ class Database
             $sql->bindValue(':money', ($oldmoney["money"] + $addmoney), SQLITE3_INTEGER);
             $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -117,7 +112,7 @@ class Database
     {
         try {
             $oldmoney = $this->GetMoney($name);
-            if(!$oldmoney) {
+            if (!$oldmoney) {
                 $this->SetMoney($name);
                 $oldmoney = $this->GetMoney($name);
             }
@@ -125,8 +120,7 @@ class Database
             $sql->bindValue(':money', ($oldmoney["money"] - $removemoney), SQLITE3_INTEGER);
             $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -136,20 +130,18 @@ class Database
     {
         try {
             $data = $this->GetMoney($name);
-            if(!$data) {
+            if (!$data) {
                 $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, :money)");
                 $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
                 $sql->bindValue(':money', $money, SQLITE3_INTEGER);
-            }
-            else {
+            } else {
                 $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
                 $sql->bindValue(':money', $money, SQLITE3_INTEGER);
                 $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             }
 
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -172,21 +164,19 @@ class Database
             $sql->bindValue(':maxcount', $item->getCount(), SQLITE3_INTEGER);
             $sql->bindValue(':levelname', $signboard->getLevel()->getName(), SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
 
     // チェストショップのチェスト存在確認
-    public function isChestShopExits($block, $levelname): bool
+    public function isChestShopChestExits(Block $block, $levelname): bool
     {
         try {
             $data = $this->GetChestShop($block, $levelname);
-            if(!$data) return false;
-            else return true;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            if ($data["chestx"] === $block->x and $data["chesty"] === $block->y and $data["chestz"] === $block->z) return true;
+            else return false;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -206,8 +196,7 @@ class Database
             $data = $result->fetchArray();
             if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -224,8 +213,7 @@ class Database
             $sql->bindValue(':z', $shopdata["signboardz"], SQLITE3_INTEGER);
             $sql->bindValue(':levelname', $shopdata["levelname"], SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -242,8 +230,7 @@ class Database
             $sql->bindValue(':sellprice', $sell, SQLITE3_INTEGER);
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -259,8 +246,7 @@ class Database
             $sql->bindValue(':sellprice', $sell, SQLITE3_INTEGER);
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -278,8 +264,7 @@ class Database
                 return false;
             }
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -300,8 +285,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -322,8 +306,7 @@ class Database
             $sql->bindValue(':invites', serialize(array()), SQLITE3_TEXT);
             $sql->bindValue(':protection', 0, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -342,8 +325,7 @@ class Database
                 return false;
             }
             return (int)$data["id"];
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -357,12 +339,11 @@ class Database
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) {
+            if (!$data) {
                 return false;
             }
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -376,8 +357,7 @@ class Database
             $sql->bindValue(':protection', $protection, SQLITE3_INTEGER);
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -386,15 +366,14 @@ class Database
     {
         try {
             $invites = $this->GetLandInvites($id);
-            if(!in_array($invitename, $invites)) {
+            if (!in_array($invitename, $invites)) {
                 $invites[] = strtolower(str_replace("'", "", $invitename));
                 $sql = $this->db->prepare("UPDATE lands SET invites = :invites WHERE id = :id");
                 $sql->bindValue(":invites", serialize($invites), SQLITE3_TEXT);
                 $sql->bindValue(":id", $id, SQLITE3_INTEGER);
                 $sql->execute();
             }
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -411,8 +390,7 @@ class Database
             }
 
             return unserialize($data["invites"]);
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -424,11 +402,10 @@ class Database
         try {
             $invites = $this->GetLandInvites($id);
             $invitename = strtolower($name);
-            if(!$invites) return false;
-            elseif(!in_array($invitename, $invites)) return false;
+            if (!$invites) return false;
+            elseif (!in_array($invitename, $invites)) return false;
             return true;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -454,8 +431,7 @@ class Database
             }
 
             return false;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -469,21 +445,19 @@ class Database
             $sql->bindValue(":owner", $name, SQLITE3_TEXT);
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
 
-    public function CheckLandOwner(int $id, string $name) : bool
+    public function CheckLandOwner(int $id, string $name): bool
     {
         try {
             $ownername = strtolower($name);
             $landdata = $this->GetLandData($id);
-            if(!$landdata) return false;
+            if (!$landdata) return false;
             return $landdata["owner"] === $ownername;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -494,11 +468,10 @@ class Database
     {
         try {
             $landdata = $this->GetLandData($id);
-            if(!$landdata) return null;
+            if (!$landdata) return null;
             elseif ($landdata["protection"] === 1) return true;
             else return false;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -518,8 +491,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -533,15 +505,14 @@ class Database
             $sql = $this->db->prepare("SELECT * FROM itemcategorys");
             $result = $sql->execute();
             while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
-                if(!$this->AllAdminShop($d["id"])) continue;
+                if (!$this->AllAdminShop($d["id"])) continue;
                 $alldata[] = $d;
             }
 
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -554,8 +525,7 @@ class Database
             $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
             $sql->bindValue(':name', $name, SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -566,8 +536,7 @@ class Database
             $sql = $this->db->prepare("DELETE FROM itemcategorys WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -579,8 +548,7 @@ class Database
             $sql->bindValue(':itemid', $item->getId(), SQLITE3_INTEGER);
             $sql->bindValue(':itemmeta', $item->getDamage(), SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -595,8 +563,7 @@ class Database
             $sql->bindValue(':y', (int)$position->y, SQLITE3_INTEGER);
             $sql->bindValue(':z', (int)$position->z, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -607,8 +574,7 @@ class Database
             $sql = $this->db->prepare("DELETE FROM worldteleports WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -626,8 +592,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -641,10 +606,9 @@ class Database
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -659,8 +623,7 @@ class Database
             $sql->bindValue(':title', $title, SQLITE3_TEXT);
             $sql->bindValue(':content', $content, SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -671,8 +634,7 @@ class Database
             $sql = $this->db->prepare("DELETE FROM adminannounces WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -684,10 +646,9 @@ class Database
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -707,8 +668,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -725,10 +685,9 @@ class Database
             $sql->bindValue(":z", (int)$pos->z, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return (int)$data["id"];
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -742,10 +701,9 @@ class Database
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -766,8 +724,7 @@ class Database
             $sql->bindValue(':y', (int)$pos->y, SQLITE3_INTEGER);
             $sql->bindValue(':z', (int)$pos->z, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -785,8 +742,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -799,8 +755,7 @@ class Database
             $sql = $this->db->prepare("DELETE FROM casinoslots WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -809,7 +764,7 @@ class Database
     {
         try {
             $oldsettings = $this->GetSlotSettings($levelname);
-            if(!$oldsettings) {
+            if (!$oldsettings) {
                 $this->SetSlotSettings($levelname);
                 $oldsettings = $this->GetSlotSettings($levelname);
             }
@@ -818,8 +773,7 @@ class Database
             $sql->bindValue(':jp', ($oldsettings["jp"] + $added), SQLITE3_INTEGER);
             $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -831,10 +785,9 @@ class Database
             $sql->bindValue(":name", $levelname, SQLITE3_TEXT);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return $data;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -848,15 +801,14 @@ class Database
             $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
             $sql->bindValue(':jp', (int)$this->plugin->config->get("Default_Slot_JP", 10000), SQLITE3_INTEGER);
             $sql->bindValue(':highjp', 0, SQLITE3_INTEGER);
-            $sql->bindValue(':highplayer',"なし", SQLITE3_TEXT);
+            $sql->bindValue(':highplayer', "なし", SQLITE3_TEXT);
             $sql->bindValue(':lastjp', 0, SQLITE3_INTEGER);
             $sql->bindValue(':lastplayer', "なし", SQLITE3_TEXT);
             $sql->bindValue(':x', 0, SQLITE3_INTEGER);
             $sql->bindValue(':y', 0, SQLITE3_INTEGER);
             $sql->bindValue(':z', 0, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -874,8 +826,7 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
@@ -891,8 +842,7 @@ class Database
             $sql->bindValue(":y", $y, SQLITE3_INTEGER);
             $sql->bindValue(":z", $z, SQLITE3_INTEGER);
             $sql->execute();
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -901,10 +851,9 @@ class Database
     {
         try {
             $data = $this->GetSlotSettings($levelname);
-            if($data["highjp"] < $data["jp"]) {
+            if ($data["highjp"] < $data["jp"]) {
                 $sql = $this->db->prepare("UPDATE casinoslotsettings SET jp = :setjp, highjp = :jp, highplayer = :player, lastjp = :jp, lastplayer = :player  WHERE levelname = :levelname");
-            }
-            else {
+            } else {
                 $sql = $this->db->prepare("UPDATE casinoslotsettings SET jp = :setjp, lastjp = :jp, lastplayer = :player  WHERE levelname = :levelname");
             }
             $sql->bindValue(":setjp", (int)$this->plugin->config->get("Default_Slot_JP", 10000), SQLITE3_INTEGER);
@@ -913,8 +862,7 @@ class Database
             $sql->bindValue(":levelname", $levelname, SQLITE3_TEXT);
             $sql->execute();
 
-        }
-        catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }

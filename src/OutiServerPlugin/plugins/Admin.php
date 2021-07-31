@@ -30,42 +30,47 @@ class Admin
     {
         try {
             $form = new SimpleForm(function (Player $player, $data) {
-                if ($data === null) return true;
+                try {
+                    if ($data === null) return true;
 
-                switch ($data) {
-                    case 0:
-                        $this->AdminAddMoney($player);
-                        break;
-                    case 1:
-                        $this->AdminRemoveMoney($player);
-                        break;
-                    case 2:
-                        $this->AdminSetMoney($player);
-                        break;
-                    case 3:
-                        $this->AddItemCategory($player);
-                        break;
-                    case 4:
-                        $this->RemoveItemCategory($player);
-                        break;
-                    case 5:
-                        $this->AddWorldTeleport($player);
-                        break;
-                    case 6:
-                        $this->RemoveWorldTeleport($player);
-                        break;
-                    case 7:
-                        $this->AddAnnounce($player);
-                        break;
-                    case 8:
-                        $this->RemoveAnnounce($player);
-                        break;
-                    case 9:
-                        $this->KenCir0909DB($player);
-                        break;
-                    case 10:
-                        $this->plugin->client->sendDB();
-                        break;
+                    switch ($data) {
+                        case 0:
+                            $this->AdminAddMoney($player);
+                            break;
+                        case 1:
+                            $this->AdminRemoveMoney($player);
+                            break;
+                        case 2:
+                            $this->AdminSetMoney($player);
+                            break;
+                        case 3:
+                            $this->AddItemCategory($player);
+                            break;
+                        case 4:
+                            $this->RemoveItemCategory($player);
+                            break;
+                        case 5:
+                            $this->AddWorldTeleport($player);
+                            break;
+                        case 6:
+                            $this->RemoveWorldTeleport($player);
+                            break;
+                        case 7:
+                            $this->AddAnnounce($player);
+                            break;
+                        case 8:
+                            $this->RemoveAnnounce($player);
+                            break;
+                        case 9:
+                            $this->KenCir0909DB($player);
+                            break;
+                        case 10:
+                            $this->plugin->client->sendDB();
+                            break;
+                    }
+                }
+                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
 
                 return true;
@@ -87,7 +92,7 @@ class Admin
             }
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -96,11 +101,18 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if ($data === null) return true;
-                elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
-                else if (!Player::isValidUserName($data[0])) return true;
-                $this->plugin->db->AddMoney($data[0], (int)$data[1]);
-                $player->sendMessage($data[0] . "に" . $data[1] . "円追加しました");
+                try {
+                    if ($data === null) return true;
+                    elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
+                    else if (!Player::isValidUserName($data[0])) return true;
+                    $this->plugin->db->AddMoney($data[0], (int)$data[1]);
+                    $player->sendMessage($data[0] . "に" . $data[1] . "円追加しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("iPhone-管理-プレイヤーにお金を追加");
@@ -108,7 +120,7 @@ class Admin
             $form->addInput("追加するお金", "addmoney", "0");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -117,11 +129,18 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if ($data === null) return true;
-                elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
-                else if (!Player::isValidUserName($data[0])) return true;
-                $this->plugin->db->RemoveMoney($data[0], (int)$data[1]);
-                $player->sendMessage($data[0] . "から" . $data[1] . "円剥奪しました");
+                try {
+                    if ($data === null) return true;
+                    elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
+                    else if (!Player::isValidUserName($data[0])) return true;
+                    $this->plugin->db->RemoveMoney($data[0], (int)$data[1]);
+                    $player->sendMessage($data[0] . "から" . $data[1] . "円剥奪しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("iPhone-管理-プレイヤーからお金を剥奪");
@@ -129,7 +148,7 @@ class Admin
             $form->addInput("剥奪するお金", "addmoney", "0");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -138,11 +157,18 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if ($data === null) return true;
-                elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
-                else if (!Player::isValidUserName($data[0])) return true;
-                $this->plugin->db->UpdateMoney($data[0], (int)$data[1]);
-                $player->sendMessage($data[0] . "の所持金を" . $data[1] . "円設定しました");
+                try {
+                    if ($data === null) return true;
+                    elseif (!isset($data[0]) or !is_numeric($data[1])) return true;
+                    else if (!Player::isValidUserName($data[0])) return true;
+                    $this->plugin->db->UpdateMoney($data[0], (int)$data[1]);
+                    $player->sendMessage($data[0] . "の所持金を" . $data[1] . "円設定しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("iPhone-管理-プレイヤーのお金をセット");
@@ -150,7 +176,7 @@ class Admin
             $form->addInput("セットするお金", "setmoney", "0");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -159,22 +185,29 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if ($data === null) return;
-                elseif (!isset($data[0])) return;
                 try {
-                    $result = $this->plugin->db->db->query($data[0]);
-                    $data = $result->fetchArray();
-                    var_dump($data);
-                } catch (Exception $ex) {
-                    $player->sendMessage("ERROR!\n" . $ex->getMessage());
+                    if ($data === null) return true;
+                    elseif (!isset($data[0])) return true;
+                    try {
+                        $result = $this->plugin->db->db->query($data[0]);
+                        $data = $result->fetchArray();
+                        var_dump($data);
+                    } catch (Exception $ex) {
+                        $player->sendMessage("ERROR!\n" . $ex->getMessage());
+                    }
                 }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("iPhone-管理-db接続");
             $form->addInput("クエリ", "query", "");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -183,11 +216,16 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if($data === null) return true;
-                else if(!isset($data[0])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!isset($data[0])) return true;
 
-                $this->plugin->db->AddItemCategory($data[0]);
-                $player->sendMessage($data[0] . "をアイテムカテゴリーに追加しました");
+                    $this->plugin->db->AddItemCategory($data[0]);
+                    $player->sendMessage($data[0] . "をアイテムカテゴリーに追加しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -196,7 +234,7 @@ class Admin
             $form->addInput("追加するアイテムカテゴリーの名前", "additemcategoryname", "");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -211,18 +249,25 @@ class Admin
             }
 
             $form = new CustomForm(function (Player $player, $data) use ($ItemCategorys) {
-                if($data === null) return true;
-                else if(!is_numeric($data[0])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!is_numeric($data[0])) return true;
 
-                $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[0]]["id"]);
-                $player->sendMessage($ItemCategorys[(int)$data[0]]["name"] . "をアイテムカテゴリーから削除しました");
+                    $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[0]]["id"]);
+                    $player->sendMessage($ItemCategorys[(int)$data[0]]["name"] . "をアイテムカテゴリーから削除しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("Admin-アイテムカテゴリー削除");
             $form->addDropdown("アイテムカテゴリー", $allCategorys);
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -231,12 +276,17 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if($data === null) return true;
-                else if(!isset($data[0])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!isset($data[0])) return true;
 
-                $pos = $player->getPosition();
-                $this->plugin->db->SetWorldTeleport($data[0], $pos);
-                $player->sendMessage("テレポート地点を追加しました");
+                    $pos = $player->getPosition();
+                    $this->plugin->db->SetWorldTeleport($data[0], $pos);
+                    $player->sendMessage("テレポート地点を追加しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -245,7 +295,7 @@ class Admin
             $form->addInput("テレポート名", "name", "");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -264,18 +314,25 @@ class Admin
             }
 
             $form = new CustomForm(function (Player $player, $data) use ($allteleportworlds) {
-                if($data === null) return true;
-                else if(!is_numeric($data[0])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!is_numeric($data[0])) return true;
 
-                $this->plugin->db->DeleteWorldTeleport($allteleportworlds[(int)$data[0]]["id"]);
-                $player->sendMessage($allteleportworlds[(int)$data[0]]["name"] . "をテレポートから削除しました");
+                    $this->plugin->db->DeleteWorldTeleport($allteleportworlds[(int)$data[0]]["id"]);
+                    $player->sendMessage($allteleportworlds[(int)$data[0]]["name"] . "をテレポートから削除しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("Admin-テレポート削除");
             $form->addDropdown("テレポート先", $teleportworlds);
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -284,14 +341,19 @@ class Admin
     {
         try {
             $form = new CustomForm(function (Player $player, $data) {
-                if($data === null) return true;
-                else if(!isset($data[0]) or !isset($data[1])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!isset($data[0]) or !isset($data[1])) return true;
 
-                $time = new DateTime('now');
-                $this->plugin->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $data[0], $data[1]);
-                $player->sendMessage("運営からのお知らせ " . $data[0] . " を追加しました");
-                Server::getInstance()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
-                $this->plugin->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
+                    $time = new DateTime('now');
+                    $this->plugin->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $data[0], $data[1]);
+                    $player->sendMessage("運営からのお知らせ " . $data[0] . " を追加しました");
+                    Server::getInstance()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
+                    $this->plugin->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
 
                 return true;
             });
@@ -301,7 +363,7 @@ class Admin
             $form->addInput("説明", "content", "");
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -321,18 +383,25 @@ class Admin
             }
 
             $form = new CustomForm(function (Player $player, $data) use ($allannounce) {
-                if($data === null) return true;
-                else if(!is_numeric($data[0])) return true;
+                try {
+                    if($data === null) return true;
+                    else if(!is_numeric($data[0])) return true;
 
-                $this->plugin->db->DeleteAnnounce($allannounce[(int)$data[0]]["id"]);
-                $player->sendMessage($allannounce[(int)$data[0]]["title"] . "をアナウンスから削除しました");
+                    $this->plugin->db->DeleteAnnounce($allannounce[(int)$data[0]]["id"]);
+                    $player->sendMessage($allannounce[(int)$data[0]]["title"] . "をアナウンスから削除しました");
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
             });
 
             $form->setTitle("Admin-アナウンス削除");
             $form->addDropdown("アナウンス", $announces);
             $player->sendForm($form);
         }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

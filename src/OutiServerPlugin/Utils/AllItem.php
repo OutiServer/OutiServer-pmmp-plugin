@@ -6,7 +6,6 @@ namespace OutiServerPlugin\Utils;
 
 use ArgumentCountError;
 use Error;
-use ErrorException;
 use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
@@ -24,8 +23,7 @@ class AllItem
         try {
             $json = file_get_contents($path);
             $this->items = json_decode($json, true);
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -33,25 +31,27 @@ class AllItem
     public function GetItemIdByJaName(string $ja_name)
     {
         try {
-            if(!isset($this->items["ja_name"][$ja_name])) return false;
+            if (!isset($this->items["ja_name"][$ja_name])) return false;
             $data = $this->items["ja_name"][$ja_name];
             return $data["id"];
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+
+        return false;
     }
 
     public function GetItemJaNameById(int $id)
     {
         try {
-            if(!isset($this->items["id"][$id])) return false;
+            if (!isset($this->items["id"][$id])) return false;
             $data = $this->items["id"][$id];
             if (!$data) return false;
             return $data["ja_name"];
-        }
-        catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+
+        return false;
     }
 }
