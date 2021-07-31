@@ -29,6 +29,7 @@ class Slot
     public array $sloted = [];
     public array $effect = [];
     private array $ftps = [];
+    private FloatingTextParticle $ftp;
 
     public function __construct(Main $plugin)
     {
@@ -36,17 +37,14 @@ class Slot
         try {
             $slotsettingdata = $this->plugin->db->AllGetSlotSettings();
             if (!$slotsettingdata) return;
-
-            foreach ($slotsettingdata as $data) {
-                if (!$this->plugin->getServer()->isLevelGenerated($data["levelname"])) continue;
-                if (!$this->plugin->getServer()->isLevelLoaded($data["levelname"])) {
-                    $this->plugin->getServer()->loadLevel($data["levelname"]);
-                }
-                $level = $this->plugin->getServer()->getLevelByName($data["levelname"]);
-                $pos = new Vector3($data["x"], $data["y"], $data["z"]);
-                $this->ftps[$level->getName()] = new FloatingTextParticle($pos, "取得中...", "§3現在のおうちサーバーカジノ(スロット)の状態");
-                $level->addParticle($this->ftps[$level->getName()]);
+            if (!$this->plugin->getServer()->isLevelGenerated($slotsettingdata[0]["levelname"])) return;
+            if (!$this->plugin->getServer()->isLevelLoaded($slotsettingdata[0]["levelname"])) {
+                $this->plugin->getServer()->loadLevel($slotsettingdata[0]["levelname"]);
             }
+            $level = $this->plugin->getServer()->getLevelByName($slotsettingdata[0]["levelname"]);
+            $pos = new Vector3($slotsettingdata[0]["levelname"]["x"], $slotsettingdata[0]["levelname"]["y"], $slotsettingdata[0]["levelname"]["z"]);
+            $this->ftp = new FloatingTextParticle($pos, "取得中...", "§3現在のおうちサーバーカジノ(スロット)の状態");
+            $level->addParticle($this->ftp);
 
             $this->plugin->getScheduler()->scheduleRepeatingTask(new SlotTask([$this, "slotinfo"]), 20);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -65,10 +63,10 @@ class Slot
                     switch ($data) {
                         case 0:
                             $this->plugin->db->UpdateSlotSettingxyz($player->getLevel()->getName(), (int)$player->x, (int)$player->y, (int)$player->z);
-                            if (!isset($this->ftps[$player->getLevel()->getName()])) {
+                            if (!isset($this->ftp)) {
                                 $pos = new Vector3((int)$player->x, (int)$player->y, (int)$player->z);
-                                $this->ftps[$player->getLevel()->getName()] = new FloatingTextParticle($pos, "取得中...", "§3現在のおうちサーバーカジノ(スロット)の状態");
-                                $player->getLevel()->addParticle($this->ftps[$player->getLevel()->getName()]);
+                                $this->ftp = new FloatingTextParticle($pos, "取得中...", "§3現在のおうちサーバーカジノ(スロット)の状態");
+                                $player->getLevel()->addParticle($this->ftp);
                             }
                             $this->slotinfo();
                             $player->sendMessage("§b[おうちカジノ(スロット)] >> 設定しました");
@@ -362,23 +360,20 @@ class Slot
         try {
             $slotsettingdata = $this->plugin->db->AllGetSlotSettings();
             if (!$slotsettingdata) return;
+            $level = $this->plugin->getServer()->getLevelByName($slotsettingdata[0]["levelname"]);
+            if (!$level) return;
+            $this->ftp->setInvisible();
+            $level->addParticle($this->ftp);
 
-            foreach ($slotsettingdata as $data) {
-                $level = $this->plugin->getServer()->getLevelByName($data["levelname"]);
-                if (!$level) return;
-                $this->ftps[$level->getName()]->setInvisible();
-                $level->addParticle($this->ftps[$level->getName()]);
-
-                $pos = new Vector3($data["x"], $data["y"], $data["z"]);
-                $slots = $this->plugin->db->GetAllSlot();
-                if ($slots) {
-                    $count = count($slots);
-                } else {
-                    $count = 0;
-                }
-                $this->ftps[$level->getName()] = new FloatingTextParticle($pos, "§b現在のジャックポット: §6" . $data["jp"] . "§fカジノコイン\n§b過去最高ジャックポット当選者: §d" . $data["highplayer"] . " §6" . $data["highjp"] . "§fカジノコイン\n" . "§b最後のジャックポット当選者: §a" . $data["lastplayer"] . " §6" . $data["lastjp"] . "§fカジノコイン\n§2稼働しているスロット台数: " . $count . "台", "§3現在のおうちサーバーカジノ(スロット)の状態");
-                $level->addParticle($this->ftps[$level->getName()]);
+            $pos = new Vector3($slotsettingdata[0]["x"], $slotsettingdata[0]["y"], $slotsettingdata[0]["z"]);
+            $slots = $this->plugin->db->GetAllSlot();
+            if ($slots) {
+                $count = count($slots);
+            } else {
+                $count = 0;
             }
+            $this->ftp = new FloatingTextParticle($pos, "§b現在のジャックポット: §6" . $slotsettingdata[0]["jp"] . "§fカジノコイン\n§b過去最高ジャックポット当選者: §d" . $slotsettingdata[0]["highplayer"] . " §f" . $slotsettingdata[0]["highjp"] . "§aカジノコイン\n" . "§b最後のジャックポット当選者: " . $slotsettingdata[0]["lastplayer"] . " §d" . $slotsettingdata[0]["lastjp"] . "カジノコイン\n§e稼働しているスロット台数: " . $count . "台", "現在のおうちサーバーカジノ(スロット)の状態");
+            $level->addParticle($this->ftp);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
