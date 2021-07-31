@@ -42,7 +42,7 @@ class Slot
                 $this->plugin->getServer()->loadLevel($slotsettingdata[0]["levelname"]);
             }
             $level = $this->plugin->getServer()->getLevelByName($slotsettingdata[0]["levelname"]);
-            $pos = new Vector3($slotsettingdata[0]["levelname"]["x"], $slotsettingdata[0]["levelname"]["y"], $slotsettingdata[0]["levelname"]["z"]);
+            $pos = new Vector3($slotsettingdata[0]["x"], $slotsettingdata[0]["y"], $slotsettingdata[0]["z"]);
             $this->ftp = new FloatingTextParticle($pos, "取得中...", "§3現在のおうちサーバーカジノ(スロット)の状態");
             $level->addParticle($this->ftp);
 
