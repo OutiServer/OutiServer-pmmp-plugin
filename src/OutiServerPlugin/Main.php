@@ -10,6 +10,7 @@ use Error;
 use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, Casino, ChestShop, Land, Money, Teleport};
+use OutiServerPlugin\commands\test;
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
@@ -62,10 +63,12 @@ class Main extends PluginBase
             $this->money = new Money($this);
             $this->casino = new Casino($this);
 
+            $map = $this->getServer()->getCommandMap();
+            $map->register($this->getName(), new test("test", $this));
+            $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
             $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
 
-            $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
 
             $this->getScheduler()->scheduleDelayedTask(new ClosureTask(
                 function (int $currentTick): void {
@@ -74,7 +77,6 @@ class Main extends PluginBase
                     ob_start();
                 }
             ), 10);
-
             $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
                 function (int $currentTick): void {
                     if (!$this->started) return;
@@ -84,7 +86,6 @@ class Main extends PluginBase
                     ob_flush();
                 }
             ), 10, 1);
-
             $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
                 function (int $currentTick): void {
                     foreach ($this->client->GetConsoleMessages() as $message) {
@@ -96,7 +97,6 @@ class Main extends PluginBase
                     }
                 }
             ), 5, 1);
-
             $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
                 function (int $currentTick): void {
                     foreach ($this->client->GetCommand() as $command) {
@@ -118,7 +118,6 @@ class Main extends PluginBase
                     }
                 }
             ), 5, 1);
-
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
