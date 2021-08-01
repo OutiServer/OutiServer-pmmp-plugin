@@ -266,6 +266,7 @@ class EventListener implements Listener
             $form->addButton("土地");
             $form->addButton("テレポート");
             $form->addButton("運営からのお知らせ");
+            $form->addButton("Discordと垢提携");
             if ($player->isOp()) {
                 $form->addButton("カジノ");
                 $form->addButton("管理系");

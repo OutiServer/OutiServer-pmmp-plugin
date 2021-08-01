@@ -28,7 +28,7 @@ class Database
 
         try {
             $this->db = new SQLite3($dir);
-            $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (name TEXT PRIMARY KEY, money INTEGER)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (name TEXT PRIMARY KEY, money INTEGER, discordid TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS chestshops (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, y INTEGER, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER)");
@@ -37,8 +37,8 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
-            if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "y")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN y INTEGER");
+            if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'moneys'")->execute()->fetchArray()["sql"], "discordid")) {
+                $this->db->exec("ALTER TABLE moneys ADD COLUMN discordid TEXT");
             }
 
             foreach ($DefaultItemCategory as $key) {

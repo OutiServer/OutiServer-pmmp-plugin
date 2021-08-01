@@ -31,6 +31,7 @@ class discord extends Thread
     protected Threaded $command_Queue;
     protected Threaded $command_response_Queue;
     protected Threaded $errorlog_Queue;
+    protected Threaded $login_Queue;
 
     public function __construct(string $file, string $dir, string $token, string $prefix, string $guild_id, string $chat_channel_id, string $log_channel_id, string $db_channel_id, string $errorlog_channel_id)
     {
