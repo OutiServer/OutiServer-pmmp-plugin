@@ -25,9 +25,6 @@ class PlayerStatus extends Task
         $this->plugin = $plugin;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function onRun(int $currentTick)
     {
         try {
@@ -44,7 +41,7 @@ class PlayerStatus extends Task
                 $this->sendData($player, "§dPing: " . $player->getPing() . "ms", 7);
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            echo "Error: " . $e->getMessage();
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
 
     }
@@ -60,7 +57,7 @@ class PlayerStatus extends Task
             $pk->sortOrder = 0;
             $player->sendDataPacket($pk);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            echo "Error: " . $e->getMessage();
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
 
@@ -78,14 +75,18 @@ class PlayerStatus extends Task
             $pk->entries[] = $entry;
             $player->sendDataPacket($pk);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            echo "Error: " . $e->getMessage();
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
 
     private function RemoveData(Player $player)
     {
-        $pk = new RemoveObjectivePacket();
-        $pk->objectiveName = "sidebar";
-        $player->sendDataPacket($pk);
+        try {
+            $pk = new RemoveObjectivePacket();
+            $pk->objectiveName = "sidebar";
+            $player->sendDataPacket($pk);
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
     }
 }

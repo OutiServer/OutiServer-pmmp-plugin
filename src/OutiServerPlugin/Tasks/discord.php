@@ -64,8 +64,8 @@ class discord extends Thread
                 'token' => $this->token,
                 "loop" => $loop
             ]);
-        } catch (IntentException $e) {
-            echo $e->getMessage() . PHP_EOL;
+        } catch (IntentException $error) {
+            echo $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . PHP_EOL;
             echo "DiscordPHP ログインできません" . PHP_EOL;
             return;
         }

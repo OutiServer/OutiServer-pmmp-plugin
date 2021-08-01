@@ -37,9 +37,6 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
-            if(!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "y")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN y INTEGER");
-            }
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -69,8 +66,9 @@ class Database
     public function SetMoney(string $name)
     {
         try {
-            $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, 1000)");
+            $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, :money)");
             $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
+            $sql->bindValue(':money', $this->plugin->config->get('Default_Money', 1000), SQLITE3_INTEGER);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
@@ -94,6 +92,7 @@ class Database
         return false;
     }
 
+    // プレイヤー所持金追加
     public function AddMoney(string $name, int $addmoney)
     {
         try {
@@ -111,6 +110,7 @@ class Database
         }
     }
 
+    // プレイヤー所持金剥奪
     public function RemoveMoney(string $name, int $removemoney)
     {
         try {
@@ -135,14 +135,12 @@ class Database
             $data = $this->GetMoney($name);
             if (!$data) {
                 $sql = $this->db->prepare("INSERT INTO moneys VALUES (:name, :money)");
-                $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
-                $sql->bindValue(':money', $money, SQLITE3_INTEGER);
             } else {
                 $sql = $this->db->prepare("UPDATE moneys SET money = :money WHERE name = :name");
-                $sql->bindValue(':money', $money, SQLITE3_INTEGER);
-                $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             }
 
+            $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
+            $sql->bindValue(':money', $money, SQLITE3_INTEGER);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

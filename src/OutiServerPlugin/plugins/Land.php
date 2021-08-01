@@ -144,6 +144,7 @@ class Land
                         $playerdata = $this->plugin->db->GetMoney($name);
                         if ($price > $playerdata["money"]) {
                             $player->sendMessage("§b[土地保護] >> §4お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
+                            return true;
                         }
 
                         $this->plugin->db->UpdateMoney($name, $playerdata["money"] - $price);
@@ -152,9 +153,6 @@ class Land
                     } elseif ($data === false) {
                         $player->sendMessage("§b[土地保護] >> §6購入しませんでした");
                     }
-
-
-                    return true;
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onErrorNotPlayer($e);
                 }
