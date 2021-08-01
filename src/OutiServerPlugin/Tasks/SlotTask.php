@@ -27,8 +27,8 @@ class SlotTask extends Task
     {
         try {
             call_user_func_array($this->callable, $this->args);
-        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            echo "Error: " . $e->getMessage();
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $error) {
+            echo $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . PHP_EOL;
         }
     }
 }
