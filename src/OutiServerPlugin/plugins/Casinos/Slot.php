@@ -289,7 +289,7 @@ class Slot
                     $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
-                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
+                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000) * $rate;
                     $this->plugin->db->AddMoney($name, $addedmoney);
                     $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
@@ -314,7 +314,7 @@ class Slot
                     $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
-                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
+                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000) * $rate;
                     $this->plugin->db->AddMoney($name, $addedmoney);
                     $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
@@ -339,7 +339,7 @@ class Slot
                     $this->plugin->client->sendChatMessage("§b[おうちカジノ(スロット)] >> ジャックポットが" . $this->plugin->config->get('Default_Slot_JP', 10000) . "に戻りました\n");
                 } else {
                     $this->oto($player, "good");
-                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000);
+                    $addedmoney = $this->plugin->config->get("Default_Slot_Doublet", 1000) * $rate;
                     $this->plugin->db->AddMoney($name, $addedmoney);
                     $player->sendMessage("§b[おうちカジノ(スロット)] >> §6ゾロ目！");
                     $player->sendMessage("§6{$addedmoney}円§a手に入れた！");
