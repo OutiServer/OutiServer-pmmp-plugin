@@ -8,6 +8,7 @@ use Error;
 use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetScorePacket;
@@ -29,6 +30,10 @@ class PlayerStatus extends Task
     {
         try {
             foreach ($this->plugin->getServer()->getOnlinePlayers() as $player) {
+                $item = Item::get(347);
+                if (!$player->getInventory()->contains($item)) {
+                    $player->getInventory()->addItem($item);
+                }
                 $name = $player->getName();
                 $this->RemoveData($player);
                 $this->setupData($player);

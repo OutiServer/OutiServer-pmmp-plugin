@@ -10,16 +10,20 @@ use Error;
 use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, Casino, ChestShop, Land, Money, Teleport};
-use OutiServerPlugin\commands\test;
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
+use pocketmine\item\Item;
+use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 use pocketmine\utils\{Config, TextFormat};
 use TypeError;
+
 
 class Main extends PluginBase
 {
@@ -51,6 +55,7 @@ class Main extends PluginBase
                 $this->getServer()->getPluginManager()->disablePlugin($this);
                 return;
             }
+
             $this->errorHandler = new ErrorHandler($this);
             $this->db = new Database($this, $this->getDataFolder() . 'outiserver.db', $this->config->get("Default_Item_Category", array()));
             $this->allItem = new AllItem($this, $this->getDataFolder() . "allitemdata.json");
@@ -63,8 +68,6 @@ class Main extends PluginBase
             $this->money = new Money($this);
             $this->casino = new Casino($this);
 
-            $map = $this->getServer()->getCommandMap();
-            $map->register($this->getName(), new test("test", $this));
             $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
             $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
             unset($token);
@@ -145,5 +148,48 @@ class Main extends PluginBase
             $this->getLogger()->error($e->getMessage());
         }
 
+    }
+
+    public function onCommand(CommandSender $sender, Command $command, $label, array $args): bool
+    {
+        try {
+            $name = $sender->getName();
+            switch (strtolower($command->getName())) {
+                case "money":
+                    if(isset($args[0])) {
+                        $data = $this->db->GetMoney($args[0]);
+                        if(!$data) return false;
+                        $sender->sendMessage("§a[経済] >> §6$args[0]の現在の所持金: §d{$data["money"]}円");
+                    }
+                    elseif ($sender instanceof Player) {
+                        $data = $this->db->GetMoney($name);
+                        $sender->sendMessage("§a[経済] >> §6あなたの現在の所持金: §d{$data["money"]}円");
+                    }
+                    else return false;
+                    break;
+                case "clock":
+                    if(!$sender instanceof Player) {
+                        $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
+                    }
+                    else {
+                        $item = Item::get(347);
+                        if (!$sender->getInventory()->contains($item)) {
+                            $sender->getInventory()->addItem($item);
+                            $sender->sendMessage("§a[おうちサーバー] >> §b時計を付与しました");
+                        }
+                        else {
+                            $sender->sendMessage("§a[おうちサーバー] >> §4あなたは既に時計を所持しています");
+                        }
+                    }
+                    break;
+            }
+
+            return true;
+        }
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->errorHandler->onError($e, $sender);
+        }
+
+        return true;
     }
 }

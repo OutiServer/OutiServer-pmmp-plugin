@@ -4,3 +4,24 @@ author: Ken_Cir
 version: 3.0.0
 api: 3.0.0
 main: OutiServerPlugin\Main
+
+commands:
+  money:
+    description: "所持金を確認する"
+    usage: "/money <playername>"
+    permission: OutiServerPlugin.command.*;OutiServerPlugin.command.money
+  clock:
+    description: "時計を貰う"
+    usage: "/clock"
+    permission: OutiServerPlugin.command.*;OutiServerPlugin.command.clock
+
+permissions:
+  OutiServerPlugin.command.*:
+    description: プレイヤーがOutiServerPluginのすべてのコマンドを使用できるようにします
+    default: op
+  OutiServerPlugin.command.money:
+    description: プレイヤーがコマンドで所持金を確認できるようにします
+    default: true
+  OutiServerPlugin.command.clock:
+    description: プレイヤーがコマンドで時計を付与できるようにします
+    default: true
