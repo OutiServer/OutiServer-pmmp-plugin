@@ -26,9 +26,9 @@ class ErrorHandler
     public function onError($error, Player $player)
     {
         try {
-            $player->sendMessage(TextFormat::RED . "プラグイン内で不明なエラーが発生しました。");
+            $player->sendMessage(TextFormat::RED . "処理中にエラーが発生しました");
             $this->plugin->client->sendErrorLogMessage("```\n" . $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . "\n```");
-            $this->plugin->getLogger()->error($error->getMessage());
+            $this->plugin->getLogger()->error($error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage());
         } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             echo $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . PHP_EOL;
         }
@@ -38,7 +38,7 @@ class ErrorHandler
     {
         try {
             $this->plugin->client->sendErrorLogMessage("```\n" . $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . "\n```");
-            $this->plugin->getLogger()->error($error->getMessage());
+            $this->plugin->getLogger()->error($error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage());
         } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             echo $error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage() . PHP_EOL;
         }

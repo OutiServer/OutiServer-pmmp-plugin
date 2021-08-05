@@ -11,6 +11,7 @@ use Exception;
 use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
+use OutiServerPlugin\Tasks\ReturnForm;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -41,7 +42,8 @@ class ChestShop
                     if ($sign instanceof Tile) {
                         $itemid = $this->plugin->allItem->GetItemIdByJaName($data[1]);
                         if (!$itemid) {
-                            $player->sendMessage("§b[チェストショップ] §f>> §6アイテムが見つかりませんでした");
+                            $player->sendMessage("§b[チェストショップ] >> §4アイテムが見つかりませんでした");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $chest, $signboard]), 20);
                             return true;
                         }
                         $item = Item::get($itemid, 0, (int)$data[0]);
@@ -74,22 +76,38 @@ class ChestShop
                 try {
                     if ($data === null) return true;
 
+                    $name = $player->getName();
                     $inventory = $player->getInventory();
-                    $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->plugin->getServer()->getLevelByName($shopdata["levelname"]));
+                    $vector3 = new Vector3($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"]);
+                    $level = $this->plugin->getServer()->getLevelByName($shopdata["levelname"]);
                     $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"], (int)$data[1]);
 
                     if (!$inventory->canAddItem($item)) {
                         $player->sendMessage('§b[チェストショップ] §f>> §6インベントリの空きが足りません');
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $shopdata]), 20);
                         return true;
                     }
 
-                    $tile = $pos->level->getTile($pos);
+                    $tile = $level->getTile($vector3);
                     $chest = $tile->getInventory()->contains($item);
 
                     if ($chest) {
-                        $this->BuyChestShopCheck($player, $item, $shopdata, $inventory);
+                        $playermoney = $this->plugin->db->GetMoney($name);
+                        $price = $item->getCount() * $shopdata["price"];
+                        if ($price > $playermoney["money"]) {
+                            $player->sendMessage("§b[チェストショップ] >> §6お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
+                            return true;
+                        }
+
+                        $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->plugin->getServer()->getLevelByName($shopdata["levelname"]));
+                        $pos->level->getTile($pos)->getInventory()->removeItem($item);
+                        $inventory->addItem($item);
+                        $this->plugin->db->RemoveMoney($name, $price);
+                        $this->plugin->db->AddMoney($shopdata["owner"], $price);
+                        $player->sendMessage("§b[チェストショップ] >> §6購入しました");
                     } else {
-                        $player->sendMessage('§b[チェストショップ] §f>> §6申し訳ありませんが、在庫が足りていないようです。');
+                        $player->sendMessage('§b[チェストショップ] >> §6申し訳ありませんが、在庫が足りていないようです。');
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $shopdata]), 20);
                     }
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
@@ -105,54 +123,6 @@ class ChestShop
             $form->addSlider("\n買う個数", 1, $shopdata["maxcount"]);
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onError($e, $player);
-        }
-    }
-
-    private function BuyChestShopCheck($player, $item, $shopdata, $playerinventory)
-    {
-        try {
-            $form = new SimpleForm(function (Player $player, $data) use ($item, $shopdata, $playerinventory) {
-                try {
-                    if ($data === null) return true;
-
-                    switch ($data) {
-                        case 0:
-                            $playername = $player->getName();
-                            $playermoney = $this->plugin->db->GetMoney($playername);
-                            $price = $item->getCount() * $shopdata["price"];
-                            if ($price > $playermoney["money"]) {
-                                $player->sendMessage("§b[チェストショップ] §f>> §6お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
-                                return true;
-                            }
-
-                            $pos = new Position($shopdata["chestx"], $shopdata["chesty"], $shopdata["chestz"], $this->plugin->getServer()->getLevelByName($shopdata["levelname"]));
-                            $pos->level->getTile($pos)->getInventory()->removeItem($item);
-                            $playerinventory->addItem($item);
-                            $this->plugin->db->RemoveMoney($playername, $price);
-                            $this->plugin->db->AddMoney($shopdata["owner"], $price);
-                            $player->sendMessage("§b[チェストショップ] §f>> §6購入しました");
-                            break;
-                        case 1:
-                            $player->sendMessage("§b[チェストショップ] §f>> §6購入しませんでした");
-                            break;
-                    }
-
-                    return true;
-                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-                    $this->plugin->errorHandler->onErrorNotPlayer($e);
-                }
-
-                return true;
-            });
-
-            $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-            $form->setTitle("購入確認");
-            $form->setContent($itemname . "を" . $item->getCount() . "個購入しますか？\n" . $item->getCount() * $shopdata["price"] . "円です");
-            $form->addButton("購入する");
-            $form->addButton("キャンセル");
-            $player->sendForm($form);
-        } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

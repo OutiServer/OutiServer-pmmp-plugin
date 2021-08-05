@@ -6,23 +6,24 @@ namespace OutiServerPlugin;
 
 use ArgumentCountError;
 use Error;
-use ErrorException;
 use Exception;
 use InvalidArgumentException;
-use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, SignChangeEvent};
 use pocketmine\event\Listener;
-use pocketmine\event\player\{PlayerChatEvent, PlayerInteractEvent, PlayerJoinEvent, PlayerKickEvent, PlayerQuitEvent};
+use pocketmine\event\player\{PlayerChatEvent,
+    PlayerInteractEvent,
+    PlayerJoinEvent,
+    PlayerKickEvent,
+    PlayerMoveEvent,
+    PlayerQuitEvent};
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 use pocketmine\tile\Tile;
 use TypeError;
 
 class EventListener implements Listener
 {
     private Main $plugin;
-    private array $checkiPhone = [];
 
     public function __construct(Main $plugin)
     {
@@ -43,13 +44,27 @@ class EventListener implements Listener
                 $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
             }
 
-            // サーバーに参加した時iPhoneを持っていなければ渡す
+            // サーバーに参加した時OutiWatchを持っていなければ渡す
             $item = Item::get(347);
+            $item->setCustomName("OutiWatch");
+
             if (!$player->getInventory()->contains($item)) {
                 $player->getInventory()->addItem($item);
             }
 
             $this->plugin->client->sendChatMessage("**$name**がサーバーに参加しました\n");
+            $this->plugin->sound->PlaySound($player);
+
+            /*
+            $this->pk[$name] = new PlaySoundPacket;
+            $this->pk[$name]->soundName = "example.sample";
+            $this->pk[$name]->x = (int)$player->x;
+            $this->pk[$name]->y = (int)$player->y;
+            $this->pk[$name]->z = (int)$player->z;
+            $this->pk[$name]->volume = 10;
+            $this->pk[$name]->pitch = 1;
+            $player->dataPacket($this->pk[$name]);
+            */
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -58,9 +73,11 @@ class EventListener implements Listener
     public function onPlayerQuit(PlayerQuitEvent $event)
     {
         try {
-            $name = $event->getPlayer()->getName();
+            $player = $event->getPlayer();
+            $this->plugin->sound->StopSound($player);
+            $name = $player->getName();
             $this->plugin->client->sendChatMessage("**$name**がサーバーから退出しました\n");
-            unset($this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name], $this->plugin->casino->slot->sloted[$name], $this->plugin->casino->slot->effect[$name], $this->checkiPhone[$name]);
+            unset($this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name], $this->plugin->casino->slot->sloted[$name], $this->plugin->casino->slot->effect[$name], $this->plugin->applewatch->check[$name]);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -76,40 +93,86 @@ class EventListener implements Listener
             $levelname = $block->level->getName();
             $shopdata = $this->plugin->db->GetChestShop($block, $levelname);
             $slotid = $this->plugin->db->GetSlotId($block);
-
-            if ($item->getName() === 'Clock' && !isset($this->checkiPhone[$name])) {
-                $this->checkiPhone[$name] = true;
-                $this->iPhone($player);
-            }
-
-            if ($shopdata) {
-                if ($this->plugin->db->isChestShopChestExits($block, $levelname) and $shopdata["owner"] !== strtolower($name) and $event->getAction() === 1 and !$player->isOp()) {
-                    $event->setCancelled();
-                    $player->sendMessage("§b[チェストショップ] §f>> §6このチェストをオープンできるのはSHOP作成者・OPのみです");
-                } elseif ($shopdata["owner"] === strtolower($name) and $event->getAction() === 1) {
-                    $player->sendMessage("§b[チェストショップ] §f>> §6自分のSHOPで購入することはできません");
-                } else {
-                    $this->plugin->chestshop->BuyChestShop($player, $shopdata);
-                }
-            }
+            $landid = $this->plugin->db->GetLandId($levelname, $block->x, $block->z);
 
             if ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
-                $landid = $this->plugin->db->GetLandId($levelname, $block->x, $block->z);
+                if ($item->getName() === 'OutiWatch' && !isset($this->plugin->applewatch->check[$name])) {
+                    $this->plugin->applewatch->check[$name] = true;
+                    $this->plugin->applewatch->Form($player);
+                } elseif ($slotid and !isset($this->plugin->casino->slot->sloted[$name])) {
+                    $pos = new Vector3($block->x, $block->y, $block->z);
+                    $sign = $block->getLevel()->getTile($pos);
+                    if ($sign instanceof Tile) {
+                        $this->plugin->casino->slot->Start($player, $slotid, $sign);
+                        $this->plugin->casino->slot->sloted[$name] = true;
+                    }
+                } elseif ($shopdata) {
+                    if ($this->plugin->db->isChestShopChestExits($block, $levelname) and !$this->plugin->db->CheckChestShopOwner((int)$shopdata["id"], $name) and !$player->isOp()) {
+                        $event->setCancelled();
+                        $player->sendMessage("§b[チェストショップ] §f>> §6このチェストをオープンできるのはSHOP作成者・OPのみです");
+                    } elseif ($this->plugin->db->CheckChestShopOwner((int)$shopdata["id"], $name)) {
+                        $player->sendMessage("§b[チェストショップ] §f>> §6自分のSHOPで購入することはできません");
+                    } else {
+                        $this->plugin->chestshop->BuyChestShop($player, $shopdata);
+                    }
+                } elseif ($landid) {
+                    if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
+                        $event->setCancelled();
+                    }
+                } elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+                    $event->setCancelled();
+                }
+            } elseif ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_AIR) {
                 if ($landid) {
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                         $event->setCancelled();
                     }
+                } elseif (!$player->isOp()) $event->setCancelled();
+            } elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+                $event->setCancelled();
+            }
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function onBreak(BlockBreakEvent $event)
+    {
+        try {
+            $block = $event->getBlock();
+            $levelname = $block->level->getName();
+            $player = $event->getPlayer();
+            $name = $player->getName();
+            $shopdata = $this->plugin->db->GetChestShop($block, $levelname);
+            $slotid = $this->plugin->db->GetSlotId($block);
+            $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
+            if ($slotid) {
+                if (!$player->isOp()) {
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
+                    $event->setCancelled();
+                } else {
+                    $this->plugin->db->DeleteSlot($slotid);
+                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §aこのスロットを削除しました");
                 }
+            }
+            elseif ($shopdata) {
+                if (!$this->plugin->db->CheckChestShopOwner((int)$shopdata["id"], $name) and !$player->isOp()) {
+                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店させることができるのはSHOP作成者・OPのみです");
+                    $event->setCancelled();
+                } else {
+                    $this->plugin->db->DeleteChestShop($shopdata);
+                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店しました");
+                }
+            }
+            elseif ($landid) {
+                if (!$this->plugin->db->CheckLandOwner($landid, $player->getName()) and !$this->plugin->db->checkInvite($landid, $player->getName()) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
+                    $event->setCancelled();
+                }
+            }
+            elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+                $event->setCancelled();
             }
 
-            if ($slotid and $event->getAction() === 1 and !isset($this->plugin->casino->slot->sloted[$name])) {
-                $pos = new Vector3($block->x, $block->y, $block->z);
-                $sign = $block->getLevel()->getTile($pos);
-                if ($sign instanceof Tile) {
-                    $this->plugin->casino->slot->Start($player, $slotid, $sign);
-                    $this->plugin->casino->slot->sloted[$name] = true;
-                }
-            }
 
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
@@ -145,46 +208,6 @@ class EventListener implements Listener
         }
     }
 
-    public function onBreak(BlockBreakEvent $event)
-    {
-        try {
-            $block = $event->getBlock();
-            $levelname = $block->level->getName();
-            $player = $event->getPlayer();
-            $name = $player->getName();
-            $shopdata = $this->plugin->db->GetChestShop($block, $levelname);
-            if ($shopdata) {
-                if ($shopdata["owner"] !== strtolower($name) and !$player->isOp()) {
-                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店させることができるのはSHOP作成者・OPのみです");
-                    $event->setCancelled();
-                } else {
-                    $this->plugin->db->DeleteChestShop($shopdata);
-                    $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店しました");
-                }
-            }
-
-            $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
-            if ($landid !== false) {
-                if (!$this->plugin->db->CheckLandOwner($landid, $player->getName()) and !$this->plugin->db->checkInvite($landid, $player->getName()) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
-                    $event->setCancelled();
-                }
-            }
-
-            $slotid = $this->plugin->db->GetSlotId($block);
-            if ($slotid) {
-                if (!$player->isOp()) {
-                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
-                    $event->setCancelled();
-                } else {
-                    $this->plugin->db->DeleteSlot($slotid);
-                    $player->sendMessage("§b[おうちカジノ(スロット)] >> §aこのスロットを削除しました");
-                }
-            }
-        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
-        }
-    }
-
     public function onPlayerChat(PlayerChatEvent $event)
     {
         try {
@@ -201,10 +224,13 @@ class EventListener implements Listener
     public function onBlockBurn(BlockBurnEvent $event)
     {
         try {
-            $landid = $this->plugin->db->GetLandId($event->getBlock()->getName(), $event->getBlock()->x, $event->getBlock()->z);
-            if ($this->plugin->db->CheckLandProtection($landid)) {
-                $event->setCancelled();
-            }
+            $block = $event->getBlock();
+            $landid = $this->plugin->db->GetLandId($block->getName(), (int)$block->x, (int)$block->z);
+            if ($landid) {
+                if ($this->plugin->db->CheckLandProtection($landid)) {
+                    $event->setCancelled();
+                }
+            } else $event->setCancelled();
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -221,58 +247,25 @@ class EventListener implements Listener
         }
     }
 
-    private function iPhone(Player $player)
+    public function onPlayerMove(PlayerMoveEvent $event)
     {
-        try {
-            $form = new SimpleForm(function (Player $player, $data) {
-                try {
-                    unset($this->checkiPhone[$player->getName()]);
-                    if ($data === null) return true;
-
-                    switch ($data) {
-                        case 0:
-                            $this->plugin->money->Form($player);
-                            break;
-                        case 1:
-                            $this->plugin->adminshop->AdminShop($player);
-                            break;
-                        case 2:
-                            $this->plugin->land->land($player);
-                            break;
-                        case 3:
-                            $this->plugin->teleport->Form($player);
-                            break;
-                        case 4:
-                            $this->plugin->announce->Form($player);
-                            break;
-                        case 5:
-                            $this->plugin->casino->Form($player);
-                            break;
-                        case 6:
-                            $this->plugin->admin->AdminForm($player);
-                            break;
-                    }
-                    return true;
-                } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
-                    $this->plugin->errorHandler->onError($e, $player);
-                }
-
-                return true;
-            });
-
-            $form->setTitle("iPhone");
-            $form->addButton("お金関連");
-            $form->addButton("AdminShop");
-            $form->addButton("土地");
-            $form->addButton("テレポート");
-            $form->addButton("運営からのお知らせ");
-            if ($player->isOp()) {
-                $form->addButton("カジノ");
-                $form->addButton("管理系");
+        $player = $event->getPlayer();
+        $name = $player->getName();
+        $level = $player->getLevel();
+        if(isset($this->plugin->sound->playersounds[$name])) {
+            $startX = $this->plugin->sound->playersounds[$name]["startx"];
+            $startZ = $this->plugin->sound->playersounds[$name]["startz"];
+            $endX = $this->plugin->sound->playersounds[$name]["endx"];
+            $endZ  = $this->plugin->sound->playersounds[$name]["endz"];
+            if($this->plugin->sound->playersounds[$name]["level"] !== $level->getName()) {
+                $this->plugin->sound->PlaySound($player);
             }
-            $player->sendForm($form);
-        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
+            elseif (!($startX <= (int)$player->x and $startZ <= (int)$player->z and $endX >= (int)$player->x and $endZ >= (int)$player->z)) {
+                $this->plugin->sound->PlaySound($player);
+            }
+        }
+        else {
+            $this->plugin->sound->PlaySound($player);
         }
     }
 }

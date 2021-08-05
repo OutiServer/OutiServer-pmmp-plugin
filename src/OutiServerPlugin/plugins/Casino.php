@@ -37,6 +37,9 @@ class Casino
                         case 0:
                             $this->slot->Form($player);
                             break;
+                        case 1:
+                            $this->plugin->applewatch->Form($player);
+                            break;
                     }
                     return true;
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -46,8 +49,9 @@ class Casino
                 return true;
             });
 
-            $form->setTitle("iPhone-Casino");
+            $form->setTitle("OutiWatch-Casino");
             $form->addButton("スロット");
+            $form->addButton("戻る");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
