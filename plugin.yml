@@ -10,14 +10,6 @@ commands:
     description: "所持金を確認する"
     usage: "/money <playername>"
     permission: OutiServerPlugin.command.*;OutiServerPlugin.command.money
-  playbgm:
-    description: "BGMを流す"
-    usage: "/playbgm"
-    permission: OutiServerPlugin.command.*
-  stopbgm:
-    description: "BGMを止める"
-    usage: "/stopbgm"
-    permission: OutiServerPlugin.command.*
   applewatch:
     description: "AppleWatchを出す"
     usage: "/applewatch"

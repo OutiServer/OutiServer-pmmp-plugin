@@ -192,32 +192,6 @@ class Main extends PluginBase
                         }
                     }
                     break;
-                case 'playbgm':
-                    if(!$sender instanceof Player) {
-                        $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
-                    }
-
-                    $sender->sendMessage("§a[おうちサーバー] >> §4再生スタート");
-                    $vector3 = $sender->asVector3();
-                    $pk = new PlaySoundPacket;
-                    $pk->soundName = "lobby.beach";
-                    $pk->x = (int)$vector3->x;
-                    $pk->y = (int)$vector3->y;
-                    $pk->z = (int)$vector3->z;
-                    $pk->volume = 1;
-                    $pk->pitch = 1;
-                    $sender->dataPacket($pk);
-                    break;
-                case 'stopbgm':
-                    if(!$sender instanceof Player) {
-                        $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
-                    }
-
-                    $sender->sendMessage("§a[おうちサーバー] >> §4再生ストップ");
-                    $pk = new StopSoundPacket;
-                    $pk->soundName = "lobby.beach";
-                    $sender->dataPacket($pk);
-                    break;
                 case 'reloadouticonfig':
                     $this->config->reload();
                     $sender->sendMessage("§a[おうちサーバー] >> §aconfigをリロードしました");
