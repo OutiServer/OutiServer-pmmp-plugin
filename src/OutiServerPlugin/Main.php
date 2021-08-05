@@ -9,7 +9,7 @@ use DateTime;
 use Error;
 use Exception;
 use InvalidArgumentException;
-use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, Casino, ChestShop, Land, Money, Teleport};
+use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, OutiWatch, Casino, ChestShop, Land, Money, Sound, Teleport};
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
@@ -17,6 +17,8 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\PlaySoundPacket;
+use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
@@ -31,6 +33,7 @@ class Main extends PluginBase
     public bool $started = false;
     public Database $db;
     public Config $config;
+    public Config $music;
     public AllItem $allItem;
     public Land $land;
     public ChestShop $chestshop;
@@ -40,6 +43,8 @@ class Main extends PluginBase
     public Announce $announce;
     public Money $money;
     public Casino $casino;
+    public OutiWatch $applewatch;
+    public Sound $sound;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -47,8 +52,10 @@ class Main extends PluginBase
         try {
             $this->saveResource("config.yml");
             $this->saveResource("allitemdata.json");
+            $this->saveResource("sound.yml");
 
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+            $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
             $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
             if ($token === 'DISCORD_TOKEN') {
                 $this->getLogger()->error("config.yml: DiscordBot_Tokenが設定されていません");
@@ -67,6 +74,8 @@ class Main extends PluginBase
             $this->announce = new Announce($this);
             $this->money = new Money($this);
             $this->casino = new Casino($this);
+            $this->applewatch = new OutiWatch($this);
+            $this->sound = new Sound($this);
 
             $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
             $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
@@ -124,9 +133,9 @@ class Main extends PluginBase
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
-        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $error) {
             $this->getLogger()->info(TextFormat::RED . "プラグイン読み込み中にエラーが発生しました\nプラグインを無効化します");
-            $this->getLogger()->error($e->getMessage());
+            $this->getLogger()->error($error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage());
             $this->getServer()->getPluginManager()->disablePlugin($this);
         }
     }
@@ -167,20 +176,55 @@ class Main extends PluginBase
                     }
                     else return false;
                     break;
-                case "clock":
+                case "outiwatch":
                     if(!$sender instanceof Player) {
                         $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
                     }
                     else {
                         $item = Item::get(347);
+                        $item->setCustomName("OutiWatch");
                         if (!$sender->getInventory()->contains($item)) {
                             $sender->getInventory()->addItem($item);
-                            $sender->sendMessage("§a[おうちサーバー] >> §b時計を付与しました");
+                            $sender->sendMessage("§a[おうちサーバー] >> §bOutiWatchを付与しました");
                         }
                         else {
                             $sender->sendMessage("§a[おうちサーバー] >> §4あなたは既に時計を所持しています");
                         }
                     }
+                    break;
+                case 'playbgm':
+                    if(!$sender instanceof Player) {
+                        $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
+                    }
+
+                    $sender->sendMessage("§a[おうちサーバー] >> §4再生スタート");
+                    $vector3 = $sender->asVector3();
+                    $pk = new PlaySoundPacket;
+                    $pk->soundName = "lobby.beach";
+                    $pk->x = (int)$vector3->x;
+                    $pk->y = (int)$vector3->y;
+                    $pk->z = (int)$vector3->z;
+                    $pk->volume = 1;
+                    $pk->pitch = 1;
+                    $sender->dataPacket($pk);
+                    break;
+                case 'stopbgm':
+                    if(!$sender instanceof Player) {
+                        $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
+                    }
+
+                    $sender->sendMessage("§a[おうちサーバー] >> §4再生ストップ");
+                    $pk = new StopSoundPacket;
+                    $pk->soundName = "lobby.beach";
+                    $sender->dataPacket($pk);
+                    break;
+                case 'reloadouticonfig':
+                    $this->config->reload();
+                    $sender->sendMessage("§a[おうちサーバー] >> §aconfigをリロードしました");
+                    break;
+                case 'reloadoutisound':
+                    $this->music->reload();
+                    $sender->sendMessage("§a[おうちサーバー] >> §asoundをリロードしました");
                     break;
             }
 

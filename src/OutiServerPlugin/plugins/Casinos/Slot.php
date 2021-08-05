@@ -81,7 +81,7 @@ class Slot
                 return true;
             });
 
-            $form->setTitle("iPhone-カジノ");
+            $form->setTitle("OutiWatch-カジノ");
             $form->addButton("スロットの状態表示座標変更");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -113,7 +113,7 @@ class Slot
                 return true;
             });
 
-            $form->setTitle("iPhone-Casino-スロット");
+            $form->setTitle("OutiWatch-Casino-スロット");
             $form->addInput("スロット名", "slotname");
             $form->addInput('ベット', 'bet', '1');
             $form->addInput("レート数", "rate", "1");
@@ -174,7 +174,7 @@ class Slot
                 return true;
             });
 
-            $form->setTitle("iPhone-Casino-スロット");
+            $form->setTitle("OutiWatch-Casino-スロット");
             $form->addLabel("bet: " . $slotdata["bet"]);
             $form->addSlider("レート数", 1, $slotdata["rate"]);
             /*

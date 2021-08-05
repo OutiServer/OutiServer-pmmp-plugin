@@ -140,38 +140,22 @@ class discord extends Thread
         $db_channel = $guild->channels->get('id', $this->db_id);
         $errorlogchannel = $guild->channels->get('id', $this->errorlog_id);
 
-
-        $logsend = "";
-        $chatsend = "";
-        $errorlogsend = "";
-
         while (count($this->log_Queue) > 0) {
             $message = unserialize($this->log_Queue->shift());
             $message = preg_replace(['/\]0;.*\%/', '/[\x07]/', "/Server thread\//"], '', TextFormat::clean(substr($message, 0, 1900)));
-            if ($message === "") {
-                continue;
+            if ($message === "") continue;
+            if (strlen($message) <= 1800) {
+                $logchannel->sendMessage("```" . $message . "```");
             }
-            $logsend .= $message;
-            if (strlen($logsend) >= 1800) {
-                break;
-            }
-        }
-        if ($logsend !== "") {
-            $logchannel->sendMessage("```" . $logsend . "```");
         }
 
         while (count($this->chat_Queue) > 0) {
             $message = unserialize($this->chat_Queue->shift());
-            if ($message === "") {
-                continue;
+            $message = str_replace("@", "", $message);
+            if ($message === "") continue;
+            if (strlen($message) <= 1800) {
+                $chatchannel->sendMessage($message);
             }
-            $chatsend .= $message;
-            if (strlen($chatsend) >= 1800) {
-                break;
-            }
-        }
-        if ($chatsend !== "") {
-            $chatchannel->sendMessage($chatsend);
         }
 
         while (count($this->command_response_Queue) > 0) {
@@ -183,16 +167,10 @@ class discord extends Thread
 
         while (count($this->errorlog_Queue) > 0) {
             $message = unserialize($this->errorlog_Queue->shift());
-            if ($message === "") {
-                continue;
+            if ($message === "") continue;
+            if (strlen($message) <= 1800) {
+                $errorlogchannel->sendMessage($message);
             }
-            $errorlogsend .= $message;
-            if (strlen($errorlogsend) >= 1800) {
-                break;
-            }
-        }
-        if ($errorlogsend !== "") {
-            $errorlogchannel->sendMessage($errorlogsend);
         }
 
         if ($this->db_send) {

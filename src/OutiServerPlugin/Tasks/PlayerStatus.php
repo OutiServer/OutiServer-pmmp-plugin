@@ -31,6 +31,7 @@ class PlayerStatus extends Task
         try {
             foreach ($this->plugin->getServer()->getOnlinePlayers() as $player) {
                 $item = Item::get(347);
+                $item->setCustomName("OutiWatch");
                 if (!$player->getInventory()->contains($item)) {
                     $player->getInventory()->addItem($item);
                 }
@@ -62,7 +63,7 @@ class PlayerStatus extends Task
             $pk->sortOrder = 0;
             $player->sendDataPacket($pk);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
+            $this->plugin->errorHandler->onError($e, $player);
         }
     }
 
@@ -80,7 +81,7 @@ class PlayerStatus extends Task
             $pk->entries[] = $entry;
             $player->sendDataPacket($pk);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
+            $this->plugin->errorHandler->onError($e, $player);
         }
     }
 
@@ -91,7 +92,7 @@ class PlayerStatus extends Task
             $pk->objectiveName = "sidebar";
             $player->sendDataPacket($pk);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
+            $this->plugin->errorHandler->onError($e, $player);
         }
     }
 }

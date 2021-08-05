@@ -10,6 +10,7 @@ use Exception;
 use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
+use OutiServerPlugin\Tasks\ReturnForm;
 use pocketmine\Player;
 use TypeError;
 
@@ -34,45 +35,60 @@ class Money
                             $name = $player->getName();
                             $playerdata = $this->plugin->db->GetMoney($name);
                             if (!$playerdata) break;
-                            $player->sendMessage("あなたの現在の所持金: " . $playerdata["money"] . "円");
+                            $player->sendMessage("§a[経済] >> §6あなたの現在の所持金: " . $playerdata["money"] . "円");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
                             break;
                         case 1:
                             $this->MoveMoney($player);
+                            break;
+                        case 2:
+                            $this->plugin->applewatch->Form($player);
                             break;
                     }
                     return true;
                 }
                 catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-                    $this->plugin->errorHandler->onErrorNotPlayer($e);
+                    $this->plugin->errorHandler->onError($e, $player);
                 }
 
                 return true;
             });
 
-            $form->setTitle("iPhone-Money");
+            $form->setTitle("OutiWatch-Money");
             $form->addButton("所持金の確認");
             $form->addButton("他playerにお金を転送");
+            $form->addButton("戻る");
             $player->sendForm($form);
         }
         catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onErrorNotPlayer($e);
+            $this->plugin->errorHandler->onError($e, $player);
         }
     }
 
-    private function MoveMoney(Player $player)
+    public function MoveMoney(Player $player)
     {
         try {
             $name = $player->getName();
-            $playermoney = $this->plugin->db->GetMoney($name);
             $form = new CustomForm(function (Player $player, $data) {
                 try {
                     if($data === null) return true;
-                    else if(!isset($data[0]) or !is_numeric($data[1])) return true;
+                    elseif ($data[0]) {
+                        $this->Form($player);
+                        return true;
+                    }
+                    else if(!isset($data[1]) or !is_numeric($data[2])) return true;
 
                     $name = $player->getName();
-                    $this->plugin->db->AddMoney($data[0], (int)$data[1]);
-                    $this->plugin->db->RemoveMoney($name, (int)$data[1]);
-                    $player->sendMessage($data[0] . "に" . $data[1] . "円転送しました");
+                    $money = $this->plugin->db->GetMoney($name);
+                    if((int)$data[2] > $money["money"]) {
+                        $player->sendMessage("§b[経済] >> §4お金が" . ($money["money"] - (int)$data[2]) * -1 . "円足りていませんよ？");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
+                        return true;
+                    }
+                    $this->plugin->db->AddMoney($data[1], (int)$data[2]);
+                    $this->plugin->db->RemoveMoney($name, (int)$data[2]);
+                    $player->sendMessage("§a[経済] >> §6$data[1]に$data[2]円転送しました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
                     return true;
                 }
                 catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -83,8 +99,9 @@ class Money
             });
 
             $form->setTitle("Money-他プレイヤーに所持金を転送");
+            $form->addToggle("キャンセルして戻る");
             $form->addInput("転送先のプレイヤー名", "playername", "");
-            $form->addSlider("転送するお金", 1, $playermoney["money"]);
+            $form->addInput("転送するお金", "money", "0");
             $player->sendForm($form);
         }
         catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {

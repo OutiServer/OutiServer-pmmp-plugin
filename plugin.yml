@@ -10,10 +10,26 @@ commands:
     description: "所持金を確認する"
     usage: "/money <playername>"
     permission: OutiServerPlugin.command.*;OutiServerPlugin.command.money
-  clock:
-    description: "時計を貰う"
-    usage: "/clock"
-    permission: OutiServerPlugin.command.*;OutiServerPlugin.command.clock
+  playbgm:
+    description: "BGMを流す"
+    usage: "/playbgm"
+    permission: OutiServerPlugin.command.*
+  stopbgm:
+    description: "BGMを止める"
+    usage: "/stopbgm"
+    permission: OutiServerPlugin.command.*
+  applewatch:
+    description: "AppleWatchを出す"
+    usage: "/applewatch"
+    permission: OutiServerPlugin.command.*;OutiServerPlugin.command.applewatch
+  reloadouticonfig:
+    description: "configをリロード"
+    usage: "/reloadouticonfig"
+    permission: OutiServerPlugin.command.*
+  reloadoutisound:
+    description: "sound設定をリロード"
+    usage: "/reloadoutisound"
+    permission: OutiServerPlugin.command.*;
 
 permissions:
   OutiServerPlugin.command.*:
@@ -22,6 +38,6 @@ permissions:
   OutiServerPlugin.command.money:
     description: プレイヤーがコマンドで所持金を確認できるようにします
     default: true
-  OutiServerPlugin.command.clock:
-    description: プレイヤーがコマンドで時計を付与できるようにします
+  OutiServerPlugin.command.applewatch:
+    description: プレイヤーがコマンドでAppleWatchを使用できるようにします
     default: true

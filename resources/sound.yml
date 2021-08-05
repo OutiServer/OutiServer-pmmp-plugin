@@ -1,0 +1,9 @@
+---
+world:
+  beach:
+    sound: "lobby.beach"
+    startx: 196
+    startz: 314
+    endx: 155
+    endz: 345
+...
