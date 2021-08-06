@@ -17,8 +17,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
-use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
@@ -53,6 +51,7 @@ class Main extends PluginBase
             $this->saveResource("config.yml");
             $this->saveResource("allitemdata.json");
             $this->saveResource("sound.yml");
+            $this->saveResource("slotconfig.yml");
 
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
             $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
@@ -144,6 +143,7 @@ class Main extends PluginBase
     {
         try {
             if (!$this->started) return;
+            $this->casino->slot->Invisibleftp();
             $this->db->close();
             $this->client->sendChatMessage("サーバーが停止しました\n");
             $this->getLogger()->info("出力バッファリングを終了しています...");

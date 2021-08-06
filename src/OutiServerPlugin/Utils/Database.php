@@ -36,17 +36,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER, oponly INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
-            $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
-            $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpx")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpx INTEGER");
-            }
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpy")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpy INTEGER");
-            }
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpz")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpz INTEGER");
-            }
+            $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, slottype INTEGER, mode INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -273,7 +263,7 @@ class Database
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->bindValue(":mode", $mode, SQLITE3_INTEGER);
             $sql->execute();
-        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -290,7 +280,7 @@ class Database
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->bindValue(":mode", $mode, SQLITE3_INTEGER);
             $sql->execute();
-        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -909,19 +899,34 @@ class Database
         return false;
     }
 
-    public function SetSlot(string $name, int $bet, int $rate, int $line, Block $pos)
+    public function SetSlot(string $name, int $bet, int $rate, int $type, Block $pos): ?int
     {
         try {
-            // id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER
-            $sql = $this->db->prepare("INSERT INTO casinoslots (name, bet, rate, line, levelname, x, y, z) VALUES (:name, :bet, :rate, :line, :levelname, :x, :y, :z)");
+            $sql = $this->db->prepare("INSERT INTO casinoslots (name, bet, rate, slottype, mode, levelname, x, y, z) VALUES (:name, :bet, :rate, :slottype, :mode, :levelname, :x, :y, :z)");
             $sql->bindValue(':name', $name, SQLITE3_TEXT);
-            $sql->bindValue('bet', $bet, SQLITE3_INTEGER);
-            $sql->bindValue('rate', $rate, SQLITE3_INTEGER);
-            $sql->bindValue('line', $line, SQLITE3_INTEGER);
+            $sql->bindValue(':bet', $bet, SQLITE3_INTEGER);
+            $sql->bindValue(':rate', $rate, SQLITE3_INTEGER);
+            $sql->bindValue(":slottype", $type, SQLITE3_INTEGER);
+            $sql->bindValue(':mode', 0, SQLITE3_INTEGER);
             $sql->bindValue(':levelname', $pos->getLevel()->getName(), SQLITE3_TEXT);
             $sql->bindValue(':x', (int)$pos->x, SQLITE3_INTEGER);
             $sql->bindValue(':y', (int)$pos->y, SQLITE3_INTEGER);
             $sql->bindValue(':z', (int)$pos->z, SQLITE3_INTEGER);
+            $sql->execute();
+            return $this->db->query("SELECT seq FROM sqlite_sequence WHERE name = 'casinoslots'")->fetchArray()["seq"];
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return null;
+    }
+
+    public function UpdateSlotMode(int $id, int $mode)
+    {
+        try {
+            $sql = $this->db->prepare("UPDATE casinoslots SET mode = :mode WHERE id = :id");
+            $sql->bindValue(':mode', $mode, SQLITE3_INTEGER);
+            $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

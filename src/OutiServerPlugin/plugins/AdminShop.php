@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, ModalForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
-use OutiServerPlugin\Utils\Enum;
+use OutiServerPlugin\Utils\OutiServerPluginEnum;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use TypeError;
@@ -130,13 +130,13 @@ class AdminShop
             for ($i = 0; $i < count($alldata); $i++) {
                 $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"]);
                 $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                if($alldata[$i]["mode"] === Enum::ADMINSHOP_ALL) {
+                if($alldata[$i]["mode"] === OutiServerPluginEnum::ADMINSHOP_ALL) {
                     $form->addButton("$itemname 購入値段: {$alldata[$i]["buyprice"]}円 売却値段: {$alldata[$i]["sellprice"]}円");
                 }
-                elseif ($alldata[$i]["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
+                elseif ($alldata[$i]["mode"] === OutiServerPluginEnum::ADMINSHOP_BUY_ONLY) {
                     $form->addButton("$itemname 購入値段: {$alldata[$i]["buyprice"]}円");
                 }
-                elseif ($alldata[$i]["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
+                elseif ($alldata[$i]["mode"] === OutiServerPluginEnum::ADMINSHOP_SELL_ONLY) {
                     $form->addButton("$itemname 売却値段: {$alldata[$i]["sellprice"]}円");
                 }
             }
@@ -160,7 +160,7 @@ class AdminShop
 
                     $item = Item::get($itemdata["itemid"], $itemdata["itemmeta"], (int)$data[2]);
                     if ($data[1] === 0) {
-                        if($itemdata["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
+                        if($itemdata["mode"] === OutiServerPluginEnum::ADMINSHOP_SELL_ONLY) {
                             $player->sendMessage("§b[AdminShop] >> §4そのアイテムは売却のみ使用できます");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }
@@ -171,7 +171,7 @@ class AdminShop
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }
                     } elseif ($data[1] === 1) {
-                        if($itemdata["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
+                        if($itemdata["mode"] === OutiServerPluginEnum::ADMINSHOP_BUY_ONLY) {
                             $player->sendMessage("§b[AdminShop] >> §4そのアイテムは購入のみ使用できます");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }

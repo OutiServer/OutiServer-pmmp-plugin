@@ -41,12 +41,25 @@ Default_Money: 1000
 
 # ーーーカジノ関係の設定ーーー
 # ーーースロットーーー
+
 # スロット初期ジャックポット
 Default_Slot_JP: 10000
 
 # スロットでゾロ目が出た時の配当金
 Default_Slot_Doublet: 1000
 
-# 確変が起こるまでに回すスロット回数
-Default_Slot_Kakuhen: 1000
+# Slot Mode1の一定額
+NormalSlot_Mode1: 100000
+
+# Slot Mode4の一定回数
+NormalSlot_Mode4: 1000
+
+# Slot Mode5の確率 ○分の1
+NormalSlot_Mode5: 1000
+
+# カイジスロット Mode0の3段階目高確率にするか
+KaijiSlot_Mode0: false
+
+# カイジ大当たり
+KaijiSlot_JP: 2000000
 ...

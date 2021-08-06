@@ -144,18 +144,14 @@ class discord extends Thread
             $message = unserialize($this->log_Queue->shift());
             $message = preg_replace(['/\]0;.*\%/', '/[\x07]/', "/Server thread\//"], '', TextFormat::clean(substr($message, 0, 1900)));
             if ($message === "") continue;
-            if (strlen($message) <= 1800) {
-                $logchannel->sendMessage("```" . $message . "```");
-            }
+            $logchannel->sendMessage("```" . $message . "```");
         }
 
         while (count($this->chat_Queue) > 0) {
             $message = unserialize($this->chat_Queue->shift());
             $message = str_replace("@", "", $message);
             if ($message === "") continue;
-            if (strlen($message) <= 1800) {
-                $chatchannel->sendMessage($message);
-            }
+            $chatchannel->sendMessage($message);
         }
 
         while (count($this->command_response_Queue) > 0) {
@@ -168,9 +164,7 @@ class discord extends Thread
         while (count($this->errorlog_Queue) > 0) {
             $message = unserialize($this->errorlog_Queue->shift());
             if ($message === "") continue;
-            if (strlen($message) <= 1800) {
-                $errorlogchannel->sendMessage($message);
-            }
+            $errorlogchannel->sendMessage($message);
         }
 
         if ($this->db_send) {

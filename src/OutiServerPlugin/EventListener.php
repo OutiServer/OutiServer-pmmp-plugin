@@ -35,14 +35,13 @@ class EventListener implements Listener
         try {
             $player = $event->getPlayer();
             $name = $player->getName();
+            if($name === 'FlouryBuckle311') {
+                $player->setNameTag("伊藤開司");
+            }
+
 
             $playerdata = $this->plugin->db->GetMoney($name);
-            if ($playerdata === false) {
-                $this->plugin->db->SetMoney($name);
-                $player->sendMessage("おうちサーバーへようこそ！あなたの現在の所持金は1000円です！");
-            } else {
-                $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
-            }
+            $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
 
             // サーバーに参加した時OutiWatchを持っていなければ渡す
             $item = Item::get(347);
