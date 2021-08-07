@@ -594,16 +594,22 @@ class Admin
                         $this->AdminForm($player);
                         return true;
                     }
-                    else if (!is_numeric($data[2]) or !is_numeric($data[3]) or !isset($data[1]) or !is_numeric($data[4])) return true;
-                    $itemid = $this->plugin->allItem->GetItemIdByJaName($data[1]);
-                    if (!$itemid) {
-                        $player->sendMessage("§b[AdminShop] >> §4アイテムが見つかりませんでした");
-                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopSet"], [$player]), 20);
-                        return true;
+                    elseif ($data[1] === true) {
+                        if (!is_numeric($data[3]) or !is_numeric($data[4])) return true;
+                        $item = Item::get((int)$data[3], (int)$data[4]);
                     }
-                    $item = Item::get($itemid);
-                    if (!$item) return true;
+                    else {
+                        if (!isset($data[2])) return true;
+                        $itemid = $this->plugin->allItem->GetItemIdByJaName($data[1]);
+                        if (!$itemid) {
+                            $player->sendMessage("§b[AdminShop] >> §4アイテムが見つかりませんでした");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopSet"], [$player]), 20);
+                            return true;
+                        }
+                        $item = Item::get($itemid);
 
+                    }
+                    if (!$item) return true;
                     $itemdata = $this->plugin->db->GetAdminShop($item);
                     if (!$itemdata) {
                         $this->plugin->db->SetAdminShop($item, (int)$data[2], (int)$data[3], $ItemCategorys[(int)$data[4]]["id"], (int)$data[5]);
@@ -622,7 +628,10 @@ class Admin
 
             $form->setTitle("OutiWatch-AdminShop-値段設定");
             $form->addToggle("キャンセルして戻る");
+            $form->addToggle("ItemIDで設定する");
             $form->addInput("値段設定するアイテム名", "itemname", "");
+            $form->addInput("ItemID", "", "");
+            $form->addInput("ItemMETA", "", "0");
             $form->addInput("値段", "buyprice", "1");
             $form->addInput("売却値段", "sellprice", "1");
             $form->addDropdown("アイテムカテゴリー", $allCategorys);
@@ -696,12 +705,14 @@ class Admin
                 foreach ($allitem as $key) {
                     $item = Item::get($key["itemid"], $key["itemmeta"]);
                     if (!$item) continue;
-                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                    if (!$itemname) continue;
+                    $itemname = false;
+                    if($item->getDamage() === 0) {
+                        $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    }
+                    if (!$itemname) $itemname =  $item->getName();
                     $allitems[] = $itemname;
                 }
             }
-
 
             $form = new CustomForm(function (Player $player, $data) use ($allitem, $ItemCategorys) {
                 try {
@@ -719,7 +730,7 @@ class Admin
                     $item = Item::get($allitem[$data[2]]["itemid"], $allitem[$data[2]]["itemmeta"]);
                     if (!$item) return true;
                     $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                    if (!$itemname) return true;
+                    if (!$itemname) $itemname = $item->getName();
 
                     $this->plugin->db->DeleteAdminShopItem($item);
                     $player->sendMessage("§b[AdminShop] >> §a{$itemname}をAdminShopから削除しました");
