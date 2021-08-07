@@ -145,7 +145,11 @@ class AdminShop
             if($alldata !== false) {
                 foreach ($alldata as $data) {
                     $item = Item::get($data["itemid"], $data["itemmeta"]);
-                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    $itemname = false;
+                    if($item->getDamage() === 0) {
+                        $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    }
+                    if(!$itemname) $itemname = $item->getName();
                     if($data["mode"] === Enum::ADMINSHOP_ALL) {
                         $form->addButton("$itemname 購入値段: {$data["buyprice"]}円 売却値段: {$data["sellprice"]}円");
                     }
