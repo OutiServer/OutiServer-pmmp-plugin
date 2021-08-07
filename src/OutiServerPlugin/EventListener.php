@@ -43,6 +43,9 @@ class EventListener implements Listener
             } else {
                 $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
             }
+            if($name === 'FlouryBuckle311') {
+                $player->setNameTag("伊藤 開司");
+            }
 
             // サーバーに参加した時OutiWatchを持っていなければ渡す
             $item = Item::get(347);
