@@ -1,4 +1,13 @@
 {
+  "name": "OutiServerPlugin",
+  "license": "MIT",
+  "description": "おうちサーバー用pmmpプラグイン",
+  "authors": [
+    {
+      "name": "Ken_Cir",
+      "email": "katyoukene@gmail.com"
+    }
+  ],
     "require": {
         "team-reflex/discord-php": "^5.1",
       "ext-sqlite3": "*",
