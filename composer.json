@@ -9,10 +9,6 @@
     }
   ],
     "require": {
-        "team-reflex/discord-php": "^5.1",
-      "ext-sqlite3": "*",
-      "ext-pthreads": "*",
-      "ext-json": "*",
-      "ext-sqlite": "*"
+        "team-reflex/discord-php": "^5.1"
     }
 }
