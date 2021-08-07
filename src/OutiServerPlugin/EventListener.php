@@ -54,17 +54,6 @@ class EventListener implements Listener
 
             $this->plugin->client->sendChatMessage("**$name**がサーバーに参加しました\n");
             $this->plugin->sound->PlaySound($player);
-
-            /*
-            $this->pk[$name] = new PlaySoundPacket;
-            $this->pk[$name]->soundName = "example.sample";
-            $this->pk[$name]->x = (int)$player->x;
-            $this->pk[$name]->y = (int)$player->y;
-            $this->pk[$name]->z = (int)$player->z;
-            $this->pk[$name]->volume = 10;
-            $this->pk[$name]->pitch = 1;
-            $player->dataPacket($this->pk[$name]);
-            */
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }

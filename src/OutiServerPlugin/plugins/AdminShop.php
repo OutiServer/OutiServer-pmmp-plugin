@@ -100,21 +100,30 @@ class AdminShop
     {
         try {
             $alldata = $this->plugin->db->AllAdminShop($CategoryId);
-            if (!$alldata) {
+            $ItemCategorys = $this->plugin->db->GetItemChildCategory($CategoryId);
+            if (!$alldata and !$ItemCategorys) {
                 $player->sendMessage("§b[AdminShop] >> §4現在そのカテゴリーでは何も売られていないようです");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenuCategory"], [$player]), 20);
                 return;
             }
 
-            $form = new SimpleForm(function (Player $player, $data) use ($alldata) {
+            $form = new SimpleForm(function (Player $player, $data) use ($alldata, $ItemCategorys) {
                 try {
+                    $categoryadded = 0;
                     if ($data === null) return true;
                     elseif ($data === 0) {
                         $this->AdminShopMenuCategory($player);
                         return true;
                     }
+                    elseif ($ItemCategorys !== false) {
+                        $categoryadded = count($ItemCategorys);
+                        if($categoryadded >= $data) {
+                            $this->AdminShopMenu($player, $ItemCategorys[$data - 1]["id"]);
+                            return true;
+                        }
+                    }
 
-                    $itemdata = $alldata[(int)$data - 1];
+                    $itemdata = $alldata[$data - ($categoryadded + 1)];
                     $this->SelectAdminShop($player, $itemdata);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
@@ -127,17 +136,25 @@ class AdminShop
             $form->setContent("AdminShop-メニュー");
             $form->addButton("戻る");
 
-            for ($i = 0; $i < count($alldata); $i++) {
-                $item = Item::get($alldata[$i]["itemid"], $alldata[$i]["itemmeta"]);
-                $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                if($alldata[$i]["mode"] === Enum::ADMINSHOP_ALL) {
-                    $form->addButton("$itemname 購入値段: {$alldata[$i]["buyprice"]}円 売却値段: {$alldata[$i]["sellprice"]}円");
+            if($ItemCategorys !== false) {
+                foreach ($ItemCategorys as $data) {
+                    $form->addButton("カテゴリー: {$data["name"]}");
                 }
-                elseif ($alldata[$i]["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
-                    $form->addButton("$itemname 購入値段: {$alldata[$i]["buyprice"]}円");
-                }
-                elseif ($alldata[$i]["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
-                    $form->addButton("$itemname 売却値段: {$alldata[$i]["sellprice"]}円");
+            }
+
+            if($alldata !== false) {
+                foreach ($alldata as $data) {
+                    $item = Item::get($data["itemid"], $data["itemmeta"]);
+                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    if($data["mode"] === Enum::ADMINSHOP_ALL) {
+                        $form->addButton("$itemname 購入値段: {$data["buyprice"]}円 売却値段: {$data["sellprice"]}円");
+                    }
+                    elseif ($data["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
+                        $form->addButton("$itemname 購入値段: {$data["buyprice"]}円");
+                    }
+                    elseif ($data["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
+                        $form->addButton("$itemname 売却値段: {$data["sellprice"]}円");
+                    }
                 }
             }
 
@@ -214,7 +231,7 @@ class AdminShop
             $this->plugin->db->RemoveMoney($name, $price);
             $player->getInventory()->addItem($item);
             $player->sendMessage("§b[AdminShop] >> §a購入しました");
-            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, " AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
+            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
         } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
@@ -228,7 +245,7 @@ class AdminShop
             $this->plugin->db->AddMoney($name, $price);
             $player->getInventory()->removeItem($item);
             $player->sendMessage("§b[AdminShop] >> §a売却しました");
-            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, " AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
+            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
         } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }

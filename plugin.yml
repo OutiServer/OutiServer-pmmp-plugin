@@ -1,7 +1,7 @@
 name: OutiServerPlugin
 description: おうちサーバー用プラグイン
 author: Ken_Cir
-version: 3.0.0
+version: 3.1.0
 api: 3.0.0
 main: OutiServerPlugin\Main
 
@@ -21,7 +21,11 @@ commands:
   reloadoutisound:
     description: "sound設定をリロード"
     usage: "/reloadoutisound"
-    permission: OutiServerPlugin.command.*;
+    permission: OutiServerPlugin.command.*
+  db:
+    description: "dbを操作する"
+    usage: "/db <query>"
+    permission: OutiServerPlugin.command.*
 
 permissions:
   OutiServerPlugin.command.*:
