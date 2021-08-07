@@ -200,6 +200,11 @@ class Main extends PluginBase
                     $this->music->reload();
                     $sender->sendMessage("§a[おうちサーバー] >> §asoundをリロードしました");
                     break;
+                case 'db':
+                    $query = join(" ", $args);
+                    var_dump($this->db->db->query($query)->fetchArray());
+                    break;
+
             }
 
             return true;

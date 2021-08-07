@@ -20,9 +20,11 @@ use TypeError;
 
 class Database
 {
+
     public SQLite3 $db;
     private Main $plugin;
 
+    // <editor-fold desc="SQLite3初期化">
     public function __construct(Main $plugin, string $dir, array $DefaultItemCategory)
     {
         $this->plugin = $plugin;
@@ -33,7 +35,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS chestshops (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER, mode INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER, tpx INTEGER, tpy INTEGER, tpz INTEGER)");
-            $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type INTEGER, parentcategory INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER, oponly INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
@@ -53,8 +55,9 @@ class Database
                 $sql->bindValue(':name', $key, SQLITE3_TEXT);
                 $result = $sql->execute();
                 if (!$result->fetchArray()) {
-                    $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
+                    $sql = $this->db->prepare("INSERT INTO itemcategorys (name, type) VALUES (:name, :type)");
                     $sql->bindValue(':name', $key, SQLITE3_TEXT);
+                    $sql->bindValue(":type", Enum::ADMINSHOP_CATEGORY_PARENT, SQLITE3_INTEGER);
                     $sql->execute();
                 }
             }
@@ -62,6 +65,7 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
     // db接続を閉じる
     public function close()
@@ -703,7 +707,7 @@ class Database
             $sql = $this->db->prepare("SELECT * FROM itemcategorys");
             $result = $sql->execute();
             while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
-                if (!$this->AllAdminShop($d["id"])) continue;
+                if ($d["type"] !== Enum::ADMINSHOP_CATEGORY_PARENT) continue;
                 $alldata[] = $d;
             }
 
@@ -720,12 +724,22 @@ class Database
     public function AddItemCategory(string $name)
     {
         try {
-            $sql = $this->db->prepare("INSERT INTO itemcategorys (name) VALUES (:name)");
+            $sql = $this->db->prepare("INSERT INTO itemcategorys (name, type, parentcategory) VALUES (:name, :type, :parentcategory)");
             $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(":type", Enum::ADMINSHOP_CATEGORY_PARENT, SQLITE3_INTEGER);
+            $sql->bindValue(":parentcategory", null, SQLITE3_NULL);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+    }
+
+    public function GetItemCaegory(int $id)
+    {
+        $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE id = :id");
+        $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+        $result = $sql->execute();
+        return $result->fetchArray();
     }
 
     public function RemoveItemCategory(int $id)
@@ -737,6 +751,40 @@ class Database
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+    }
+
+    public function AddItemChildCategory(string $name, int $parentid)
+    {
+        try {
+            $sql = $this->db->prepare("INSERT INTO itemcategorys (name, type, parentcategory) VALUES (:name, :type, :parentcategory)");
+            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(":type", Enum::ADMINSHOP_CATEGORY_CHILD, SQLITE3_INTEGER);
+            $sql->bindValue(":parentcategory", $parentid, SQLITE3_INTEGER);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetItemChildCategory(int $id)
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE parentcategory = :parentcategory");
+            $sql->bindValue(":parentcategory", $id, SQLITE3_INTEGER);
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = $d;
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
     }
 
     public function DeleteAdminShopItem(Item $item)
@@ -912,7 +960,6 @@ class Database
     public function SetSlot(string $name, int $bet, int $rate, int $line, Block $pos)
     {
         try {
-            // id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER
             $sql = $this->db->prepare("INSERT INTO casinoslots (name, bet, rate, line, levelname, x, y, z) VALUES (:name, :bet, :rate, :line, :levelname, :x, :y, :z)");
             $sql->bindValue(':name', $name, SQLITE3_TEXT);
             $sql->bindValue('bet', $bet, SQLITE3_INTEGER);

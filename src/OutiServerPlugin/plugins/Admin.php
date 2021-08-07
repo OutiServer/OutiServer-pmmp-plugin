@@ -15,7 +15,6 @@ use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use SQLiteException;
 use TypeError;
 
 class Admin
@@ -51,38 +50,33 @@ class Admin
                             $this->RemoveItemCategory($player);
                             break;
                         case 5:
-                            $this->AddWorldTeleport($player);
+                            $this->AddItemChildCategory($player);
                             break;
                         case 6:
-                            $this->RemoveWorldTeleport($player);
+                            $this->DeleteItemChildCategorySelect($player);
                             break;
                         case 7:
-                            $this->AddAnnounce($player);
+                            $this->AddWorldTeleport($player);
                             break;
                         case 8:
-                            $this->RemoveAnnounce($player);
+                            $this->RemoveWorldTeleport($player);
                             break;
                         case 9:
-                            $this->AdminShopSet($player);
+                            $this->AddAnnounce($player);
                             break;
                         case 10:
-                            $this->DeleteItemCategory($player);
+                            $this->RemoveAnnounce($player);
                             break;
                         case 11:
-                            $this->ForcedLandAbandonment($player);
+                            $this->AdminShopSet($player);
                             break;
                         case 12:
-                            $this->plugin->config->reload();
-                            $player->sendMessage("§a[おうちサーバー] >> §aconfigをリロードしました");
-                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                            $this->DeleteItemCategory($player);
                             break;
                         case 13:
-                            $this->db($player);
+                            $this->ForcedLandAbandonment($player);
                             break;
                         case 14:
-                            $this->plugin->client->sendDB();
-                            break;
-                        case 15:
                             $this->plugin->applewatch->Form($player);
                             break;
                     }
@@ -100,6 +94,8 @@ class Admin
             $form->addButton("プレイヤーのお金を設定");
             $form->addButton("アイテムカテゴリーの追加");
             $form->addButton("アイテムカテゴリーの削除");
+            $form->addButton("子アイテムカテゴリーの追加");
+            $form->addButton("子アイテムカテゴリーの削除");
             $form->addButton("テレポートの追加");
             $form->addButton("テレポートの削除");
             $form->addButton("アナウンスの追加");
@@ -107,9 +103,6 @@ class Admin
             $form->addButton("AdminShopのアイテム設定");
             $form->addButton("AdminShopのアイテム削除");
             $form->addButton("土地強制放棄");
-            $form->addButton("Configリロード");
-            $form->addButton("db操作(§4SQLite技術者以外使用禁止)");
-            $form->addButton("db送信");
             $form->addButton("戻る");
             $player->sendForm($form);
         }
@@ -220,42 +213,6 @@ class Admin
         }
     }
 
-    public function db(Player $player)
-    {
-        try {
-            $form = new CustomForm(function (Player $player, $data) {
-                try {
-                    if ($data === null) return true;
-                    elseif ($data[0]) {
-                        $this->AdminForm($player);
-                        return true;
-                    }
-                    elseif (!isset($data[1])) return true;
-                    try {
-                        $result = $this->plugin->db->db->query($data[1]);
-                        $data = $result->fetchArray();
-                        var_dump($data);
-                    } catch (SQLiteException $ex) {
-                        $player->sendMessage("§4ERROR!\n" . $ex->getMessage());
-                    }
-                }
-                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
-                    $this->plugin->errorHandler->onError($e, $player);
-                }
-
-                return true;
-            });
-
-            $form->setTitle("OutiWatch-管理-db");
-            $form->addToggle("キャンセルして戻る");
-            $form->addInput("クエリ", "query", "");
-            $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onError($e, $player);
-        }
-    }
-
     public function AddItemCategory(Player $player)
     {
         try {
@@ -293,6 +250,11 @@ class Admin
     {
         try {
             $ItemCategorys = $this->plugin->db->GetAllItemCategory();
+            if(!$ItemCategorys) {
+                $player->sendMessage("§b[AdminShop] >> §4カテゴリーが1つも見つかりませんでした");
+                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                return;
+            }
             $allCategorys = [];
             foreach ($ItemCategorys as $key) {
                 $allCategorys[] = $key["name"];
@@ -310,6 +272,135 @@ class Admin
                     $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[1]]["id"]);
                     $player->sendMessage("{$ItemCategorys[(int)$data[1]]["name"]}をアイテムカテゴリーから削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "RemoveItemCategory"], [$player]), 20);
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
+            });
+
+            $form->setTitle("Admin-アイテムカテゴリー削除");
+            $form->addToggle("キャンセルして戻る");
+            $form->addDropdown("アイテムカテゴリー", $allCategorys);
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    public function AddItemChildCategory(Player $player)
+    {
+        try {
+            $ItemCategorys = $this->plugin->db->GetAllItemCategory();
+            if(!$ItemCategorys) {
+                $player->sendMessage("§b[AdminShop] >> §4カテゴリーが1つも見つかりませんでした");
+                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                return;
+            }
+            $allCategorys = [];
+            foreach ($ItemCategorys as $key) {
+                $allCategorys[] = $key["name"];
+            }
+
+            $form = new CustomForm(function (Player $player, $data) use($ItemCategorys, $allCategorys) {
+                try {
+                    if($data === null) return true;
+                    elseif ($data[0]) {
+                        $this->AdminForm($player);
+                        return true;
+                    }
+                    elseif(!isset($data[1])) return true;
+
+                    $this->plugin->db->AddItemChildCategory($data[2], $ItemCategorys[$data[1]]["id"]);
+                    $player->sendMessage("§b[AdminShop] >> §a{$allCategorys[$data[1]]}に$data[2]をカテゴリーとして追加しました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AddItemChildCategory"], [$player]), 20);
+                }
+                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
+            });
+
+            $form->setTitle("Admin-子アイテムカテゴリー追加");
+            $form->addToggle("キャンセルして戻る");
+            $form->addDropdown("親カテゴリー", $allCategorys);
+            $form->addInput("追加する子アイテムカテゴリーの名前", "name", "");
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    public function DeleteItemChildCategorySelect(Player $player)
+    {
+        try {
+            $ItemCategorys = $this->plugin->db->GetAllItemCategory();
+            if(!$ItemCategorys) {
+                $player->sendMessage("§b[AdminShop] >> §4カテゴリーが1つも見つかりませんでした");
+                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                return;
+            }
+
+            $form = new SimpleForm(function (Player $player, $data) use ($ItemCategorys) {
+                try {
+                    if ($data === null) return true;
+                    elseif ($data === 0) {
+                        $this->AdminForm($player);
+                        return true;
+                    }
+                    $Categoryid = $ItemCategorys[(int)$data - 1]["id"];
+                    $this->DeleteItemChildCategory($player, $Categoryid);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
+            });
+
+            $form->setTitle("OutiWatch-Admin-子アイテムカテゴリー削除");
+            $form->setContent("AdminShop-カテゴリー");
+            $form->addButton("戻る");
+            foreach ($ItemCategorys as $key) {
+                $form->addButton($key["name"]);
+            }
+            $player->sendForm($form);
+        }
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+
+    public function DeleteItemChildCategory(Player $player, int $id)
+    {
+        try {
+            $ItemCategorys = $this->plugin->db->GetItemChildCategory($id);
+            if(!$ItemCategorys) {
+                $player->sendMessage("§b[AdminShop] >> §4カテゴリーが1つも見つかりませんでした");
+                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemChildCategorySelect"], [$player]), 20);
+                return;
+            }
+            $allCategorys = [];
+            foreach ($ItemCategorys as $key) {
+                $allCategorys[] = $key["name"];
+            }
+
+            $form = new CustomForm(function (Player $player, $data) use ($ItemCategorys, $id) {
+                try {
+                    if($data === null) return true;
+                    elseif ($data[0]) {
+                        $this->AdminForm($player);
+                        return true;
+                    }
+                    else if(!is_numeric($data[1])) return true;
+
+                    $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[1]]["id"]);
+                    $parentcategory = $this->plugin->db->GetItemCaegory($id);
+                    $player->sendMessage("{$parentcategory["name"]}のアイテムカテゴリーから{$ItemCategorys[(int)$data[1]]["name"]}をから削除しました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemChildCategory"], [$player, $id]), 20);
                 }
                 catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
@@ -585,32 +676,47 @@ class Admin
     public function DeleteItemSelect(Player $player, int $categoryid)
     {
         try {
+            $ItemCategorys = $this->plugin->db->GetItemChildCategory($categoryid);
             $allitem = $this->plugin->db->AllAdminShop($categoryid);
-            if (!$allitem) {
+            if (!$allitem and !$ItemCategorys) {
                 $player->sendMessage("§b[AdminShop] >> §4現在そのカテゴリーでは何も売られていないようです");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemCategory"], [$player]), 20);
                 return;
             }
 
             $allitems = [];
-            foreach ($allitem as $key) {
-                $item = Item::get($key["itemid"], $key["itemmeta"]);
-                if (!$item) continue;
-                $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                if (!$itemname) continue;
-                $allitems[] = $itemname;
+            $category = [];
+            if($ItemCategorys !== false) {
+                foreach ($ItemCategorys as $data) {
+                    $category[] = $data["name"];
+                }
             }
 
-            $form = new CustomForm(function (Player $player, $data) use ($allitem) {
+            if($allitem !== false) {
+                foreach ($allitem as $key) {
+                    $item = Item::get($key["itemid"], $key["itemmeta"]);
+                    if (!$item) continue;
+                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    if (!$itemname) continue;
+                    $allitems[] = $itemname;
+                }
+            }
+
+
+            $form = new CustomForm(function (Player $player, $data) use ($allitem, $ItemCategorys) {
                 try {
                     if ($data === null) return true;
-                    elseif ($data === 0) {
+                    elseif ($data[0] === true) {
                         $this->AdminForm($player);
                         return true;
                     }
-                    else if (!is_numeric($data[1])) return true;
+                    elseif (($data[1] === true and $ItemCategorys !== false) or $allitem === false) {
 
-                    $item = Item::get($allitem[$data[1]]["itemid"], $allitem[$data[1]]["itemmeta"]);
+                        $this->DeleteItemSelect($player, $ItemCategorys[$data[3]]["id"]);
+                        return true;
+                    }
+
+                    $item = Item::get($allitem[$data[2]]["itemid"], $allitem[$data[2]]["itemmeta"]);
                     if (!$item) return true;
                     $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
                     if (!$itemname) return true;
@@ -618,7 +724,7 @@ class Admin
                     $this->plugin->db->DeleteAdminShopItem($item);
                     $player->sendMessage("§b[AdminShop] >> §a{$itemname}をAdminShopから削除しました");
                     if(count($allitem) > 1) {
-                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemSelect"], [$player, $allitem[$data[1]]["categoryid"]]), 20);
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemSelect"], [$player, $allitem[$data[2]]["categoryid"]]), 20);
                     }
                     else {
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemCategory"], [$player]), 20);
@@ -632,7 +738,9 @@ class Admin
 
             $form->setTitle("Admin-アイテム削除");
             $form->addToggle("キャンセルして戻る");
+            $form->addToggle("カテゴリーに移動する");
             $form->addDropdown("アイテム", $allitems);
+            $form->addDropdown("カテゴリー", $category);
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
