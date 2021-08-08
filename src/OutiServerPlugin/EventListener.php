@@ -271,7 +271,7 @@ class EventListener implements Listener
                     $event->setCancelled();
                 }
             }
-            else {
+            elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
                 $event->setCancelled();
             }
         }
