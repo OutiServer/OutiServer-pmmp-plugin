@@ -109,14 +109,12 @@ class EventListener implements Listener
                     }
                 } elseif ($landid) {
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
-                        echo "OK6" . PHP_EOL;
                         $event->setCancelled();
                     }
                 }
             } elseif ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_AIR) {
                 if ($landid) {
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
-                        echo "OK5" . PHP_EOL;
                         $event->setCancelled();
                     }
                 }
@@ -156,12 +154,10 @@ class EventListener implements Listener
             }
             elseif ($landid) {
                 if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
-                   echo "OK" . PHP_EOL;
                     $event->setCancelled();
                 }
             }
             elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
-                echo "OK2" . PHP_EOL;
                 $event->setCancelled();
             }
 
@@ -270,16 +266,13 @@ class EventListener implements Listener
         $levelname = $block->getLevel()->getName();
         $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
         if(!$player->isOp()) {
-            echo "OK7" . PHP_EOL;
             if($landid) {
                 if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and !$player->isOp()) {
                     $event->setCancelled();
-                    echo "OK3" . PHP_EOL;
                 }
             }
             else {
                 $event->setCancelled();
-                echo "OK4" . PHP_EOL;
             }
         }
     }
