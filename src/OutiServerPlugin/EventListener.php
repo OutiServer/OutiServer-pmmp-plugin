@@ -8,7 +8,7 @@ use ArgumentCountError;
 use Error;
 use Exception;
 use InvalidArgumentException;
-use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, SignChangeEvent};
+use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, BlockPlaceEvent, SignChangeEvent};
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerChatEvent,
     PlayerInteractEvent,
@@ -111,17 +111,13 @@ class EventListener implements Listener
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                         $event->setCancelled();
                     }
-                } elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
-                    $event->setCancelled();
                 }
             } elseif ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_AIR) {
                 if ($landid) {
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                         $event->setCancelled();
                     }
-                } elseif (!$player->isOp()) $event->setCancelled();
-            } elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
-                $event->setCancelled();
+                }
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
@@ -157,7 +153,7 @@ class EventListener implements Listener
                 }
             }
             elseif ($landid) {
-                if (!$this->plugin->db->CheckLandOwner($landid, $player->getName()) and !$this->plugin->db->checkInvite($landid, $player->getName()) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
+                if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                     $event->setCancelled();
                 }
             }
@@ -234,6 +230,7 @@ class EventListener implements Listener
             $name = $event->getPlayer()->getName();
             $reason = $event->getReason();
             $this->plugin->client->sendChatMessage("**$name**がサーバーから追放されました\nReason: $reason\n");
+            $this->plugin->getServer()->broadcastMessage("{$name}がサーバーから追放されました\nReason: $reason");
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -258,6 +255,25 @@ class EventListener implements Listener
         }
         else {
             $this->plugin->sound->PlaySound($player);
+        }
+    }
+
+    public function onBlockPlace(BlockPlaceEvent $event)
+    {
+        $player = $event->getPlayer();
+        $name = $player->getName();
+        $block = $event->getBlock();
+        $levelname = $block->getLevel()->getName();
+        $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
+        if(!$player->isOp()) {
+            if($landid) {
+                if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and !$player->isOp()) {
+                    $event->setCancelled();
+                }
+            }
+            else {
+                $event->setCancelled();
+            }
         }
     }
 }
