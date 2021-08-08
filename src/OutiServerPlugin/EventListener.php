@@ -91,7 +91,8 @@ class EventListener implements Listener
                 if ($item->getName() === 'OutiWatch' && !isset($this->plugin->applewatch->check[$name])) {
                     $this->plugin->applewatch->check[$name] = true;
                     $this->plugin->applewatch->Form($player);
-                } elseif ($slotid and !isset($this->plugin->casino->slot->sloted[$name])) {
+                }
+                 if ($slotid and !isset($this->plugin->casino->slot->sloted[$name])) {
                     $pos = new Vector3($block->x, $block->y, $block->z);
                     $sign = $block->getLevel()->getTile($pos);
                     if ($sign instanceof Tile) {
@@ -152,7 +153,7 @@ class EventListener implements Listener
                     $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店しました");
                 }
             }
-            elseif ($landid) {
+            if ($landid) {
                 if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                     $event->setCancelled();
                 }
