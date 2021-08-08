@@ -210,7 +210,7 @@ class Main extends PluginBase
             return true;
         }
         catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->errorHandler->onError($e, $sender);
+            $this->errorHandler->onErrorNotPlayer($e);
         }
 
         return true;
