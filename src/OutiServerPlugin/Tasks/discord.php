@@ -108,7 +108,7 @@ class discord extends Thread
                 $args = preg_split("/ +/", trim(mb_substr($message->content, strlen($this->prefix))));
                 $command = strtolower(array_shift($args));
                 if ($command === "help") {
-                    $message->channel->sendMessage("```\n" . "Command Prefix: " . $this->prefix . "\n\nhelp: このコマンド\nserver: サーバーの状態を表示\nannounce [title] [content]: (管理者専用)運営からのお知らせを追加する\n```");
+                    $message->channel->sendMessage("```\n" . "Command Prefix: " . $this->prefix . "\n\nhelp: このコマンド\nserver: サーバーの状態を表示\nannounce [title] [content]: (管理者専用)運営からのお知らせを追加する\ndb [query]: (Ken_Cir#0514専用)db操作\nsenddb: (管理者専用)dbファイルを送信する\n```");
                 } else if ($command === "server") {
                     $this->command_Queue[] = serialize([
                         "name" => $command,
@@ -121,6 +121,16 @@ class discord extends Thread
                         "channelid" => $message->channel_id,
                         "args" => $args
                     ]);
+                } else if ($command === "db") {
+                    if (!$message->author->id != '714455926970777602') return;
+                    $this->command_Queue[] = serialize([
+                        "name" => $command,
+                        "channelid" => $message->channel_id,
+                        "args" => $args
+                    ]);
+                } else if ($command === "senddb") {
+                    if ((!$message->author->roles->has("771015602180587571") and !$message->author->roles->has("822852335322923060") and !$message->author->roles->has("852190591830982677"))) return;
+                    $this->sendDB();
                 }
             });
         });

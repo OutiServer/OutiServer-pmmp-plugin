@@ -26,6 +26,14 @@ commands:
     description: "dbを操作する"
     usage: "/db <query>"
     permission: OutiServerPlugin.command.*
+  senddb:
+    description: "dbファイルをDiscordに送信する"
+    usage: "/senddb <query>"
+    permission: OutiServerPlugin.command.*
+  setitem:
+    description: "アイテム設定"
+    usage: "/setitem <itemid> <itemmeta> <日本語名> <画像パス>"
+    permission: OutiServerPlugin.command.*
 
 permissions:
   OutiServerPlugin.command.*:

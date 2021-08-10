@@ -46,7 +46,7 @@ class ChestShop
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $chest, $signboard]), 20);
                             return true;
                         }
-                        $item = Item::get($item->getId(), $item->getDamage(), $data[0]);
+                        $item = Item::get($item->getId(), $item->getDamage(), (int)$data[0]);
                         $this->plugin->db->SetChestShop($name, $chest, $signboard, $item, $data[2]);
                         $itemname = $this->plugin->db->GetItemDataItem($item);
                         $sign->setText("§bshop", "§ashop主: " . $name, "§d販売しているItem: " . $itemname["janame"], "§eお値段: " . $data[2] . "円");
