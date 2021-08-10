@@ -9,11 +9,13 @@ use Error;
 use Exception;
 use InvalidArgumentException;
 use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, BlockPlaceEvent, SignChangeEvent};
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerChatEvent,
     PlayerInteractEvent,
     PlayerJoinEvent,
     PlayerKickEvent,
+    PlayerLoginEvent,
     PlayerMoveEvent,
     PlayerQuitEvent};
 use pocketmine\item\Item;
@@ -30,6 +32,16 @@ class EventListener implements Listener
         $this->plugin = $plugin;
     }
 
+    public function onPlayerLogin(PlayerLoginEvent $event)
+    {
+        try {
+            $player = $event->getPlayer();
+            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', 'https://discord.com/api/webhooks/874656004225241148/17LX2YS8khGmtEBfDu440TDPYUBFyXz9_o9SzKSkW4V7uJxktWZfp8O_YZStb1iHdx8K'), "{$player->getName()}がワールド: {$player->getLevel()->getName()} X座標{$player->getX()} Y座標{$player->getY()} Z座標{$player->getZ()} にログインしました"));
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
     public function onJoin(PlayerJoinEvent $event)
     {
         try {
@@ -43,9 +55,8 @@ class EventListener implements Listener
             } else {
                 $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
             }
-            if($name === 'FlouryBuckle311') {
-                $player->setNameTag("伊藤 開司");
-            }
+
+            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', 'https://discord.com/api/webhooks/874656004225241148/17LX2YS8khGmtEBfDu440TDPYUBFyXz9_o9SzKSkW4V7uJxktWZfp8O_YZStb1iHdx8K'), "{$name}がゲームに参加しました。 所持金: {$playerdata["money"]}円"));
 
             // サーバーに参加した時OutiWatchを持っていなければ渡す
             $item = Item::get(347);

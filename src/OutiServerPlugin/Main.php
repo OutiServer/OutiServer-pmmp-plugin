@@ -13,6 +13,7 @@ use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, OutiWatch, Casino, Che
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Utils\{Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -22,6 +23,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 use pocketmine\utils\{Config, TextFormat};
+use SQLiteException;
 use TypeError;
 
 
@@ -106,25 +108,34 @@ class Main extends PluginBase
             ), 5, 1);
             $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
                 function (int $currentTick): void {
-                    foreach ($this->client->GetCommand() as $command) {
-                        switch ($command["name"]) {
-                            case "server":
-                                $server = Server::getInstance();
-                                $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " . $server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
-                                break;
-                            case "announce":
-                                $time = new DateTime('now');
-                                $title = array_shift($command["args"]);
-                                $content = join("\n", $command["args"]);
-                                $this->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $title, $content);
-                                $this->client->sendCommand($command["channelid"], "アナウンスに" . $title . "を追加しました\n");
-                                Server::getInstance()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
-                                $this->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
-                                break;
+                    try {
+                        foreach ($this->client->GetCommand() as $command) {
+                            switch ($command["name"]) {
+                                case "server":
+                                    $server = $this->getServer();
+                                    $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " . $server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
+                                    break;
+                                case "announce":
+                                    $time = new DateTime('now');
+                                    $title = array_shift($command["args"]);
+                                    $content = join("\n", $command["args"]);
+                                    $this->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $title, $content);
+                                    $this->client->sendCommand($command["channelid"], "アナウンスに" . $title . "を追加しました\n");
+                                    $this->getServer()->broadcastMessage(TextFormat::YELLOW . "[運営より] 運営からのお知らせが追加されました、ご確認ください。");
+                                    $this->client->sendChatMessage("__**[運営より] 運営からのお知らせが追加されました、ご確認ください。**__\n");
+                                    break;
+                                case 'db':
+                                    $query = join(" ", $command["args"]);
+                                    var_dump($this->db->db->query($query)->fetchArray());
+                                    break;
+                            }
                         }
+                    } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError | SQLiteException $e) {
+                        $this->errorHandler->onErrorNotPlayer($e);
                     }
                 }
             ), 5, 1);
+
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
@@ -199,12 +210,34 @@ class Main extends PluginBase
                     $query = join(" ", $args);
                     var_dump($this->db->db->query($query)->fetchArray());
                     break;
+                case 'senddb':
+                    $this->client->sendDB();
+                    break;
+                case 'setitem':
+                    var_dump($args);
+                    if(!is_numeric($args[0]) or !is_numeric($args[1]) or !isset($args[2])) break;
+                    $item = Item::get((int)$args[0], (int)$args[1]);
+                    if(!$item) return true;
 
+                    $path = "";
+                    if(isset($args[3])) {
+                        $path = $args[3];
+                    }
+
+                    if($this->db->GetItemDataItem($item)) {
+                        $this->db->UpdateItemData($item, $args[2], $path);
+                    }
+                    else {
+                        $this->db->SetItemData($item, $args[2], $path);
+                    }
+
+                    $sender->sendMessage("§b[Item設定] >> §a設定しました");
+                    break;
             }
 
             return true;
         }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError | SQLiteException $e) {
             $this->errorHandler->onErrorNotPlayer($e);
         }
 
