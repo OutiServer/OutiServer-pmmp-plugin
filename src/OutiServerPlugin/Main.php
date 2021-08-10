@@ -11,14 +11,12 @@ use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, OutiWatch, Casino, ChestShop, Land, Money, Sound, Teleport};
 use OutiServerPlugin\Tasks\discord;
-use OutiServerPlugin\Utils\{AllItem, Database, ErrorHandler};
+use OutiServerPlugin\Utils\{Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
-use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
@@ -34,7 +32,6 @@ class Main extends PluginBase
     public Database $db;
     public Config $config;
     public Config $music;
-    public AllItem $allItem;
     public Land $land;
     public ChestShop $chestshop;
     public AdminShop $adminshop;
@@ -51,7 +48,6 @@ class Main extends PluginBase
     {
         try {
             $this->saveResource("config.yml");
-            $this->saveResource("allitemdata.json");
             $this->saveResource("sound.yml");
 
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
@@ -65,7 +61,6 @@ class Main extends PluginBase
 
             $this->errorHandler = new ErrorHandler($this);
             $this->db = new Database($this, $this->getDataFolder() . 'outiserver.db', $this->config->get("Default_Item_Category", array()));
-            $this->allItem = new AllItem($this, $this->getDataFolder() . "allitemdata.json");
             $this->land = new Land($this);
             $this->chestshop = new ChestShop($this);
             $this->adminshop = new AdminShop($this);

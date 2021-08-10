@@ -40,15 +40,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpx")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpx INTEGER");
-            }
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpy")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpy INTEGER");
-            }
-            if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "tpz")) {
-                $this->db->exec("ALTER TABLE lands ADD COLUMN tpz INTEGER");
-            }
+            $this->db->exec("CREATE TABLE IF NOT EXISTS itemdatas (item TEXT PRIMARY KEY, id INTEGER, meta INTEGER, janame TEXT, imagepath TEXT)");
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -277,7 +269,7 @@ class Database
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->bindValue(":mode", $mode, SQLITE3_INTEGER);
             $sql->execute();
-        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -294,7 +286,7 @@ class Database
             $sql->bindValue(":categoryid", $categoryid, SQLITE3_INTEGER);
             $sql->bindValue(":mode", $mode, SQLITE3_INTEGER);
             $sql->execute();
-        } catch (SQLiteException | Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
@@ -1111,5 +1103,66 @@ class Database
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
+    }
+
+    public function SetItemData(Item $item, string $name, string $path)
+    {
+        try {
+            // itemdatas (item TEXT PRIMARY KEY, id INTEGER, meta INTEGER, janame TEXT, imagepath TEXT)
+            $sql = $this->db->prepare("INSERT INTO itemdatas VALUES (:item, :id, :meta, :janame, :imagepath)");
+            $sql->bindValue(":item", $item->getName(), SQLITE3_TEXT);
+            $sql->bindValue(":id", $item->getId(), SQLITE3_INTEGER);
+            $sql->bindValue(":meta", $item->getDamage(), SQLITE3_INTEGER);
+            $sql->bindValue(":janame", $name, SQLITE3_TEXT);
+            $sql->bindValue(":imagepath", $path, SQLITE3_TEXT);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function UpdateItemData(Item $item, string $name, string $path)
+    {
+        try {
+            $sql = $this->db->prepare("UPDATE itemdatas SET id = :id, meta = :meta, janame = :janame, imagepath = :imagepath WHERE item = :item");
+            $sql->bindValue(":item", $item->getName(), SQLITE3_TEXT);
+            $sql->bindValue(":id", $item->getId(), SQLITE3_INTEGER);
+            $sql->bindValue(":meta", $item->getDamage(), SQLITE3_INTEGER);
+            $sql->bindValue(":janame", $name, SQLITE3_TEXT);
+            $sql->bindValue(":imagepath", $path, SQLITE3_TEXT);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetItemDataItem(Item $item)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM itemdatas WHERE item = :item");
+            $sql->bindValue(":item", $item->getName(), SQLITE3_TEXT);
+            $result = $sql->execute();
+            return $result->fetchArray();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function GetItem(string $name)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM itemdatas WHERE janame = :name");
+            $sql->bindValue(":name", $name, SQLITE3_TEXT);
+            $result = $sql->execute();
+            $data = $result->fetchArray();
+            if(!$data) return false;
+            return Item::get($data["id"], $data["meta"]);
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
     }
 }

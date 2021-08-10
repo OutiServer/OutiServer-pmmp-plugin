@@ -77,6 +77,9 @@ class Admin
                             $this->ForcedLandAbandonment($player);
                             break;
                         case 14:
+                            $this->SetItem($player);
+                            break;
+                        case 15:
                             $this->plugin->applewatch->Form($player);
                             break;
                     }
@@ -103,6 +106,7 @@ class Admin
             $form->addButton("AdminShopのアイテム設定");
             $form->addButton("AdminShopのアイテム削除");
             $form->addButton("土地強制放棄");
+            $form->addButton("アイテム設定");
             $form->addButton("戻る");
             $player->sendForm($form);
         }
@@ -594,22 +598,14 @@ class Admin
                         $this->AdminForm($player);
                         return true;
                     }
-                    elseif ($data[1] === true) {
-                        if (!is_numeric($data[3]) or !is_numeric($data[4])) return true;
-                        $item = Item::get((int)$data[3], (int)$data[4]);
-                    }
-                    else {
-                        if (!isset($data[2])) return true;
-                        $itemid = $this->plugin->allItem->GetItemIdByJaName($data[1]);
-                        if (!$itemid) {
-                            $player->sendMessage("§b[AdminShop] >> §4アイテムが見つかりませんでした");
+                        if (!isset($data[1])) return true;
+                        $item = $this->plugin->db->GetItem($data[1]);
+                        if (!$item) {
+                            $player->sendMessage("§b[AdminShop] >> §4アイテムデータが見つかりませんでした");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopSet"], [$player]), 20);
                             return true;
                         }
-                        $item = Item::get($itemid);
 
-                    }
-                    if (!$item) return true;
                     $itemdata = $this->plugin->db->GetAdminShop($item);
                     if (!$itemdata) {
                         $this->plugin->db->SetAdminShop($item, (int)$data[2], (int)$data[3], $ItemCategorys[(int)$data[4]]["id"], (int)$data[5]);
@@ -628,10 +624,7 @@ class Admin
 
             $form->setTitle("OutiWatch-AdminShop-値段設定");
             $form->addToggle("キャンセルして戻る");
-            $form->addToggle("ItemIDで設定する");
             $form->addInput("値段設定するアイテム名", "itemname", "");
-            $form->addInput("ItemID", "", "");
-            $form->addInput("ItemMETA", "", "0");
             $form->addInput("値段", "buyprice", "1");
             $form->addInput("売却値段", "sellprice", "1");
             $form->addDropdown("アイテムカテゴリー", $allCategorys);
@@ -705,12 +698,13 @@ class Admin
                 foreach ($allitem as $key) {
                     $item = Item::get($key["itemid"], $key["itemmeta"]);
                     if (!$item) continue;
-                    $itemname = false;
-                    if($item->getDamage() === 0) {
-                        $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    $itemdata = $this->plugin->db->GetItemDataItem($item);
+                    if(!$itemdata) {
+                        $itemdata = array(
+                            "janame" => $item->getName()
+                        );
                     }
-                    if (!$itemname) $itemname =  $item->getName();
-                    $allitems[] = $itemname;
+                    $allitems[] = $itemdata["janame"];
                 }
             }
 
@@ -729,11 +723,12 @@ class Admin
 
                     $item = Item::get($allitem[$data[2]]["itemid"], $allitem[$data[2]]["itemmeta"]);
                     if (!$item) return true;
-                    $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                    if (!$itemname) $itemname = $item->getName();
+
+                    $itemdata = $this->plugin->db->GetItemDataItem($item);
+
 
                     $this->plugin->db->DeleteAdminShopItem($item);
-                    $player->sendMessage("§b[AdminShop] >> §a{$itemname}をAdminShopから削除しました");
+                    $player->sendMessage("§b[AdminShop] >> §a{$itemdata["janame"]}をAdminShopから削除しました");
                     if(count($allitem) > 1) {
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemSelect"], [$player, $allitem[$data[2]]["categoryid"]]), 20);
                     }
@@ -796,4 +791,51 @@ class Admin
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
+
+    // <editor-fold desc="アイテム名設定">
+    public function SetItem(Player $player)
+    {
+        try {
+
+            $form = new CustomForm(function (Player $player, $data) {
+                try {
+                    if ($data === null) return true;
+                    elseif ($data[0] === true) {
+                        $player->sendMessage("§b[Item設定] >> §eキャンセルしました");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                        return true;
+                    }
+                    elseif (!is_numeric($data[1]) or !is_numeric($data[2]) or !isset($data[3]) or !isset($data[4])) return true;
+
+                    $item = Item::get((int)$data[1], (int)$data[2]);
+                    if(!$item) return true;
+
+                    if($this->plugin->db->GetItemDataItem($item)) {
+                        $this->plugin->db->UpdateItemData($item, $data[3], $data[4]);
+                    }
+                    else {
+                        $this->plugin->db->SetItemData($item, $data[3], $data[4]);
+                    }
+
+                    $player->sendMessage("§b[Item設定] >> §a設定しました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SetItem"], [$player]), 20);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
+            });
+
+            $form->setTitle("OutiWatch-Admin-アイテム設定");
+            $form->addToggle("キャンセルして戻る");
+            $form->addInput("ItemID", "", "");
+            $form->addInput("ItemMETA", "", "0");
+            $form->addInput("Itemの日本語名", "", "");
+            $form->addInput("Itemのテクスチャへのパス", "", "");
+            $player->sendForm($form);
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+    // </editor-fold>
 }
