@@ -9,9 +9,6 @@
     }
   ],
     "require": {
-        "team-reflex/discord-php": "^5.1",
-      "ext-sqlite": "*",
-      "ext-curl": "*",
-      "ext-json": "*"
+        "team-reflex/discord-php": "^5.1"
     }
 }
