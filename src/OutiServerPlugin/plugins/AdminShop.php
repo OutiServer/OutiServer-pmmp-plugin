@@ -6,10 +6,9 @@ namespace OutiServerPlugin\plugins;
 
 use ArgumentCountError;
 use Error;
-use ErrorException;
 use Exception;
 use InvalidArgumentException;
-use jojoe77777\FormAPI\{CustomForm, ModalForm, SimpleForm};
+use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
 use OutiServerPlugin\Utils\Enum;
@@ -71,7 +70,7 @@ class AdminShop
                 try {
                     if ($data === null) return true;
                     elseif ($data === 0) {
-                        $this->AdminShop($player);
+                        $this->plugin->applewatch->Form($player);
                         return true;
                     }
                     $Categoryid = $alldata[(int)$data - 1]["id"];
@@ -83,7 +82,7 @@ class AdminShop
                 return true;
             });
 
-            $form->setTitle("OutiWatch");
+            $form->setTitle("OutiWatch-AdminShop");
             $form->setContent("AdminShop-カテゴリー");
             $form->addButton("戻る");
             for ($i = 0; $i < count($alldata); $i++) {
@@ -145,19 +144,21 @@ class AdminShop
             if($alldata !== false) {
                 foreach ($alldata as $data) {
                     $item = Item::get($data["itemid"], $data["itemmeta"]);
-                    $itemname = false;
-                    if($item->getDamage() === 0) {
-                        $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+                    $itemdata = $this->plugin->db->GetItemDataItem($item);
+                    if(!$itemdata) {
+                        $itemdata = array(
+                            "janame" => $item->getName(),
+                            "imagepath" => ""
+                        );
                     }
-                    if(!$itemname) $itemname = $item->getName();
                     if($data["mode"] === Enum::ADMINSHOP_ALL) {
-                        $form->addButton("$itemname 購入値段: {$data["buyprice"]}円 売却値段: {$data["sellprice"]}円");
+                        $form->addButton("{$itemdata["janame"]} 購入値段: {$data["buyprice"]}円 売却値段: {$data["sellprice"]}円", 0, $itemdata["imagepath"]);
                     }
                     elseif ($data["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
-                        $form->addButton("$itemname 購入値段: {$data["buyprice"]}円");
+                        $form->addButton("{$itemdata["janame"]} 購入値段: {$data["buyprice"]}円", 0, $itemdata["imagepath"]);
                     }
                     elseif ($data["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
-                        $form->addButton("$itemname 売却値段: {$data["sellprice"]}円");
+                        $form->addButton("{$itemdata["janame"]} 売却値段: {$data["sellprice"]}円", 0, $itemdata["imagepath"]);
                     }
                 }
             }
@@ -186,7 +187,18 @@ class AdminShop
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }
                         elseif ($player->getInventory()->canAddItem($item)) {
-                            $this->AdminShopBuyCheck($player, $item, $itemdata);
+                            $price = $item->getCount() * $itemdata["buyprice"];
+                            $name = $player->getName();
+                            $playerdata = $this->plugin->db->GetMoney($name);
+                            if ($price > $playerdata["money"]) {
+                                $player->sendMessage("§b[AdminShop] >> §4お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
+                                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
+                                return true;
+                            }
+                            $this->plugin->db->RemoveMoney($name, $price);
+                            $player->getInventory()->addItem($item);
+                            $player->sendMessage("§b[AdminShop] >> §a購入しました");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
                         } else {
                             $player->sendMessage("§b[AdminShop] >> §4インベントリの空き容量が足りません");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
@@ -197,7 +209,12 @@ class AdminShop
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }
                         elseif ($player->getInventory()->contains($item)) {
-                            $this->AdminShopSellCheck($player, $item, $itemdata);
+                            $price = $item->getCount() * $itemdata["sellprice"];
+                            $name = $player->getName();
+                            $this->plugin->db->AddMoney($name, $price);
+                            $player->getInventory()->removeItem($item);
+                            $player->sendMessage("§b[AdminShop] >> §a売却しました");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
                         } else {
                             $player->sendMessage("§b[AdminShop] >> §4自分の所持しているアイテム以上のアイテムを売却することはできません");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
@@ -216,41 +233,6 @@ class AdminShop
             $form->addInput("購入・売却する個数", "count", "1");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onError($e, $player);
-        }
-    }
-
-    public function AdminShopBuyCheck(Player $player, $item, $itemdata)
-    {
-        try {
-            $price = $item->getCount() * $itemdata["buyprice"];
-            $name = $player->getName();
-            $playerdata = $this->plugin->db->GetMoney($name);
-            if ($price > $playerdata["money"]) {
-                $player->sendMessage("§b[AdminShop] >> §4お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
-                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
-                return;
-            }
-
-            $this->plugin->db->RemoveMoney($name, $price);
-            $player->getInventory()->addItem($item);
-            $player->sendMessage("§b[AdminShop] >> §a購入しました");
-            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
-        } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
-            $this->plugin->errorHandler->onError($e, $player);
-        }
-    }
-
-    public function AdminShopSellCheck(Player $player, $item, $itemdata)
-    {
-        try {
-            $price = $item->getCount() * $itemdata["sellprice"];
-            $name = $player->getName();
-            $this->plugin->db->AddMoney($name, $price);
-            $player->getInventory()->removeItem($item);
-            $player->sendMessage("§b[AdminShop] >> §a売却しました");
-            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
-        } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

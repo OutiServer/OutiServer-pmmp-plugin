@@ -39,7 +39,7 @@ class OutiWatch
                             $this->plugin->money->Form($player);
                             break;
                         case 2:
-                            $this->plugin->adminshop->AdminShop($player);
+                            $this->plugin->adminshop->AdminShopMenuCategory($player);
                             break;
                         case 3:
                             $this->plugin->land->land($player);

@@ -34,22 +34,22 @@ class ChestShop
             $form = new CustomForm(function (Player $player, $data) use ($chest, $signboard) {
                 try {
                     if ($data === null) return true;
-                    else if (!is_numeric($data[0]) or !is_numeric($data[2]) or !isset($data[1])) return true;
+                    else if (!is_numeric($data[2]) or !isset($data[1])) return true;
 
                     $name = $player->getName();
                     $pos = new Vector3($signboard->x, $signboard->y, $signboard->z);
                     $sign = $signboard->getLevel()->getTile($pos);
                     if ($sign instanceof Tile) {
-                        $itemid = $this->plugin->allItem->GetItemIdByJaName($data[1]);
-                        if (!$itemid) {
-                            $player->sendMessage("§b[チェストショップ] >> §4アイテムが見つかりませんでした");
+                        $item = $this->plugin->db->GetItem($data[1]);
+                        if (!$item) {
+                            $player->sendMessage("§b[チェストショップ] >> §4アイテムデータが見つかりませんでした");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $chest, $signboard]), 20);
                             return true;
                         }
-                        $item = Item::get($itemid, 0, (int)$data[0]);
+                        $item = Item::get($item->getId(), $item->getDamage(), $data[0]);
                         $this->plugin->db->SetChestShop($name, $chest, $signboard, $item, $data[2]);
-                        $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
-                        $sign->setText("§bshop", "§ashop主: " . $name, "§d販売しているItem: " . $itemname, "§eお値段: " . $data[2] . "円");
+                        $itemname = $this->plugin->db->GetItemDataItem($item);
+                        $sign->setText("§bshop", "§ashop主: " . $name, "§d販売しているItem: " . $itemname["janame"], "§eお値段: " . $data[2] . "円");
                         $player->sendMessage("§b[チェストショップ] §f>> §6チェストショップを作成しました！");
                     }
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -117,9 +117,13 @@ class ChestShop
             });
 
             $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"]);
-            $itemname = $this->plugin->allItem->GetItemJaNameById($item->getId());
+            $itemname = $this->plugin->db->GetItemDataItem($item);
+            if (!$itemname) {
+                $player->sendMessage("§b[チェストショップ] >> §4アイテムが見つかりませんでした");
+                return true;
+            }
             $form->setTitle("Shop");
-            $form->addLabel("販売物: " . $itemname);
+            $form->addLabel("販売物: " . $itemname["janame"]);
             $form->addSlider("\n買う個数", 1, $shopdata["maxcount"]);
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
