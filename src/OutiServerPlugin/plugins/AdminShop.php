@@ -113,10 +113,9 @@ class AdminShop
                     elseif ($data === 0) {
                         $this->AdminShopMenuCategory($player);
                         return true;
-                    }
-                    elseif ($ItemCategorys !== false) {
+                    } elseif ($ItemCategorys !== false) {
                         $categoryadded = count($ItemCategorys);
-                        if($categoryadded >= $data) {
+                        if ($categoryadded >= $data) {
                             $this->AdminShopMenu($player, $ItemCategorys[$data - 1]["id"]);
                             return true;
                         }
@@ -135,29 +134,27 @@ class AdminShop
             $form->setContent("AdminShop-メニュー");
             $form->addButton("戻る");
 
-            if($ItemCategorys !== false) {
+            if ($ItemCategorys !== false) {
                 foreach ($ItemCategorys as $data) {
                     $form->addButton("カテゴリー: {$data["name"]}");
                 }
             }
 
-            if($alldata !== false) {
+            if ($alldata !== false) {
                 foreach ($alldata as $data) {
                     $item = Item::get($data["itemid"], $data["itemmeta"]);
                     $itemdata = $this->plugin->db->GetItemDataItem($item);
-                    if(!$itemdata) {
+                    if (!$itemdata) {
                         $itemdata = array(
                             "janame" => $item->getName(),
                             "imagepath" => ""
                         );
                     }
-                    if($data["mode"] === Enum::ADMINSHOP_ALL) {
+                    if ($data["mode"] === Enum::ADMINSHOP_ALL) {
                         $form->addButton("{$itemdata["janame"]} 購入値段: {$data["buyprice"]}円 売却値段: {$data["sellprice"]}円", 0, $itemdata["imagepath"]);
-                    }
-                    elseif ($data["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
+                    } elseif ($data["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
                         $form->addButton("{$itemdata["janame"]} 購入値段: {$data["buyprice"]}円", 0, $itemdata["imagepath"]);
-                    }
-                    elseif ($data["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
+                    } elseif ($data["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
                         $form->addButton("{$itemdata["janame"]} 売却値段: {$data["sellprice"]}円", 0, $itemdata["imagepath"]);
                     }
                 }
@@ -182,11 +179,10 @@ class AdminShop
 
                     $item = Item::get($itemdata["itemid"], $itemdata["itemmeta"], (int)$data[2]);
                     if ($data[1] === 0) {
-                        if($itemdata["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
+                        if ($itemdata["mode"] === Enum::ADMINSHOP_SELL_ONLY) {
                             $player->sendMessage("§b[AdminShop] >> §4そのアイテムは売却のみ使用できます");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
-                        }
-                        elseif ($player->getInventory()->canAddItem($item)) {
+                        } elseif ($player->getInventory()->canAddItem($item)) {
                             $price = $item->getCount() * $itemdata["buyprice"];
                             $name = $player->getName();
                             $playerdata = $this->plugin->db->GetMoney($name);
@@ -204,11 +200,10 @@ class AdminShop
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
                         }
                     } elseif ($data[1] === 1) {
-                        if($itemdata["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
+                        if ($itemdata["mode"] === Enum::ADMINSHOP_BUY_ONLY) {
                             $player->sendMessage("§b[AdminShop] >> §4そのアイテムは購入のみ使用できます");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SelectAdminShop"], [$player, $itemdata]), 20);
-                        }
-                        elseif ($player->getInventory()->contains($item)) {
+                        } elseif ($player->getInventory()->contains($item)) {
                             $price = $item->getCount() * $itemdata["sellprice"];
                             $name = $player->getName();
                             $this->plugin->db->AddMoney($name, $price);

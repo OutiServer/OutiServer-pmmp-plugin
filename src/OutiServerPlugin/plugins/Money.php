@@ -46,8 +46,7 @@ class Money
                             break;
                     }
                     return true;
-                }
-                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
                 }
 
@@ -59,8 +58,7 @@ class Money
             $form->addButton("他playerにお金を転送");
             $form->addButton("戻る");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -68,30 +66,27 @@ class Money
     public function MoveMoney(Player $player)
     {
         try {
-            $name = $player->getName();
             $form = new CustomForm(function (Player $player, $data) {
                 try {
-                    if($data === null) return true;
+                    if ($data === null) return true;
                     elseif ($data[0]) {
                         $this->Form($player);
                         return true;
-                    }
-                    else if(!isset($data[1]) or !is_numeric($data[2])) return true;
+                    } else if (!isset($data[1]) or !is_numeric($data[2])) return true;
 
                     $name = $player->getName();
                     $money = $this->plugin->db->GetMoney($name);
-                    if((int)$data[2] > $money["money"]) {
+                    if ((int)$data[2] > $money["money"]) {
                         $player->sendMessage("§b[経済] >> §4お金が" . ($money["money"] - (int)$data[2]) * -1 . "円足りていませんよ？");
-                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "MoveMoney"], [$player]), 20);
                         return true;
                     }
                     $this->plugin->db->AddMoney($data[1], (int)$data[2]);
                     $this->plugin->db->RemoveMoney($name, (int)$data[2]);
                     $player->sendMessage("§a[経済] >> §6$data[1]に$data[2]円転送しました");
-                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "MoveMoney"], [$player]), 20);
                     return true;
-                }
-                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onErrorNotPlayer($e);
                 }
 
@@ -101,10 +96,9 @@ class Money
             $form->setTitle("Money-他プレイヤーに所持金を転送");
             $form->addToggle("キャンセルして戻る");
             $form->addInput("転送先のプレイヤー名", "playername", "");
-            $form->addInput("転送するお金", "money", "0");
+            $form->addInput("転送するお金", "money", "1");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

@@ -10,10 +10,10 @@ use Exception;
 use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
+use OutiServerPlugin\Tasks\ReturnForm;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use TypeError;
-use OutiServerPlugin\Tasks\ReturnForm;
 
 class Land
 {
@@ -35,7 +35,7 @@ class Land
 
                     switch ($data) {
                         case 0:
-                            if(in_array($player->getLevel()->getName(), $this->plugin->config->get('Land_Buy_Bans', array()))) {
+                            if (in_array($player->getLevel()->getName(), $this->plugin->config->get('Land_Buy_Bans', array()))) {
                                 $player->sendMessage("§b[土地保護] >> §rこのワールドの土地は購入できません");
                                 return true;
                             }
@@ -153,7 +153,7 @@ class Land
 
             $form = new CustomForm(function (Player $player, $data) use ($levelname, $price, $startX, $startZ, $endX, $endZ) {
                 try {
-                    if($data === null) return true;
+                    if ($data === null) return true;
                     $name = $player->getName();
                     unset($this->startlands[$name], $this->endlands[$name]);
                     if ($data[1] === false) {
@@ -161,14 +161,13 @@ class Land
                         if ($price > $playerdata["money"]) {
                             $player->sendMessage("§b[土地保護] >> §4お金が" . ($playerdata["money"] - $price) * -1 . "円足りていませんよ？");
 
-                        }
-                        else {
+                        } else {
                             $this->plugin->db->UpdateMoney($name, $playerdata["money"] - $price);
                             $id = $this->plugin->db->SetLand($name, $levelname, $startX, $startZ, $endX, $endZ, (int)$data[2], $data[3] ? $player->asVector3() : null);
                             $player->sendMessage("§b[土地保護] >> §6購入しました\n購入した土地番号は #$id です、招待・TPなどに使用しますので控えておいてください。");
                         }
 
-                    } elseif ($data[1]  === true) {
+                    } elseif ($data[1] === true) {
                         $player->sendMessage("§b[土地保護] >> §6購入しませんでした");
                     }
 
@@ -196,7 +195,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
                 return;
             }
@@ -208,16 +207,15 @@ class Land
 
                     $landid = (int)$alllands[(int)$data[0]];
                     $landdata = $this->plugin->db->GetLandData($landid);
-                    if(!$landdata) {
+                    if (!$landdata) {
                         $player->sendMessage("§b[土地保護] >> §4土地データが見つかりませんでした");
                         return true;
                     }
 
-                    if($this->plugin->db->CheckLandProtection($landid)) {
+                    if ($this->plugin->db->CheckLandProtection($landid)) {
                         $this->plugin->db->UpdateLandProtection($landid, 0);
                         $player->sendMessage("§b[土地保護] >> §4土地ID #$landid の土地保護を無効にしました");
-                    }
-                    else {
+                    } else {
                         $this->plugin->db->UpdateLandProtection($landid, 1);
                         $player->sendMessage("§b[土地保護] >> §6土地ID #$landid の土地保護を有効にしました");
                     }
@@ -243,7 +241,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -252,12 +250,11 @@ class Land
             $form = new CustomForm(function (Player $player, $data) use ($alllands) {
                 try {
                     if ($data === null) return true;
-                    else if($data[0] === true) {
+                    else if ($data[0] === true) {
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    }
-                    else if (!is_numeric($data[1]) or !isset($data[2])) return true;
+                    } else if (!is_numeric($data[1]) or !isset($data[2])) return true;
                     else if (!Player::isValidUserName($data[2])) {
                         $player->sendMessage("§b[土地保護] >> §4不正なプレイヤー名です");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "inviteland"], [$player]), 20);
@@ -298,7 +295,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -311,8 +308,7 @@ class Land
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    }
-                    elseif (!is_numeric($data[1])) return true;
+                    } elseif (!is_numeric($data[1])) return true;
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $invites = $this->plugin->db->GetLandInvites($landid);
@@ -349,7 +345,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -362,8 +358,7 @@ class Land
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    }
-                    else if (!is_numeric($data[1]) or !isset($data[2])) return true;
+                    } else if (!is_numeric($data[1]) or !isset($data[2])) return true;
                     else if (!Player::isValidUserName($data[2])) {
                         $player->sendMessage("§b[土地保護] >> §4不正なプレイヤー名です");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "MoveLandOwner"], [$player]), 20);
@@ -396,12 +391,11 @@ class Land
     {
         try {
             $landid = $this->plugin->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
-            if(!$landid) {
+            if (!$landid) {
                 $player->sendMessage("§b[土地保護] >> §4現在立っている場所はあなたが所有していません");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
-            }
-            elseif(!$this->plugin->db->CheckLandOwner($landid, $player->getName())) {
+            } elseif (!$this->plugin->db->CheckLandOwner($landid, $player->getName())) {
                 $player->sendMessage("§b[土地保護] >> §4現在立っている場所はあなたが所有していません");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -420,7 +414,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -433,8 +427,7 @@ class Land
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    }
-                    else if (!is_numeric($data[1])) return true;
+                    } else if (!is_numeric($data[1])) return true;
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $this->plugin->db->DeleteLand($landid);
@@ -460,23 +453,21 @@ class Land
     {
         try {
             $landid = $this->plugin->db->GetLandId($player->getLevel()->getName(), (int)$player->x, (int)$player->z);
-            if(!$landid) {
+            if (!$landid) {
                 $player->sendMessage("§b[土地保護] >> §4この土地は誰も所有してないようです");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
             }
 
             $landdata = $this->plugin->db->GetLandData($landid);
-            if($this->plugin->db->checkInvite($landid, $player->getName())) {
+            if ($this->plugin->db->checkInvite($landid, $player->getName())) {
                 $invite = "あなたはこの土地に招待されています";
-            }
-            else {
+            } else {
                 $invite = "あなたはこの土地に招待されていません";
             }
             $player->sendMessage("§b[土地保護] >> §6土地ID #$landid\n所有者 {$landdata["owner"]}\n$invite");
             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -486,7 +477,7 @@ class Land
         try {
             $name = $player->getName();
             $alllands = $this->plugin->db->GetAllLandOwnerInviteData($name);
-            if(!$alllands) {
+            if (!$alllands) {
                 $player->sendMessage("§b[土地保護] >> §4あなたが現在所有してTP地点が設定されている土地・招待されていてTP地点が設定されている土地は存在しないようです。");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 return;
@@ -499,8 +490,7 @@ class Land
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    }
-                    elseif (!is_numeric($data[1])) return true;
+                    } elseif (!is_numeric($data[1])) return true;
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $landdata = $this->plugin->db->GetLandData($landid);

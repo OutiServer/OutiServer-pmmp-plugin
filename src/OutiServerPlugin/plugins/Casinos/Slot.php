@@ -160,7 +160,7 @@ class Slot
                     }
                     */
                     $money = $this->plugin->db->GetMoney($name);
-                    if($money["money"] < ($slotdata["bet"] * (int)$data[1])) {
+                    if ($money["money"] < ($slotdata["bet"] * (int)$data[1])) {
                         unset($this->sloted[$name]);
                         $player->sendMessage("§b[おうちカジノ(スロット)] >> §rカジノコインがあと" . (($slotdata["bet"] * (int)$data[1]) - $money["money"]) . "コイン足りていませんよ？");
                         return true;

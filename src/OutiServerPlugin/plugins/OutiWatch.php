@@ -1,7 +1,6 @@
 <?php
 
 
-
 namespace OutiServerPlugin\plugins;
 
 use ArgumentCountError;

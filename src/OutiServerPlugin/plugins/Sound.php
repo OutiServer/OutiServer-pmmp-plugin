@@ -28,7 +28,7 @@ class Sound
             $name = $player->getName();
             $level = $player->getLevel();
             $sound = $this->plugin->music->get($level->getName());
-            if(!$sound) return;
+            if (!$sound) return;
             foreach ($sound as $data) {
                 $startX = (int)$data["startx"];
                 $endX = (int)$data["endx"];
@@ -65,8 +65,7 @@ class Sound
                     break;
                 }
             }
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
 
@@ -76,13 +75,12 @@ class Sound
     {
         try {
             $name = $player->getName();
-            if(!isset($this->playersounds[$name])) return;
+            if (!isset($this->playersounds[$name])) return;
             $pk = new StopSoundPacket;
             $pk->soundName = $this->playersounds[$name]["sound"];
             $player->sendDataPacket($pk);
             unset($this->playersounds[$name]);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

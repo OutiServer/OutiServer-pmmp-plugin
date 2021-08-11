@@ -9,7 +9,7 @@ use Error;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
-use jojoe77777\FormAPI\{CustomForm, SimpleForm};
+use jojoe77777\FormAPI\{CustomForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
 use pocketmine\item\Item;
@@ -34,22 +34,17 @@ class ChestShop
             $form = new CustomForm(function (Player $player, $data) use ($chest, $signboard) {
                 try {
                     if ($data === null) return true;
-                    else if (!is_numeric($data[2]) or !isset($data[1])) return true;
+                    else if (!is_numeric($data[1]) or !is_numeric($data[2]) or !is_numeric($data[3])) return true;
 
                     $name = $player->getName();
                     $pos = new Vector3($signboard->x, $signboard->y, $signboard->z);
                     $sign = $signboard->getLevel()->getTile($pos);
                     if ($sign instanceof Tile) {
-                        $item = $this->plugin->db->GetItem($data[1]);
-                        if (!$item) {
-                            $player->sendMessage("§b[チェストショップ] >> §4アイテムデータが見つかりませんでした");
-                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $chest, $signboard]), 20);
-                            return true;
-                        }
-                        $item = Item::get($item->getId(), $item->getDamage(), (int)$data[0]);
-                        $this->plugin->db->SetChestShop($name, $chest, $signboard, $item, $data[2]);
+                        $item = Item::get((int)$data[1], (int)$data[2], (int)$data[0]);
+                        $this->plugin->db->SetChestShop($name, $chest, $signboard, $item, (int)$data[3]);
                         $itemname = $this->plugin->db->GetItemDataItem($item);
-                        $sign->setText("§bshop", "§ashop主: " . $name, "§d販売しているItem: " . $itemname["janame"], "§eお値段: " . $data[2] . "円");
+                        if (!$itemname) $itemname = array("janame" => $item->getName());
+                        $sign->setText("§bshop", "§a" . $name, "§d" . $itemname["janame"], "§e" . $data[3] . "円");
                         $player->sendMessage("§b[チェストショップ] §f>> §6チェストショップを作成しました！");
                     }
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -61,7 +56,8 @@ class ChestShop
 
             $form->setTitle("shop作成");
             $form->addSlider("販売するItemの最大購入数", 1, 64);
-            $form->addInput("販売するItemの名前", "itemname", "");
+            $form->addInput("販売するItemのId", "itemid", "");
+            $form->addInput("販売するItemのMeta", "itemmeta", "0");
             $form->addInput("販売するItemの値段", "price", "1");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -95,7 +91,12 @@ class ChestShop
                         $playermoney = $this->plugin->db->GetMoney($name);
                         $price = $item->getCount() * $shopdata["price"];
                         if ($price > $playermoney["money"]) {
-                            $player->sendMessage("§b[チェストショップ] >> §6お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
+                            $player->sendMessage("§b[チェストショップ] >> §4お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player]), 20);
+                            return true;
+                        } elseif ($player->getInventory()->canAddItem($item)) {
+                            $player->sendMessage("§b[チェストショップ] >> §4インベントリの空き容量が足りません");
+                            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player]), 20);
                             return true;
                         }
 

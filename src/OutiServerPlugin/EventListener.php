@@ -8,8 +8,8 @@ use ArgumentCountError;
 use Error;
 use Exception;
 use InvalidArgumentException;
-use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, BlockPlaceEvent, SignChangeEvent};
 use OutiServerPlugin\Tasks\SendLog;
+use pocketmine\event\block\{BlockBreakEvent, BlockBurnEvent, BlockPlaceEvent, SignChangeEvent};
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerChatEvent,
     PlayerInteractEvent,
@@ -103,7 +103,7 @@ class EventListener implements Listener
                     $this->plugin->applewatch->check[$name] = true;
                     $this->plugin->applewatch->Form($player);
                 }
-                 if ($slotid and !isset($this->plugin->casino->slot->sloted[$name])) {
+                if ($slotid and !isset($this->plugin->casino->slot->sloted[$name])) {
                     $pos = new Vector3($block->x, $block->y, $block->z);
                     $sign = $block->getLevel()->getTile($pos);
                     if ($sign instanceof Tile) {
@@ -154,8 +154,7 @@ class EventListener implements Listener
                     $this->plugin->db->DeleteSlot($slotid);
                     $player->sendMessage("§b[おうちカジノ(スロット)] >> §aこのスロットを削除しました");
                 }
-            }
-            elseif ($shopdata) {
+            } elseif ($shopdata) {
                 if (!$this->plugin->db->CheckChestShopOwner((int)$shopdata["id"], $name) and !$player->isOp()) {
                     $player->sendMessage("§b[チェストショップ] §f>> §6このShopを閉店させることができるのはSHOP作成者・OPのみです");
                     $event->setCancelled();
@@ -168,8 +167,7 @@ class EventListener implements Listener
                 if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and $this->plugin->db->CheckLandProtection($landid) and !$player->isOp()) {
                     $event->setCancelled();
                 }
-            }
-            elseif(!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+            } elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
                 $event->setCancelled();
             }
 
@@ -253,19 +251,17 @@ class EventListener implements Listener
         $player = $event->getPlayer();
         $name = $player->getName();
         $level = $player->getLevel();
-        if(isset($this->plugin->sound->playersounds[$name])) {
+        if (isset($this->plugin->sound->playersounds[$name])) {
             $startX = $this->plugin->sound->playersounds[$name]["startx"];
             $startZ = $this->plugin->sound->playersounds[$name]["startz"];
             $endX = $this->plugin->sound->playersounds[$name]["endx"];
-            $endZ  = $this->plugin->sound->playersounds[$name]["endz"];
-            if($this->plugin->sound->playersounds[$name]["level"] !== $level->getName()) {
+            $endZ = $this->plugin->sound->playersounds[$name]["endz"];
+            if ($this->plugin->sound->playersounds[$name]["level"] !== $level->getName()) {
+                $this->plugin->sound->PlaySound($player);
+            } elseif (!($startX <= (int)$player->x and $startZ <= (int)$player->z and $endX >= (int)$player->x and $endZ >= (int)$player->z)) {
                 $this->plugin->sound->PlaySound($player);
             }
-            elseif (!($startX <= (int)$player->x and $startZ <= (int)$player->z and $endX >= (int)$player->x and $endZ >= (int)$player->z)) {
-                $this->plugin->sound->PlaySound($player);
-            }
-        }
-        else {
+        } else {
             $this->plugin->sound->PlaySound($player);
         }
     }
@@ -277,13 +273,12 @@ class EventListener implements Listener
         $block = $event->getBlock();
         $levelname = $block->getLevel()->getName();
         $landid = $this->plugin->db->GetLandId($levelname, (int)$block->x, (int)$block->z);
-        if(!$player->isOp()) {
-            if($landid) {
+        if (!$player->isOp()) {
+            if ($landid) {
                 if (!$this->plugin->db->CheckLandOwner($landid, $name) and !$this->plugin->db->checkInvite($landid, $name) and !$player->isOp()) {
                     $event->setCancelled();
                 }
-            }
-            elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+            } elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
                 $event->setCancelled();
             }
         }

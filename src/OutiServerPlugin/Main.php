@@ -9,11 +9,20 @@ use DateTime;
 use Error;
 use Exception;
 use InvalidArgumentException;
-use OutiServerPlugin\plugins\{Admin, AdminShop, Announce, OutiWatch, Casino, ChestShop, Land, Money, Sound, Teleport};
+use OutiServerPlugin\plugins\{Admin,
+    AdminShop,
+    Announce,
+    AutoItemClear,
+    Casino,
+    ChestShop,
+    Land,
+    Money,
+    OutiWatch,
+    Sound,
+    Teleport};
 use OutiServerPlugin\Tasks\discord;
-use OutiServerPlugin\Utils\{Database, ErrorHandler};
 use OutiServerPlugin\Tasks\PlayerStatus;
-use OutiServerPlugin\Tasks\SendLog;
+use OutiServerPlugin\Utils\{Database, ErrorHandler};
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -21,7 +30,6 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
-use pocketmine\Server;
 use pocketmine\utils\{Config, TextFormat};
 use SQLiteException;
 use TypeError;
@@ -44,6 +52,7 @@ class Main extends PluginBase
     public Casino $casino;
     public OutiWatch $applewatch;
     public Sound $sound;
+    public AutoItemClear $autoClearLagg;
     public ErrorHandler $errorHandler;
 
     public function onEnable()
@@ -73,6 +82,7 @@ class Main extends PluginBase
             $this->casino = new Casino($this);
             $this->applewatch = new OutiWatch($this);
             $this->sound = new Sound($this);
+            $this->autoClearLagg = new AutoItemClear($this);
 
             $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
             $this->client = new discord($this->getFile(), $this->getDataFolder(), $token, $this->config->get("Discord_Command_Prefix", "?unko"), $this->config->get('Discord_Guild_Id', '706452606918066237'), $this->config->get('DiscordChat_Channel_Id', '834317763769925632'), $this->config->get('DiscordLog_Channel_Id', '833626570270572584'), $this->config->get('DiscordDB_Channel_Id', '863124612429381699'), $this->config->get('DiscordErrorLog_Channel_id', '868787060394307604'));
@@ -98,11 +108,11 @@ class Main extends PluginBase
             $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(
                 function (int $currentTick): void {
                     foreach ($this->client->GetConsoleMessages() as $message) {
-                        Server::getInstance()->dispatchCommand(new ConsoleCommandSender(), $message["content"]);
+                        $this->getServer()->dispatchCommand(new ConsoleCommandSender(), $message["content"]);
                     }
 
                     foreach ($this->client->GetChatMessage() as $message) {
-                        Server::getInstance()->broadcastMessage("[Discord:" . $message["username"] . "] " . $message["content"]);
+                        $this->getServer()->broadcastMessage("[Discord:" . $message["username"] . "] " . $message["content"]);
                     }
                 }
             ), 5, 1);
@@ -171,29 +181,25 @@ class Main extends PluginBase
             $name = $sender->getName();
             switch (strtolower($command->getName())) {
                 case "money":
-                    if(isset($args[0])) {
+                    if (isset($args[0])) {
                         $data = $this->db->GetMoney($args[0]);
-                        if(!$data) return false;
+                        if (!$data) return false;
                         $sender->sendMessage("§a[経済] >> §6$args[0]の現在の所持金: §d{$data["money"]}円");
-                    }
-                    elseif ($sender instanceof Player) {
+                    } elseif ($sender instanceof Player) {
                         $data = $this->db->GetMoney($name);
                         $sender->sendMessage("§a[経済] >> §6あなたの現在の所持金: §d{$data["money"]}円");
-                    }
-                    else return false;
+                    } else return false;
                     break;
                 case "outiwatch":
-                    if(!$sender instanceof Player) {
+                    if (!$sender instanceof Player) {
                         $sender->sendMessage("§a[おうちサーバー] >> §4このコマンドはコンソールから実行できません");
-                    }
-                    else {
+                    } else {
                         $item = Item::get(347);
                         $item->setCustomName("OutiWatch");
                         if (!$sender->getInventory()->contains($item)) {
                             $sender->getInventory()->addItem($item);
                             $sender->sendMessage("§a[おうちサーバー] >> §bOutiWatchを付与しました");
-                        }
-                        else {
+                        } else {
                             $sender->sendMessage("§a[おうちサーバー] >> §4あなたは既に時計を所持しています");
                         }
                     }
@@ -215,19 +221,18 @@ class Main extends PluginBase
                     break;
                 case 'setitem':
                     var_dump($args);
-                    if(!is_numeric($args[0]) or !is_numeric($args[1]) or !isset($args[2])) break;
+                    if (!is_numeric($args[0]) or !is_numeric($args[1]) or !isset($args[2])) break;
                     $item = Item::get((int)$args[0], (int)$args[1]);
-                    if(!$item) return true;
+                    if (!$item) return true;
 
                     $path = "";
-                    if(isset($args[3])) {
+                    if (isset($args[3])) {
                         $path = $args[3];
                     }
 
-                    if($this->db->GetItemDataItem($item)) {
+                    if ($this->db->GetItemDataItem($item)) {
                         $this->db->UpdateItemData($item, $args[2], $path);
-                    }
-                    else {
+                    } else {
                         $this->db->SetItemData($item, $args[2], $path);
                     }
 
@@ -236,8 +241,7 @@ class Main extends PluginBase
             }
 
             return true;
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError | SQLiteException $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError | SQLiteException $e) {
             $this->errorHandler->onErrorNotPlayer($e);
         }
 

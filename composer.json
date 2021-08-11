@@ -8,7 +8,7 @@
       "email": "katyoukene@gmail.com"
     }
   ],
-    "require": {
-        "team-reflex/discord-php": "^5.1"
-    }
+  "require": {
+    "team-reflex/discord-php": "^5.1"
+  }
 }

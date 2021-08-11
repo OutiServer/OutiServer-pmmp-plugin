@@ -29,17 +29,16 @@ class Teleport
     {
         try {
             $alldata = $this->plugin->db->GetAllWorldTeleport();
-            if(!$alldata) {
+            if (!$alldata) {
                 $player->sendMessage("§b[ワールドテレポート] >> §4現在テレポートできるワールドは1つもないようです");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this->plugin->applewatch, "Form"], [$player]), 20);
                 return;
             }
             $alltps = [];
             foreach ($alldata as $key) {
-                if($key["oponly"] === 1 and $player->isOp()) {
+                if ($key["oponly"] === 1 and $player->isOp()) {
                     $alltps[] = $key;
-                }
-                elseif ($key["oponly"] === 0) {
+                } elseif ($key["oponly"] === 0) {
                     $alltps[] = $key;
                 }
             }
@@ -47,14 +46,13 @@ class Teleport
             $form = new SimpleForm(function (Player $player, $data) use ($alltps) {
                 try {
                     if ($data === null) return true;
-                    elseif($data === 0) {
+                    elseif ($data === 0) {
                         $this->plugin->applewatch->Form($player);
                         return true;
                     }
 
                     $this->TeleportCheck($player, $alltps[(int)$data - 1]["id"]);
-                }
-                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
                 }
 
@@ -67,8 +65,7 @@ class Teleport
                 $form->addButton($key["name"]);
             }
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -96,8 +93,7 @@ class Teleport
                         $player->sendMessage("§b[ワールドテレポート] >> §cキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "Form"], [$player]), 20);
                     }
-                }
-                catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
                 }
 
@@ -105,12 +101,11 @@ class Teleport
             });
 
             $form->setTitle("OutiWatch-Teleport-最終確認");
-            $form->setContent("ワールド名: " .  $pos->getLevel()->getName() . "\nX座標: " . $pos->x . "\nY座標" . $pos->y . "\nZ座標" . $pos->z . "\nにある" . $worlddata["name"] . "にテレポートします、よろしいですか？");
+            $form->setContent("ワールド名: " . $pos->getLevel()->getName() . "\nX座標: " . $pos->x . "\nY座標" . $pos->y . "\nZ座標" . $pos->z . "\nにある" . $worlddata["name"] . "にテレポートします、よろしいですか？");
             $form->setButton1("テレポートする");
             $form->setButton2("やめる");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }

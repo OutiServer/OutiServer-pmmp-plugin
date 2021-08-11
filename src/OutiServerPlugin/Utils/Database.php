@@ -89,15 +89,7 @@ class Database
             $sql = $this->db->prepare("SELECT * FROM moneys WHERE name = :name");
             $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
             $result = $sql->execute();
-            $data = $result->fetchArray();
-            if (!$data) {
-                $this->SetMoney($name);
-                $sql = $this->db->prepare("SELECT * FROM moneys WHERE name = :name");
-                $sql->bindValue(':name', strtolower($name), SQLITE3_TEXT);
-                $result = $sql->execute();
-                $data = $result->fetchArray();
-            }
-            return $data;
+            return $result->fetchArray();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -451,7 +443,7 @@ class Database
             }
 
             $lands = $this->GetAllLand();
-            if(!$lands) return false;
+            if (!$lands) return false;
             foreach ($lands as $data) {
                 if (!$this->checkInvite($data["id"], $name) or !$data["tpx"]) continue;
 
@@ -495,7 +487,7 @@ class Database
         try {
             $alldata = [];
             $lands = $this->GetAllLand();
-            if(!$lands) return false;
+            if (!$lands) return false;
             foreach ($lands as $data) {
                 $alldata[] = "{$data["id"]}";
             }
@@ -1157,7 +1149,7 @@ class Database
             $sql->bindValue(":name", $name, SQLITE3_TEXT);
             $result = $sql->execute();
             $data = $result->fetchArray();
-            if(!$data) return false;
+            if (!$data) return false;
             return Item::get($data["id"], $data["meta"]);
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

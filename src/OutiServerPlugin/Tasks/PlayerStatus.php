@@ -36,6 +36,7 @@ class PlayerStatus extends Task
                     $player->getInventory()->addItem($item);
                 }
                 $name = $player->getName();
+                if (!$this->plugin->db->GetMoney($name)) return;
                 $this->RemoveData($player);
                 $this->setupData($player);
                 $this->sendData($player, "§e所持金: " . $this->plugin->db->GetMoney($name)["money"] . "円", 1);
@@ -45,6 +46,7 @@ class PlayerStatus extends Task
                 $this->sendData($player, "§6持ってるアイテムid: " . $player->getInventory()->getItemInHand()->getId() . ":" . $player->getInventory()->getItemInHand()->getDamage(), 5);
                 $this->sendData($player, "§6オンライン人数: " . count($this->plugin->getServer()->getOnlinePlayers()) . "/" . $this->plugin->getServer()->getMaxPlayers(), 6);
                 $this->sendData($player, "§dPing: " . $player->getPing() . "ms", 7);
+                $this->sendData($player, "§c" . gmdate("アイテムクリアまであとi分s秒", $this->plugin->autoClearLagg->seconds), 8);
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

@@ -26,17 +26,17 @@ Discord_Command_Prefix: "?unko"
 
 # ーーー土地関係の設定ーーー
 # 土地購入を禁止するワールド
-Land_Buy_Bans: []
+Land_Buy_Bans: [ ]
 
 # デフォルトの土地保護を解除するワールド(資源ワールドなど)
-Land_Protection_Allow: []
+Land_Protection_Allow: [ ]
 
 # 1ブロックあたりの値段
 Land_Price: 200
 
 # ーーーAdminShop関係の設定ーーー
 # デフォルトアイテムカテゴリー
-Default_Item_Category: ["チート", "建材", "鉱石", "ツール", "防具", "エンチャント", "装飾", "食材", "醸造", "その他"]
+Default_Item_Category: [ "チート", "建材", "鉱石", "ツール", "防具", "エンチャント", "装飾", "食材", "醸造", "その他" ]
 
 # ーーー経済関係の設定ーーー
 # 初期所持金
@@ -52,4 +52,12 @@ Default_Slot_Doublet: 1000
 
 # 確変が起こるまでに回すスロット回数
 Default_Slot_Kakuhen: 1000
+
+# ーーー落ちているアイテムclear設定ーーー
+# 落ちているアイテムを消す間隔(秒) 20tick = 1秒前提
+ClearItemTick: 3600
+
+# 削除警告をプレイヤー全員に送信する残り時間
+WarningClearItemTick: [ 60, 5 ]
+
 ...

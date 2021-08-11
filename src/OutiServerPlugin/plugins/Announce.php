@@ -27,7 +27,7 @@ class Announce
     {
         try {
             $allannounce = $this->plugin->db->GetAllAnnounce();
-            if(!$allannounce) {
+            if (!$allannounce) {
                 $player->sendMessage("§b[運営からのお知らせ] >> §4現在運営からのお知らせはありません");
                 return;
             }
@@ -40,8 +40,7 @@ class Announce
                         return true;
                     }
                     $this->Check($player, $allannounce[(int)$data - 1]["id"]);
-                }
-                catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
+                } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
                 }
 
@@ -51,11 +50,10 @@ class Announce
             $form->setTitle("OutiWatch-運営からのお知らせ");
             $form->addButton("戻る");
             foreach ($allannounce as $key) {
-                $form->addButton($key["title"]. " 追加日: " . $key["addtime"]);
+                $form->addButton($key["title"] . " 追加日: " . $key["addtime"]);
             }
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
@@ -66,17 +64,16 @@ class Announce
             $announcedata = $this->plugin->db->GetAnnounce($id);
 
             $form = new ModalForm(function (Player $player, $data) {
-                if($data === null) return true;
+                if ($data === null) return true;
                 $this->Form($player);
             });
 
             $form->setTitle("OutiWatch-運営からのお知らせ-" . $announcedata["title"]);
-            $form->setContent("タイトル: " .$announcedata["title"] . "\n\n" . $announcedata["content"] . "\n\n追加日: " . $announcedata["addtime"]);
+            $form->setContent("タイトル: " . $announcedata["title"] . "\n\n" . $announcedata["content"] . "\n\n追加日: " . $announcedata["addtime"]);
             $form->setButton1("確認");
             $form->setButton2("確認");
             $player->sendForm($form);
-        }
-        catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
     }
