@@ -94,7 +94,7 @@ class ChestShop
                             $player->sendMessage("§b[チェストショップ] >> §4お金が" . ($playermoney["money"] - $price) * -1 . "円足りていませんよ？");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player]), 20);
                             return true;
-                        } elseif ($player->getInventory()->canAddItem($item)) {
+                        } elseif (!$player->getInventory()->canAddItem($item)) {
                             $player->sendMessage("§b[チェストショップ] >> §4インベントリの空き容量が足りません");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player]), 20);
                             return true;
