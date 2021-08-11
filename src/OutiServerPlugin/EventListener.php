@@ -50,10 +50,16 @@ class EventListener implements Listener
 
             $playerdata = $this->plugin->db->GetMoney($name);
             if ($playerdata === false) {
+                $playerdata = array(
+                    "money" => 1000
+                );
                 $this->plugin->db->SetMoney($name);
-                $player->sendMessage("おうちサーバーへようこそ！あなたの現在の所持金は1000円です！");
+                $player->sendMessage("おうちサーバーへようこそ！\n初参加の場合は、チュートリアルワールドをプレイすることをお勧めします！\n分からないことがあれば気軽に質問してください！");
+                $this->plugin->getServer()->broadcastMessage("{$name}さんがサーバーに初参加です！\nおうちサーバーへようこそ！");
+                $this->plugin->client->sendChatMessage("**$name**がサーバーに初参加しました！\n");
             } else {
                 $player->sendMessage("あなたの現在の所持金は" . $playerdata["money"] . "円です。");
+                $this->plugin->client->sendChatMessage("**$name**がサーバーに参加しました\n");
             }
 
             $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', 'https://discord.com/api/webhooks/874656004225241148/17LX2YS8khGmtEBfDu440TDPYUBFyXz9_o9SzKSkW4V7uJxktWZfp8O_YZStb1iHdx8K'), "{$name}がゲームに参加しました。 所持金: {$playerdata["money"]}円"));
@@ -66,7 +72,6 @@ class EventListener implements Listener
                 $player->getInventory()->addItem($item);
             }
 
-            $this->plugin->client->sendChatMessage("**$name**がサーバーに参加しました\n");
             $this->plugin->sound->PlaySound($player);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
