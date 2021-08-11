@@ -120,8 +120,9 @@ class ChestShop
             $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"]);
             $itemname = $this->plugin->db->GetItemDataItem($item);
             if (!$itemname) {
-                $player->sendMessage("§b[チェストショップ] >> §4アイテムが見つかりませんでした");
-                return true;
+                $itemname = array(
+                    "janame" => $item->getName()
+                );
             }
             $form->setTitle("Shop");
             $form->addLabel("販売物: " . $itemname["janame"]);
