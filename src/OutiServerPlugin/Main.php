@@ -113,7 +113,7 @@ class Main extends PluginBase
                     }
 
                     foreach ($this->client->GetChatMessage() as $message) {
-                        $this->getServer()->broadcastMessage("[Discord:" . $message["username"] . "] " . $message["content"]);
+                        $this->getServer()->broadcastMessage("[Discord:{$message["role"]}:" . $message["username"] . "] " . $message["content"]);
                     }
                 }
             ), 5, 1);
