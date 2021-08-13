@@ -19,7 +19,13 @@ DiscordDB_Channel_Id: "863124612429381699"
 DiscordErrorLog_Channel_id: "868787060394307604"
 
 # DiscordのPlayerLog用WebhookURL
-DiscordPlayerLog_Webhook: "https://discord.com/api/webhooks/874656004225241148/17LX2YS8khGmtEBfDu440TDPYUBFyXz9_o9SzKSkW4V7uJxktWZfp8O_YZStb1iHdx8K"
+DiscordPlayerLog_Webhook: ""
+
+# DiscordのBlockLog用WebhookURL
+DiscordBlockLog_Webhook: ""
+
+# DiscordのPluginLog用WebhookURL
+DiscordPluginLog_Webhook: ""
 
 # DiscordのCommand Prefix
 Discord_Command_Prefix: "?unko"

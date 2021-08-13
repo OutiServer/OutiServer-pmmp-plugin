@@ -23,6 +23,7 @@ use OutiServerPlugin\plugins\{Admin,
 use OutiServerPlugin\Tasks\discord;
 use OutiServerPlugin\Tasks\PlayerStatus;
 use OutiServerPlugin\Utils\{Database, ErrorHandler};
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -149,6 +150,7 @@ class Main extends PluginBase
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
             $this->client->sendChatMessage("サーバーが起動しました！\n");
+            $this->getServer()->getAsyncPool()->submitTask(new SendLog($this->config->get('DiscordPluginLog_Webhook', ''), "プラグインが正常に有効化されました"));
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $error) {
             $this->getLogger()->info(TextFormat::RED . "プラグイン読み込み中にエラーが発生しました\nプラグインを無効化します");
             $this->getLogger()->error($error->getFile() . "の" . $error->getLine() . "行目でError\n" . $error->getMessage());
@@ -168,6 +170,7 @@ class Main extends PluginBase
             ob_end_clean();
             $this->getLogger()->info("discordBotの終了を待機しております...");
             $this->client->join();
+            $this->getServer()->getAsyncPool()->submitTask(new SendLog($this->config->get('DiscordPluginLog_Webhook', ''), "プラグインが正常に無効化されました"));
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->getLogger()->info(TextFormat::RED . "プラグイン無効化中にエラーが発生しました\nプラグインが正常に無効化できていない可能性があります");
             $this->getLogger()->error($e->getMessage());

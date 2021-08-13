@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use TypeError;
@@ -125,6 +126,7 @@ class Admin
                     } elseif (!isset($data[1]) or !is_numeric($data[2])) return true;
                     else if (!Player::isValidUserName($data[1])) return true;
                     $this->plugin->db->AddMoney($data[1], (int)$data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 $data[1] に $data[2] 円追加しました"));
                     $player->sendMessage("§b[経済] >> §a$data[1]に$data[2]円追加しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminAddMoney"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -156,6 +158,7 @@ class Admin
                     } elseif (!isset($data[1]) or !is_numeric($data[2])) return true;
                     else if (!Player::isValidUserName($data[1])) return true;
                     $this->plugin->db->RemoveMoney($data[1], (int)$data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 $data[1] に $data[2] 円剥奪しました"));
                     $player->sendMessage("§b[経済] >> §a$data[1]から$data[2]円剥奪しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminRemoveMoney"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -187,6 +190,7 @@ class Admin
                     } elseif (!isset($data[1]) or !is_numeric($data[2])) return true;
                     else if (!Player::isValidUserName($data[1])) return true;
                     $this->plugin->db->UpdateMoney($data[1], (int)$data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 $data[1] の所持金を $data[2] 円に設定しました"));
                     $player->sendMessage("§b[経済] >> §a$data[1]の所持金を$data[2]円設定しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminSetMoney"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -218,6 +222,7 @@ class Admin
                     } else if (!isset($data[1])) return true;
 
                     $this->plugin->db->AddItemCategory($data[1]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 $data[1] をアイテムカテゴリーに追加しました"));
                     $player->sendMessage("§b[AdminShop] >> §a$data[1]をアイテムカテゴリーに追加しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AddItemCategory"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -259,6 +264,7 @@ class Admin
                     } else if (!is_numeric($data[1])) return true;
 
                     $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[1]]["id"]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 {$ItemCategorys[(int)$data[1]]["name"]} をアイテムカテゴリーから削除しました"));
                     $player->sendMessage("{$ItemCategorys[(int)$data[1]]["name"]}をアイテムカテゴリーから削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "RemoveItemCategory"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -300,6 +306,7 @@ class Admin
                     } elseif (!isset($data[1])) return true;
 
                     $this->plugin->db->AddItemChildCategory($data[2], $ItemCategorys[$data[1]]["id"]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 {$allCategorys[$data[1]]} に アイテムカテゴリー $data[2] を追加しました"));
                     $player->sendMessage("§b[AdminShop] >> §a{$allCategorys[$data[1]]}に$data[2]をカテゴリーとして追加しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AddItemChildCategory"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -381,6 +388,7 @@ class Admin
 
                     $this->plugin->db->RemoveItemCategory($ItemCategorys[(int)$data[1]]["id"]);
                     $parentcategory = $this->plugin->db->GetItemCaegory($id);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 {$parentcategory["name"]} のアイテムカテゴリーから {$ItemCategorys[(int)$data[1]]["name"]} をから削除しました"));
                     $player->sendMessage("{$parentcategory["name"]}のアイテムカテゴリーから{$ItemCategorys[(int)$data[1]]["name"]}をから削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemChildCategory"], [$player, $id]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -412,6 +420,7 @@ class Admin
 
                     $pos = $player->getPosition();
                     $this->plugin->db->SetWorldTeleport($data[2], $pos, (int)$data[1]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 ワールド {$pos->getLevel()->getName()} X座標 {$pos->getX()} Y座標 {$pos->getY()} Z座標 {$pos->getZ()} に テレポート名 $data[2] としてTP地点を追加しました"));
                     $player->sendMessage("§b[ワールドテレポート] >> §aテレポート地点を追加しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -453,6 +462,7 @@ class Admin
                     } else if (!is_numeric($data[1])) return true;
 
                     $this->plugin->db->DeleteWorldTeleport($allteleportworlds[(int)$data[1]]["id"]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 ワールド {$allteleportworlds[(int)$data[1]]["levelname"]} X座標 {$allteleportworlds[(int)$data[1]]["x"]} Y座標 {$allteleportworlds[(int)$data[1]]["y"]} Z座標 {$allteleportworlds[(int)$data[1]]["z"]} TP名 X座標 {$allteleportworlds[(int)$data[1]]["name"]} を削除しました"));
                     $player->sendMessage("§b[ワールドテレポート] >> §a{$allteleportworlds[(int)$data[1]]["name"]}をテレポートから削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "RemoveWorldTeleport"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -484,6 +494,7 @@ class Admin
 
                     $time = new DateTime('now');
                     $this->plugin->db->AddAnnounce($time->format("Y年m月d日 H時i分"), $data[1], $data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 アナウンス $data[1] を追加しました"));
                     $player->sendMessage("§b[運営からのお知らせ] >> §a運営からのお知らせ$data[1]を追加しました");
                     $this->plugin->getServer()->broadcastMessage("§b[おうちサーバー] >> §e運営からのお知らせが追加されました、ご確認ください。");
                     $this->plugin->client->sendChatMessage("__**[おうちサーバー] >> 運営からのお知らせが追加されました、ご確認ください。**__\n");
@@ -528,6 +539,7 @@ class Admin
                     } else if (!is_numeric($data[1])) return true;
 
                     $this->plugin->db->DeleteAnnounce($allannounce[(int)$data[1]]["id"]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 アナウンス {$allannounce[(int)$data[1]]["title"]} を削除しました"));
                     $player->sendMessage("§b[運営からのお知らせ] >> §a{$allannounce[(int)$data[1]]["title"]}をアナウンスから削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "RemoveAnnounce"], [$player]), 20);
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -577,6 +589,9 @@ class Admin
                         $this->plugin->db->UpdateAdminShop($item, (int)$data[2], (int)$data[3], $ItemCategorys[(int)$data[4]]["id"], (int)$data[5]);
                     }
 
+                    $itemdata = $this->plugin->db->GetItemDataItem($item);
+                    if(!$itemdata) $itemdata = array("janame" => $item->getName());
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 AdminShopにItemName {$itemdata["janame"]} 購入金額 $data[2] 売却金額 $data[3] Mode $data[5] に設定しました"));
                     $player->sendMessage("§b[AdminShop] >> §a設定しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopSet"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -688,9 +703,11 @@ class Admin
                     if (!$item) return true;
 
                     $itemdata = $this->plugin->db->GetItemDataItem($item);
+                    if(!$itemdata) $itemdata = array("janame" => $item->getName());
 
 
                     $this->plugin->db->DeleteAdminShopItem($item);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 AdminShopから ItemName {$itemdata["janame"]} を削除しました"));
                     $player->sendMessage("§b[AdminShop] >> §a{$itemdata["janame"]}をAdminShopから削除しました");
                     if (count($allitem) > 1) {
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "DeleteItemSelect"], [$player, $allitem[$data[2]]["categoryid"]]), 20);
@@ -736,6 +753,7 @@ class Admin
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $this->plugin->db->DeleteLand($landid);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 土地ID $landid を強制放棄しました"));
                     $player->sendMessage("§b[土地保護] >> §6土地ID #$landid を強制放棄しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "ForcedLandAbandonment"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -776,6 +794,7 @@ class Admin
                         $this->plugin->db->SetItemData($item, $data[3], $data[4]);
                     }
 
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、 ItemId {$item->getId()} ItemMeta {$item->getDamage()} Item名 $data[3] テクスチャパス $data[4] に設定しました"));
                     $player->sendMessage("§b[Item設定] >> §a設定しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SetItem"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {

@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{ModalForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use TypeError;
@@ -84,10 +85,12 @@ class Teleport
             }
             $level = $this->plugin->getServer()->getLevelByName($worlddata["levelname"]);
             $pos = new Position($worlddata["x"], $worlddata["y"], $worlddata["z"], $level);
-            $form = new ModalForm(function (Player $player, $data) use ($pos) {
+            $form = new ModalForm(function (Player $player, $data) use ($level, $pos) {
                 try {
                     if ($data === true) {
+                        $oldtp = $player;
                         $player->teleport($pos);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}がTeleportを使用し、ワールド {$oldtp->getLevel()->getName()} X座標 {$oldtp->getX()} Y座標 {$oldtp->getY()} Z座標 {$oldtp->getZ()} から ワールド {$level->getName()} X座標 {$player->getX()} Y座標 {$player->getY()} Z座標 {$player->getZ()} にTPしました"));
                         $player->sendMessage("§b[ワールドテレポート] >> §aテレポートしました");
                     } elseif ($data === false) {
                         $player->sendMessage("§b[ワールドテレポート] >> §cキャンセルしました");
