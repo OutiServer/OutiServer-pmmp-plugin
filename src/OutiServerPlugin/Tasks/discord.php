@@ -98,7 +98,18 @@ class discord extends Thread
                         'content' => $message->content
                     ]);
                 } elseif ($message->channel_id === $this->chat_id) {
+                    $role = "住人";
+                    if($message->author->roles->has('771015602180587571')) {
+                        $role = "管理者";
+                    }
+                    elseif($message->author->roles->has('822852335322923060')) {
+                        $role = "副管理者";
+                    }
+                    elseif($message->author->roles->has('739473593674629120')) {
+                        $role = "Server Booster";
+                    }
                     $this->serverchat_Queue[] = serialize([
+                        'role' => $role,
                         'username' => $message->author->username,
                         'content' => $message->content
                     ]);
