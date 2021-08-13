@@ -830,6 +830,7 @@ class Admin
                         return true;
                     } elseif (!isset($data[1])) return true;
                     $this->plugin->db->SetRegularMessage($data[1]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、定期メッセージを追加しました\ncontent: $data[1]"));
                     $player->sendMessage("§b[定期メッセージ設定] >> §a設定しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SetRegularMessage"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -853,7 +854,7 @@ class Admin
     public function DeleteRegularMessage(Player $player)
     {
         $allmessages = $this->plugin->db->GetAllLandId();
-        if (!allmessages) {
+        if (!$allmessages) {
             $player->sendMessage("§b[定期メッセージ削除] >> §4現在定期メッセージは1つもないようです");
             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
             return;
@@ -876,6 +877,7 @@ class Admin
 
                 $message = $allmessages[$data[1]];
                 $this->plugin->db->DeleteLand($message["id"]);
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、定期メッセージを削除しました\nid {$message["id"]} content {$message["content"]}"));
                 $player->sendMessage("§b[土地保護] >> §6定期メッセージID #{$message["id"]} を削除しました");
                 $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "ForcedLandAbandonment"], [$player]), 20);
             } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
