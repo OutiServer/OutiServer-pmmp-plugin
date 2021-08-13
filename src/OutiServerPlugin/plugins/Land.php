@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use TypeError;
@@ -164,6 +165,7 @@ class Land
                         } else {
                             $this->plugin->db->UpdateMoney($name, $playerdata["money"] - $price);
                             $id = $this->plugin->db->SetLand($name, $levelname, $startX, $startZ, $endX, $endZ, (int)$data[2], $data[3] ? $player->asVector3() : null);
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地購入を使用し ワールド $levelname 開始X座標 $startX 開始Z座標 $startZ 終了X座標 $endX 終了Z座標 $endZ の土地を $price 円で購入しました\n土地ID $id\n" . $data[3] ? "TP地点 X座標 {$player->asVector3()->getX()} Y座標 {$player->asVector3()->getY()} Z座標 {$player->asVector3()->getZ()}" : ""));
                             $player->sendMessage("§b[土地保護] >> §6購入しました\n購入した土地番号は #$id です、招待・TPなどに使用しますので控えておいてください。");
                         }
 
@@ -214,9 +216,11 @@ class Land
 
                     if ($this->plugin->db->CheckLandProtection($landid)) {
                         $this->plugin->db->UpdateLandProtection($landid, 0);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $landid の土地保護を無効化しました"));
                         $player->sendMessage("§b[土地保護] >> §4土地ID #$landid の土地保護を無効にしました");
                     } else {
                         $this->plugin->db->UpdateLandProtection($landid, 1);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $landid の土地保護を有効化しました"));
                         $player->sendMessage("§b[土地保護] >> §6土地ID #$landid の土地保護を有効にしました");
                     }
 
@@ -265,10 +269,12 @@ class Land
 
                     if ($this->plugin->db->checkInvite($landid, $data[2])) {
                         if ($this->plugin->db->RemoveLandInvite($landid, $data[2])) {
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $landid の $data[2] の招待を取り消しました"));
                             $player->sendMessage("§b[土地保護] >> §6$data[2]の土地ID #$landid の招待を削除しました");
                         }
                     } else {
                         $this->plugin->db->AddLandInvite($landid, $data[2]);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $landid に $data[2] を招待しました"));
                         $player->sendMessage("§b[土地保護] >> §6$data[2]を土地ID #$landid に招待しました");
                     }
 
@@ -367,6 +373,7 @@ class Land
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $this->plugin->db->ChangeLandOwner($landid, $data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地所有権譲渡を使用し 土地ID $landid の所有権を $data[2] に譲渡しました"));
                     $player->sendMessage("§b[土地保護] >> §6土地ID #$landid の所有権を$data[2]に譲渡しました");
 
                     return true;
@@ -402,6 +409,7 @@ class Land
             }
 
             $this->plugin->db->UpdateLandTereport($landid, $player->asVector3());
+            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地TP地点設定を使用し 土地ID $landid のTP地点を X座標 {$player->asVector3()->getX()} Y座標 {$player->asVector3()->getY()} Z座標 {$player->asVector3()->getZ()} に変更しました"));
             $player->sendMessage("§b[土地保護] >> §d土地ID #$landid のテレポート場所を変更しました");
             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -431,6 +439,7 @@ class Land
 
                     $landid = (int)$alllands[(int)$data[1]];
                     $this->plugin->db->DeleteLand($landid);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地放棄を使用し 土地ID $landid の土地を放棄しました"));
                     $player->sendMessage("§b[土地保護] >> §6土地ID #$landid を私有地から削除しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -504,7 +513,9 @@ class Land
                     }
                     $level = $this->plugin->getServer()->getLevelByName($landdata["levelname"]);
                     $pos = new Position($landdata["tpx"], $landdata["tpy"], $landdata["tpz"], $level);
+                    $oldtp = $player;
                     $player->teleport($pos);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地TPを使用し、 ワールド {$oldtp->getLevel()->getName()} X座標 {$oldtp->getX()} Y座標 {$oldtp->getY()} Z座標 {$oldtp->getZ()} から ワールド {$level->getName()} X座標 {$player->getX()} Y座標 {$player->getY()} Z座標 {$player->getZ()} にTPしました"));
                     $player->sendMessage("§b[土地保護] >> §6土地ID #$landid にテレポートしました");
 
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);

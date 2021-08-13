@@ -12,6 +12,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -45,6 +46,7 @@ class ChestShop
                         $itemname = $this->plugin->db->GetItemDataItem($item);
                         if (!$itemname) $itemname = array("janame" => $item->getName());
                         $sign->setText("§bshop", "§a" . $name, "§d" . $itemname["janame"], "§e" . $data[3] . "円");
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が ワールド {$player->getLevel()->getName()} X座標 {$pos->getX()} Y座標 {$pos->getY()} Z座標 {$pos->getZ()} にチェストSHOPを作成し、{$itemname["janame"]} を販売開始しました"));
                         $player->sendMessage("§b[チェストショップ] §f>> §6チェストショップを作成しました！");
                     }
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
@@ -68,7 +70,15 @@ class ChestShop
     public function BuyChestShop(Player $player, $shopdata)
     {
         try {
-            $form = new CustomForm(function (Player $player, $data) use ($shopdata) {
+            $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"]);
+            $itemname = $this->plugin->db->GetItemDataItem($item);
+            if (!$itemname) {
+                $itemname = array(
+                    "janame" => $item->getName()
+                );
+            }
+
+            $form = new CustomForm(function (Player $player, $data) use ($itemname, $shopdata) {
                 try {
                     if ($data === null) return true;
 
@@ -105,10 +115,11 @@ class ChestShop
                         $inventory->addItem($item);
                         $this->plugin->db->RemoveMoney($name, $price);
                         $this->plugin->db->AddMoney($shopdata["owner"], $price);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が ワールド {$pos->getLevel()->getName()} X座標 {$pos->getX()} Y座標 {$pos->getY()} Z座標 {$pos->getZ()} Onwer {$shopdata["owner"]} のチェストショップを使用し、{$itemname["janame"]} を {$item->getCount()}個購入しました"));
                         $player->sendMessage("§b[チェストショップ] >> §6購入しました");
                     } else {
                         $player->sendMessage('§b[チェストショップ] >> §6申し訳ありませんが、在庫が足りていないようです。');
-                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $shopdata]), 20);
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player, $shopdata]), 20);
                     }
                 } catch (Error | TypeError | Exception | ErrorException | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
@@ -117,13 +128,6 @@ class ChestShop
                 return true;
             });
 
-            $item = Item::get($shopdata["itemid"], $shopdata["itemmeta"]);
-            $itemname = $this->plugin->db->GetItemDataItem($item);
-            if (!$itemname) {
-                $itemname = array(
-                    "janame" => $item->getName()
-                );
-            }
             $form->setTitle("Shop");
             $form->addLabel("販売物: " . $itemname["janame"]);
             $form->addSlider("\n買う個数", 1, $shopdata["maxcount"]);

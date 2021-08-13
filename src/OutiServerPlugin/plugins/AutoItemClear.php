@@ -10,6 +10,7 @@ use Error;
 use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Human;
 use pocketmine\entity\object\ExperienceOrb;
@@ -50,10 +51,11 @@ class AutoItemClear
                                 }
                             }
 
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "合計{$entitiesCleared}個の落ちていたアイテムを削除しました"));
                             $this->seconds = $this->plugin->config->get('ClearItemTick', 3600);
                             $this->plugin->getLogger()->info("合計{$entitiesCleared}個のアイテムを削除しました");
                         } elseif (in_array($this->seconds, $this->plugin->config->get("WarningClearItemTick", array(60, 5)))) {
-                            $this->plugin->getServer()->broadcastMessage("§b[おうtサーバー] >> §cあと{$this->seconds}秒で落ちているアイテムが削除されます、ご注意ください。");
+                            $this->plugin->getServer()->broadcastMessage("§b[おうちサーバー] >> §cあと{$this->seconds}秒で落ちているアイテムが削除されます、ご注意ください。");
                         }
                     } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                         $this->plugin->errorHandler->onErrorNotPlayer($e);
