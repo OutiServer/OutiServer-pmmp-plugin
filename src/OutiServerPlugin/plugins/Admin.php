@@ -81,6 +81,12 @@ class Admin
                             $this->SetItem($player);
                             break;
                         case 15:
+                            $this->SetRegularMessage($player);
+                            break;
+                        case 16:
+                            $this->DeleteRegularMessage($player);
+                            break;
+                        case 17:
                             $this->plugin->applewatch->Form($player);
                             break;
                     }
@@ -107,6 +113,8 @@ class Admin
             $form->addButton("AdminShopのアイテム削除");
             $form->addButton("土地強制放棄");
             $form->addButton("アイテム設定");
+            $form->addButton("定期メッセージの追加");
+            $form->addButton("定期メッセージの削除");
             $form->addButton("戻る");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -814,6 +822,83 @@ class Admin
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
         }
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="定期メッセージ設定">
+    public function SetRegularMessage(Player $player)
+    {
+        try {
+            $form = new CustomForm(function (Player $player, $data) {
+                try {
+                    if ($data === null) return true;
+                    elseif ($data[0] === true) {
+                        $player->sendMessage("§b[定期メッセージ設定] >> §eキャンセルしました");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                        return true;
+                    } elseif (!isset($data[1])) return true;
+                    $this->plugin->db->SetRegularMessage($data[1]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、定期メッセージを追加しました\ncontent: $data[1]"));
+                    $player->sendMessage("§b[定期メッセージ設定] >> §a設定しました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "SetRegularMessage"], [$player]), 20);
+                } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                    $this->plugin->errorHandler->onError($e, $player);
+                }
+
+                return true;
+            });
+
+            $form->setTitle("OutiWatch-Admin-定期メッセージ追加");
+            $form->addToggle("キャンセルして戻る");
+            $form->addInput("メッセージ", "content", "");
+            $player->sendForm($form);
+        } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onError($e, $player);
+        }
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="定期メッセージ削除">
+    public function DeleteRegularMessage(Player $player)
+    {
+        $allmessages = $this->plugin->db->GetRegularMessageAll();
+        if (!$allmessages) {
+            $player->sendMessage("§b[定期メッセージ削除] >> §4現在定期メッセージは1つもないようです");
+            $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+            return;
+        }
+
+        $messages = [];
+        foreach ($allmessages as $message) {
+            $messages[] = $messag["content"];
+        }
+
+
+        $form = new CustomForm(function (Player $player, $data) use ($allmessages) {
+            try {
+                if ($data === null) return true;
+                elseif ($data[0] === true) {
+                    $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
+                    $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
+                    return true;
+                }
+
+                $message = $allmessages[$data[1]];
+                $this->plugin->db->DeleteLand($message["id"]);
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminを使用し、定期メッセージを削除しました\nid {$message["id"]} content {$message["content"]}"));
+                $player->sendMessage("§b[土地保護] >> §6定期メッセージID #{$message["id"]} を削除しました");
+                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "ForcedLandAbandonment"], [$player]), 20);
+            } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                $this->plugin->errorHandler->onError($e, $player);
+            }
+
+            return true;
+        });
+
+        $form->setTitle("OutiWatch-Admin-定期メッセージ削除");
+        $form->addToggle("キャンセルして戻る");
+        $form->addDropdown("削除するメッセージ", $messages);
+        $player->sendForm($form);
     }
     // </editor-fold>
 }

@@ -66,4 +66,8 @@ ClearItemTick: 3600
 # 削除警告をプレイヤー全員に送信する残り時間
 WarningClearItemTick: [ 60, 5 ]
 
+# ーーーその他ーーー
+# 定期メッセージの間隔(秒)
+RegularMessageTick: 60
+
 ...

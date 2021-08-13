@@ -146,6 +146,18 @@ class Main extends PluginBase
                     }
                 }
             ), 5, 1);
+            $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(
+                function (int $currentTick): void {
+                    try {
+                        $messages = $this->db->GetRegularMessageAll();
+                        if(!$messages) return;
+                        $message = $messages[array_rand($messages)];
+                        $this->getServer()->broadcastMessage("[定期] {$message["content"]}");
+                    } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+                        $this->errorHandler->onErrorNotPlayer($e);
+                    }
+                }
+            ), $this->config->get('RegularMessageTick', 60) * 20);
 
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 

@@ -41,6 +41,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslots (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bet INTEGER , rate INTEGER, line INTEGER, levelname TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemdatas (item TEXT PRIMARY KEY, id INTEGER, meta INTEGER, janame TEXT, imagepath TEXT)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS regularmessages (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT)");
 
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
@@ -1156,5 +1157,47 @@ class Database
         }
 
         return false;
+    }
+
+    public function SetRegularMessage(string $content)
+    {
+        try {
+            $sql = $this->db->prepare("INSERT INTO regularmessages (content) VALUES (:content)");
+            $sql->bindValue(':content', $content, SQLITE3_TEXT);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetRegularMessageAll()
+    {
+        try {
+            $alldata = [];
+            $sql = $this->db->prepare("SELECT * FROM regularmessages");
+            $result = $sql->execute();
+            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
+                $alldata[] = $d;
+            }
+
+            if (count($alldata) < 1) return false;
+
+            return $alldata;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function DeleteRegularMessage(int $id)
+    {
+        try {
+            $sql = $this->db->prepare("DELETE FROM regularmessages id = :id");
+            $sql->bindValue(':id', $id, SQLITE3_INTEGER);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
     }
 }
