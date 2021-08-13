@@ -81,6 +81,12 @@ class Admin
                             $this->SetItem($player);
                             break;
                         case 15:
+                            $this->SetRegularMessage($player);
+                            break;
+                        case 16:
+                            $this->DeleteRegularMessage($player);
+                            break;
+                        case 17:
                             $this->plugin->applewatch->Form($player);
                             break;
                     }
@@ -107,6 +113,8 @@ class Admin
             $form->addButton("AdminShopのアイテム削除");
             $form->addButton("土地強制放棄");
             $form->addButton("アイテム設定");
+            $form->addButton("定期メッセージの追加");
+            $form->addButton("定期メッセージの削除");
             $form->addButton("戻る");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -853,7 +861,7 @@ class Admin
     // <editor-fold desc="定期メッセージ削除">
     public function DeleteRegularMessage(Player $player)
     {
-        $allmessages = $this->plugin->db->GetAllLandId();
+        $allmessages = $this->plugin->db->GetRegularMessageAll();
         if (!$allmessages) {
             $player->sendMessage("§b[定期メッセージ削除] >> §4現在定期メッセージは1つもないようです");
             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminForm"], [$player]), 20);
@@ -862,7 +870,7 @@ class Admin
 
         $messages = [];
         foreach ($allmessages as $message) {
-            $messages[] = $message;
+            $messages[] = $messag["content"];
         }
 
 

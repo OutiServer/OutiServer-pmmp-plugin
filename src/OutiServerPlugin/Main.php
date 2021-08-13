@@ -151,13 +151,13 @@ class Main extends PluginBase
                     try {
                         $messages = $this->db->GetRegularMessageAll();
                         if(!$messages) return;
-                        $message = array_rand($messages);
-                        $this->getServer()->broadcastMessage("[定期] $message");
+                        $message = $messages[array_rand($messages)];
+                        $this->getServer()->broadcastMessage("[定期] {$message["content"]}");
                     } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                         $this->errorHandler->onErrorNotPlayer($e);
                     }
                 }
-            ), 20);
+            ), $this->config->get('RegularMessageTick', 60) * 20);
 
             $this->getScheduler()->scheduleRepeatingTask(new PlayerStatus($this), 5);
 
