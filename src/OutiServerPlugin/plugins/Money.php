@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\Player;
 use TypeError;
 
@@ -83,6 +84,7 @@ class Money
                     }
                     $this->plugin->db->AddMoney($data[1], (int)$data[2]);
                     $this->plugin->db->RemoveMoney($name, (int)$data[2]);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が所持金転送を使用し、$data[1] に $data[2] 円転送しました"));
                     $player->sendMessage("§a[経済] >> §6$data[1]に$data[2]円転送しました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "MoveMoney"], [$player]), 20);
                     return true;

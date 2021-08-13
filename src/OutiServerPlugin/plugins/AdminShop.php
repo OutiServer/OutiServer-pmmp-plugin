@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use jojoe77777\FormAPI\{CustomForm, SimpleForm};
 use OutiServerPlugin\Main;
 use OutiServerPlugin\Tasks\ReturnForm;
+use OutiServerPlugin\Tasks\SendLog;
 use OutiServerPlugin\Utils\Enum;
 use pocketmine\item\Item;
 use pocketmine\Player;
@@ -193,6 +194,9 @@ class AdminShop
                             }
                             $this->plugin->db->RemoveMoney($name, $price);
                             $player->getInventory()->addItem($item);
+                            $itemname = $this->plugin->db->GetItemDataItem($item);
+                            if (!$itemname) $itemname = array("janame" => $item->getName());
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminShopを使用し、 {$itemname["janame"]} を {$item->getCount()} 個 {$price} 円で購入しました"));
                             $player->sendMessage("§b[AdminShop] >> §a購入しました");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
                         } else {
@@ -208,6 +212,9 @@ class AdminShop
                             $name = $player->getName();
                             $this->plugin->db->AddMoney($name, $price);
                             $player->getInventory()->removeItem($item);
+                            $itemname = $this->plugin->db->GetItemDataItem($item);
+                            if (!$itemname) $itemname = array("janame" => $item->getName());
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()} がAdminShopを使用し、 {$itemname["janame"]} を {$item->getCount()} 個 {$price} 円で売却しました"));
                             $player->sendMessage("§b[AdminShop] >> §a売却しました");
                             $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "AdminShopMenu"], [$player, $itemdata["categoryid"]]), 20);
                         } else {
