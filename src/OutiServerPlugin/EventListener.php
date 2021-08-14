@@ -311,9 +311,11 @@ class EventListener implements Listener
             $player = $event->getPlayer();
             $name = $player->getName();
             $level = $player->getLevel();
-            if($this->playerlevel[$name] !== $level->getName()) {
-                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', ''), "{$name}が ワールド: {$this->playerlevel[$name]} から {$player->getLevel()->getName()} に移動しました"));
-                $this->playerlevel[$name] = $level->getName();
+            if(isset($this->playerlevel[$name])) {
+                if($this->playerlevel[$name] !== $level->getName()) {
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', ''), "{$name}が ワールド: {$this->playerlevel[$name]} から {$player->getLevel()->getName()} に移動しました"));
+                    $this->playerlevel[$name] = $level->getName();
+                }
             }
             if (isset($this->plugin->sound->playersounds[$name])) {
                 $startX = $this->plugin->sound->playersounds[$name]["startx"];
