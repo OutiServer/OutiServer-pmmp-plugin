@@ -1,7 +1,7 @@
 name: OutiServerPlugin
 description: おうちサーバー用プラグイン
 author: Ken_Cir
-version: 3.2.0
+version: 3.2.1
 api: 3.0.0
 main: OutiServerPlugin\Main
 
@@ -18,9 +18,9 @@ commands:
     description: "configをリロード"
     usage: "/reloadouticonfig"
     permission: OutiServerPlugin.command.*
-  reloadoutisound:
+  reloadoutisoundconfig:
     description: "sound設定をリロード"
-    usage: "/reloadoutisound"
+    usage: "/reloadoutisoundconfig"
     permission: OutiServerPlugin.command.*
   db:
     description: "dbを操作する"
@@ -33,6 +33,10 @@ commands:
   setitem:
     description: "アイテム設定"
     usage: "/setitem <itemid> <itemmeta> <日本語名> <画像パス>"
+    permission: OutiServerPlugin.command.*
+  reloadoutilandconfig:
+    description: "土地の金額設定をリロード"
+    usage: "/reloadoutilandconfig"
     permission: OutiServerPlugin.command.*
 
 permissions:
