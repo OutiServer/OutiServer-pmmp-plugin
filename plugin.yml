@@ -1,7 +1,7 @@
 name: OutiServerPlugin
 description: おうちサーバー用プラグイン
 author: Ken_Cir
-version: 3.2.1
+version: 3.2.2
 api: 3.0.0
 main: OutiServerPlugin\Main
 
