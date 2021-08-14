@@ -14,6 +14,7 @@ use OutiServerPlugin\Tasks\ReturnForm;
 use OutiServerPlugin\Tasks\SendLog;
 use pocketmine\level\Position;
 use pocketmine\Player;
+use pocketmine\utils\Config;
 use TypeError;
 
 class Land
@@ -21,10 +22,13 @@ class Land
     private Main $plugin;
     public array $startlands = [];
     public array $endlands = [];
+    private Config $landprice;
 
     public function __construct(Main $plugin)
     {
         $this->plugin = $plugin;
+        $this->landprice = new Config($this->plugin->getDataFolder() . "land.yml", Config::YAML);
+        var_dump($this->landprice->get('world'));
     }
 
     public function land(Player $player)
@@ -145,12 +149,13 @@ class Land
 
             if ($landid = $this->plugin->db->GetLandId($levelname, $startX, $startZ) or $landid = $this->plugin->db->GetLandId($levelname, $endX, $endZ)) {
                 $landdata = $this->plugin->db->GetLandData($landid);
+                unset($this->startlands[$name], $this->endlands[$name]);
                 $player->sendMessage("選択された土地は既に" . $landdata["owner"] . "が所有しています");
                 return;
             }
 
             $blockcount = ((($endX + 1) - ($startX - 1)) - 1) * ((($endZ + 1) - ($startZ - 1)) - 1);
-            $price = $blockcount * $this->plugin->config->get("Land_Price", 200);
+            $price = $blockcount * $this->plugin->landconfig->get($levelname, array('price' => 200))["price"];
 
             $form = new CustomForm(function (Player $player, $data) use ($levelname, $price, $startX, $startZ, $endX, $endZ) {
                 try {

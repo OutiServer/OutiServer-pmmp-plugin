@@ -43,6 +43,7 @@ class Main extends PluginBase
     public Database $db;
     public Config $config;
     public Config $music;
+    public Config $landconfig;
     public Land $land;
     public ChestShop $chestshop;
     public AdminShop $adminshop;
@@ -61,9 +62,11 @@ class Main extends PluginBase
         try {
             $this->saveResource("config.yml");
             $this->saveResource("sound.yml");
+            $this->saveResource("land.yml");
 
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
             $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
+            $this->landconfig = new Config($this->getDataFolder() . "land.yml", Config::YAML);
             $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
             if ($token === 'DISCORD_TOKEN') {
                 $this->getLogger()->error("config.yml: DiscordBot_Tokenが設定されていません");
@@ -223,7 +226,7 @@ class Main extends PluginBase
                     $this->config->reload();
                     $sender->sendMessage("§a[おうちサーバー] >> §aconfigをリロードしました");
                     break;
-                case 'reloadoutisound':
+                case 'reloadoutisoundconfig':
                     $this->music->reload();
                     $sender->sendMessage("§a[おうちサーバー] >> §asoundをリロードしました");
                     break;
@@ -252,6 +255,10 @@ class Main extends PluginBase
                     }
 
                     $sender->sendMessage("§b[Item設定] >> §a設定しました");
+                    break;
+                case 'reloadoutilandconfig':
+                    $this->landconfig->reload();
+                    $sender->sendMessage("§b[土地設定] >> §a土地設定をリロードしました");
                     break;
             }
 
