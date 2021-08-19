@@ -38,6 +38,18 @@ commands:
     description: "土地の金額設定をリロード"
     usage: "/reloadoutilandconfig"
     permission: OutiServerPlugin.command.*
+  warn:
+    description: "ユーザーを警告する"
+    usage: "/warn <プレイヤー名> <理由>"
+    permission: OutiServerPlugin.command.*
+  checkwarn:
+    description: "警告を確認する"
+    usage: "/checkwarn"
+    permission: OutiServerPlugin.command.*;OutiServerPlugin.command.checkwarn
+  removewarn:
+    description: "ユーザーから警告を削除する"
+    usage: "/removewarn <プレイヤー名>"
+    permission: OutiServerPlugin.command.*
 
 permissions:
   OutiServerPlugin.command.*:
@@ -48,4 +60,7 @@ permissions:
     default: true
   OutiServerPlugin.command.applewatch:
     description: プレイヤーがコマンドでAppleWatchを使用できるようにします
+    default: true
+  OutiServerPlugin.command.checkwarn:
+    description: プレイヤーがコマンドでcheckwarnを使用できるようにします
     default: true

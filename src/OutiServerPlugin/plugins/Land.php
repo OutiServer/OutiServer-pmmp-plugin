@@ -28,7 +28,6 @@ class Land
     {
         $this->plugin = $plugin;
         $this->landprice = new Config($this->plugin->getDataFolder() . "land.yml", Config::YAML);
-        var_dump($this->landprice->get('world'));
     }
 
     public function land(Player $player)
