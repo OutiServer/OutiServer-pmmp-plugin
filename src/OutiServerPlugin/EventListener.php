@@ -298,6 +298,7 @@ class EventListener implements Listener
             $reason = $event->getReason();
             $this->plugin->client->sendChatMessage("**$name**がサーバーから追放されました\nReason: $reason\n");
             $this->plugin->getServer()->broadcastMessage("{$name}がサーバーから追放されました\nReason: $reason");
+            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "$name がサーバーから追放されました\n追放理由: $reason"));
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }

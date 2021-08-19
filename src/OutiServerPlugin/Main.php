@@ -238,7 +238,6 @@ class Main extends PluginBase
                     $this->client->sendDB();
                     break;
                 case 'setitem':
-                    var_dump($args);
                     if (!is_numeric($args[0]) or !is_numeric($args[1]) or !isset($args[2])) break;
                     $item = Item::get((int)$args[0], (int)$args[1]);
                     if (!$item) return true;
@@ -259,6 +258,58 @@ class Main extends PluginBase
                 case 'reloadoutilandconfig':
                     $this->landconfig->reload();
                     $sender->sendMessage("§b[土地設定] >> §a土地設定をリロードしました");
+                    break;
+                case 'warn':
+                    if(!isset($args[0]) or !isset($args[1])) return false;
+                    elseif ($this->db->GetWarnName($args[0])) {
+                        $sender->sendMessage("$args[0] は既に警告されています");
+                    }
+                    else {
+                        $this->db->AddWarn($args[0], $args[1]);
+                        $this->getServer()->getAsyncPool()->submitTask(new SendLog($this->config->get('DiscordPunishmentLog_Webhook', ''), "$name が警告されました\n警告理由: $args[1]"));
+                        $sender->sendMessage("$args[0] を警告しました\n理由: $args[1]");
+                        $player = $this->getServer()->getPlayer($args[0]);
+                        if($player instanceof Player) {
+                            $nt = $player->getNameTag();
+                            $dn = $player->getDisplayName();
+                            $player->setNameTag("§c⚠§f $nt");
+                            $player->setDisplayName("§c⚠§f $dn");
+                            $player->sendMessage("警告されました\n理由: $args[1]");
+                        }
+                    }
+                    break;
+                case 'checkwarn':
+                    if(!$sender instanceof Player) {
+                        $sender->sendMessage("このコマンドはコンソールから実行できません");
+                    }
+                    else {
+                        $warn = $this->db->GetWarnName($sender->getName());
+                        if(!$warn) {
+                            $sender->sendMessage("貴方は警告されていません");
+                        }
+                        else {
+                            $sender->sendMessage("貴方は警告されています\n警告理由: {$warn["reason"]}");
+                        }
+                    }
+                    break;
+                case 'removewarn':
+                    if(!isset($args[0])) return false;
+                    $warn = $this->db->GetWarnName($args[0]);
+                    if(!$warn) {
+                        $sender->sendMessage("$args[0] は警告されていません");
+                    }
+                    else {
+                        $this->db->RemoveWarnName($args[0]);
+                        $sender->sendMessage("$args[0] の警告を解除しました");
+                        $player = $this->getServer()->getPlayer($args[0]);
+                        if($player instanceof Player) {
+                            $nt = str_replace("§c⚠§f", "", $player->getNameTag());
+                            $dn = str_replace("§c⚠§f", "", $player->getDisplayName());
+                            $player->setNameTag($nt);
+                            $player->setDisplayName($dn);
+                            $player->sendMessage("警告が解除されました");
+                        }
+                    }
                     break;
             }
 
