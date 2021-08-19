@@ -14,4 +14,10 @@ interface Enum
     // AdminShop Category
     const ADMINSHOP_CATEGORY_PARENT = 0;
     const ADMINSHOP_CATEGORY_CHILD = 1;
+
+    // Land Perms
+    const LAND_PERMS_TAP = 0;
+    const LAND_PERMS_INSTALLATION = 1;
+    const LAND_PERMS_DESTRUCTION = 2;
+    const LAND_PERMS_ALARM = 3;
 }

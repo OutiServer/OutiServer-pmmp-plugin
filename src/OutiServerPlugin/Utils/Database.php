@@ -11,6 +11,7 @@ use Exception;
 use InvalidArgumentException;
 use OutiServerPlugin\Main;
 use pocketmine\block\Block;
+use pocketmine\block\RedstoneTorchUnlit;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
@@ -34,7 +35,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS moneys (name TEXT PRIMARY KEY, money INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS chestshops (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, chestx INTEGER, chesty INTEGER, chestz INTEGER, signboardx INTEGER, signboardy INTEGER, signboardz INTEGER, itemid INTEGER, itemmeta INTEGER, price INTEGER, maxcount INTEGER, levelname TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminshops (id TEXT PRIMARY KEY, itemid INTEGER, itemmeta INTEGER, buyprice INTEGER, sellprice INTEGER, categoryid INTEGER, mode INTEGER)");
-            $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, protection INTEGER, tpx INTEGER, tpy INTEGER, tpz INTEGER)");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS lands (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT, levelname TEXT, startx INTEGER, startz INTEGER, endx INTEGER, endz INTEGER, invites TEXT, notinviteperms TEXT, protection INTEGER, tpx INTEGER, tpy INTEGER, tpz INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemcategorys (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type INTEGER, parentcategory INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS worldteleports (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, levelname TEXT, x INTEGER, y INTEGER, z INTEGER, oponly INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS adminannounces (id INTEGER PRIMARY KEY AUTOINCREMENT, addtime TEXT, title TEXT, content TEXT)");
@@ -42,7 +43,17 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemdatas (item TEXT PRIMARY KEY, id INTEGER, meta INTEGER, janame TEXT, imagepath TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS regularmessages (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT)");
-
+            if(!$this->plugin->backupconfig->get("changeLandData", false)) {
+                if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "notinviteperms")) {
+                    $this->db->exec("ALTER TABLE lands ADD COLUMN notinviteperms TEXT");
+                }
+                $sql = $this->db->prepare("UPDATE lands SET invites = :invites, notinviteperms = :notinviteperms");
+                $sql->bindValue(":invites", serialize(array()), SQLITE3_TEXT);
+                $sql->bindValue(":notinviteperms", serialize(array(false, false, false, false)), SQLITE3_TEXT);
+                $sql->execute();
+                $this->plugin->backupconfig->set("changeLandData", true);
+                $this->plugin->backupconfig->save();
+            }
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
                 $sql->bindValue(':name', $key, SQLITE3_TEXT);
@@ -60,7 +71,7 @@ class Database
     }
     // </editor-fold>
 
-    // db接続を閉じる
+    // <editor-fold desc="SQLite3接続を閉じる">
     public function close()
     {
         try {
@@ -69,8 +80,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // プレイヤー所持金設定
+    // <editor-fold desc="プレイヤー所持金設定">
     public function SetMoney(string $name)
     {
         try {
@@ -82,8 +94,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // プレイヤー所持金取得
+    // <editor-fold desc="プレイヤー所持金取得">
     public function GetMoney(string $name)
     {
         try {
@@ -97,8 +110,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // プレイヤー所持金追加
+    // <editor-fold desc="プレイヤー所持金追加">
     public function AddMoney(string $name, int $addmoney)
     {
         try {
@@ -115,8 +129,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // プレイヤー所持金剥奪
+    // <editor-fold desc="プレイヤー所持金剥奪">
     public function RemoveMoney(string $name, int $removemoney)
     {
         try {
@@ -133,8 +148,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // プレイヤー所持金更新
+    // <editor-fold desc="プレイヤー所持金更新">
     public function UpdateMoney(string $name, int $money)
     {
         try {
@@ -152,8 +168,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // チェストショップ設定
+    // <editor-fold desc="チェストショップ設定">
     public function SetChestShop(string $name, $chest, $signboard, $item, $price)
     {
         try {
@@ -175,8 +192,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // チェストショップのチェスト存在確認
+    // <editor-fold desc="チェストショップのチェスト存在確認">
     public function isChestShopChestExits(Block $block, $levelname): bool
     {
         try {
@@ -189,15 +207,17 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // チェストショップのオーナーか確認
+    // <editor-fold desc="チェストショップのオーナーか確認">
     public function CheckChestShopOwner(int $id, string $name): bool
     {
         $data = $this->GetChestShopId($id);
         return $data["owner"] === strtolower($name);
     }
+    // </editor-fold>
 
-    // チェストショップ取得
+    // <editor-fold desc="チェストショップ取得">
     public function GetChestShop($block, $levelname)
     {
         try {
@@ -216,8 +236,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // チェストショップID取得
+    // <editor-fold desc="チェストショップID取得">
     public function GetChestShopId(int $id)
     {
         try {
@@ -233,8 +254,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // チェストショップ削除
+    // <editor-fold desc="チェストショップ削除">
     public function DeleteChestShop($shopdata)
     {
         try {
@@ -248,8 +270,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // AdminShop設定
+    // <editor-fold desc="AdminShop設定">
     public function SetAdminShop(Item $item, int $buy, int $sell, int $categoryid, int $mode)
     {
         try {
@@ -266,8 +289,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // AdminShop設定更新
+    // <editor-fold desc="AdminShop設定更新">
     public function UpdateAdminShop(Item $item, int $buy, int $sell, int $categoryid, int $mode)
     {
         try {
@@ -283,8 +307,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // AdminShop取得
+    // <editor-fold desc="AdminShop取得">
     public function GetAdminShop($item)
     {
         try {
@@ -303,8 +328,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // AdminShopに登録されているItem全取得
+    // <editor-fold desc="AdminShopに登録されているItem全取得">
     public function AllAdminShop(int $CategoryId)
     {
         try {
@@ -325,12 +351,13 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // 土地保護設定
-    public function SetLand(string $owner, string $levelname, int $startx, int $startz, int $endx, int $endz, int $protection, ?Vector3 $vector3)
+    // <editor-fold desc="土地追加">
+    public function SetLand(string $owner, string $levelname, int $startx, int $startz, int $endx, int $endz, array $perms, int $protection, ?Vector3 $vector3)
     {
         try {
-            $sql = $this->db->prepare("INSERT INTO lands (owner, levelname, startx, startz, endx, endz, invites, protection, tpx, tpy, tpz) VALUES (:owner, :levelname, :startx, :startz, :endx, :endz, :invites, :protection, :tpx, :tpy, :tpz)");
+            $sql = $this->db->prepare("INSERT INTO lands (owner, levelname, startx, startz, endx, endz, invites, notinviteperms, protection, tpx, tpy, tpz) VALUES (:owner, :levelname, :startx, :startz, :endx, :endz, :invites, :notinviteperms, :protection, :tpx, :tpy, :tpz)");
             $sql->bindValue(':owner', strtolower($owner), SQLITE3_TEXT);
             $sql->bindValue(':levelname', $levelname, SQLITE3_TEXT);
             $sql->bindValue(':startx', $startx, SQLITE3_INTEGER);
@@ -338,6 +365,7 @@ class Database
             $sql->bindValue(':endx', $endx, SQLITE3_INTEGER);
             $sql->bindValue(':endz', $endz, SQLITE3_INTEGER);
             $sql->bindValue(':invites', serialize(array()), SQLITE3_TEXT);
+            $sql->bindValue(':notinviteperms', serialize($perms), SQLITE3_TEXT);
             $sql->bindValue(':protection', $protection, SQLITE3_INTEGER);
             if (!$vector3) {
                 $sql->bindValue(':tpx', null, SQLITE3_NULL);
@@ -357,8 +385,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // ID取得
+    // <editor-fold desc="土地ID取得">
     public function GetLandId(string $levelname, int $x, int $z)
     {
         try {
@@ -371,6 +400,7 @@ class Database
             if (!$data) {
                 return false;
             }
+
             return (int)$data["id"];
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
@@ -378,7 +408,9 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
+    // <editor-fold desc="土地データ取得">
     public function GetLandData(int $id)
     {
         try {
@@ -396,8 +428,42 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
-    // 土地データ削除
+    // <editor-fold desc="土地権限取得">
+    public function GetLandPerms(int $id, ?string $name = null)
+    {
+        try {
+            $data = $this->GetLandData($id);
+            if(!$name) return unserialize($data["notinviteperms"]);
+            // 招待データがない場合は通常の権限
+            elseif (!$this->checkInvite($id, strtolower($name))) return unserialize($data["notinviteperms"]);
+
+            $invites = $this->GetLandInvites($id);
+            foreach ($invites as $d) {
+                if(in_array(strtolower($name), $d)) return $d["perms"];
+            }
+
+            return unserialize($data["notinviteperms"]);
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="チェストショップのオーナーか確認">
+    public function CheckLandPerms(int $id, int $perm, ?string $name = null)
+    {
+        $perms = $this->GetLandPerms($id, $name);
+       // var_dump($perms);
+        //var_dump($perm);
+        return $perms[$perm];
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="土地データ削除">
     public function DeleteLand(int $id)
     {
         try {
@@ -408,8 +474,9 @@ class Database
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
+    // </editor-fold>
 
-    // nameが所有している土地ID全取得
+    // <editor-fold desc="nameが所有している土地ID全取得">
     public function GetAllLandOwnerData(string $name)
     {
         try {
@@ -430,6 +497,7 @@ class Database
 
         return false;
     }
+    // </editor-fold>
 
     public function GetAllLandOwnerInviteData(string $name)
     {
@@ -459,6 +527,18 @@ class Database
         }
 
         return false;
+    }
+
+    public function UpdateLandPemrs(int $id, array $perms)
+    {
+        try {
+            $sql = $this->db->prepare("UPDATE lands SET notinviteperms = :notinviteperms WHERE id = :id");
+            $sql->bindValue(':notinviteperms', serialize($perms), SQLITE3_TEXT);
+            $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
     }
 
     // 全ての土地取得
@@ -529,12 +609,16 @@ class Database
         }
     }
 
-    public function AddLandInvite(int $id, string $invitename)
+    public function AddLandInvite(int $id, string $invitename, array $perms)
     {
         try {
             $invites = $this->GetLandInvites($id);
-            if (!in_array($invitename, $invites)) {
-                $invites[] = strtolower(str_replace("'", "", $invitename));
+            $name = strtolower(str_replace("'", "", $invitename));
+            if (!$this->checkInvite($id, $name)) {
+                $invites[] = array(
+                    "name" => strtolower(str_replace("'", "", $invitename)),
+                    "perms" => $perms
+                );
                 $sql = $this->db->prepare("UPDATE lands SET invites = :invites WHERE id = :id");
                 $sql->bindValue(":invites", serialize($invites), SQLITE3_TEXT);
                 $sql->bindValue(":id", $id, SQLITE3_INTEGER);
@@ -552,10 +636,7 @@ class Database
             $sql->bindValue(":id", $id, SQLITE3_INTEGER);
             $result = $sql->execute();
             $data = $result->fetchArray(SQLITE3_ASSOC);
-            if (!$data) {
-                return false;
-            }
-
+            if (!$data) return false;
             return unserialize($data["invites"]);
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
@@ -569,9 +650,10 @@ class Database
         try {
             $invites = $this->GetLandInvites($id);
             $invitename = strtolower($name);
-            if (!$invites) return false;
-            elseif (!in_array($invitename, $invites)) return false;
-            return true;
+            foreach ($invites as $data) {
+                if(in_array($invitename, $data)) return true;
+            }
+            return false;
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -579,25 +661,47 @@ class Database
         return false;
     }
 
-    public function RemoveLandInvite(int $id, string $name): bool
+    public function RemoveLandInvite(int $id, string $name)
     {
         try {
             $invites = $this->GetLandInvites($id);
             $invitename = strtolower($name);
-            if (!in_array($invitename, $invites)) return false;
+            if (!$this->checkInvite($id, $invitename)) return;
+            $newinvite = [];
 
-            foreach ($invites as $key => $i) {
-                if ($i === $invitename) {
-                    unset($invites[$key]);
-                    $sql = $this->db->prepare("UPDATE lands SET invites = :invites WHERE id = :id");
-                    $sql->bindValue(":invites", serialize($invites), SQLITE3_TEXT);
-                    $sql->bindValue(":id", $id, SQLITE3_INTEGER);
-                    $sql->execute();
-                    return true;
+            foreach ($invites as $key) {
+                if (!in_array($invitename, $key)) {
+                    $newinvite[] = $key;
                 }
             }
 
-            return false;
+            $sql = $this->db->prepare("UPDATE lands SET invites = :invites WHERE id = :id");
+            $sql->bindValue(":invites", serialize($newinvite), SQLITE3_TEXT);
+            $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+            $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function GetLandInvitePerms(int $id, string $name)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM lands WHERE id = :id");
+            $sql->bindValue(":id", $id, SQLITE3_INTEGER);
+            $result = $sql->execute();
+            $data = $result->fetchArray(SQLITE3_ASSOC);
+            if (!$data) return false;
+            $all = unserialize($data["invites"]);
+            $perms = false;
+            foreach ($all as $key) {
+                if($key["name"] === $name) {
+                    $perms = $key["perms"];
+                    break;
+                }
+            }
+
+            return $perms;
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -1193,7 +1297,7 @@ class Database
     public function DeleteRegularMessage(int $id)
     {
         try {
-            $sql = $this->db->prepare("DELETE FROM regularmessages id = :id");
+            $sql = $this->db->prepare("DELETE FROM regularmessages WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {

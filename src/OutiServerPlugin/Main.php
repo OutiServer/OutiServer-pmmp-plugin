@@ -44,6 +44,7 @@ class Main extends PluginBase
     public Config $config;
     public Config $music;
     public Config $landconfig;
+    public Config $backupconfig;
     public Land $land;
     public ChestShop $chestshop;
     public AdminShop $adminshop;
@@ -67,6 +68,9 @@ class Main extends PluginBase
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
             $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
             $this->landconfig = new Config($this->getDataFolder() . "land.yml", Config::YAML);
+            $this->backupconfig = new Config($this->getDataFolder() . "backup.yml", Config::YAML, array(
+                "changeLandData" => false
+            ));
             $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
             if ($token === 'DISCORD_TOKEN') {
                 $this->getLogger()->error("config.yml: DiscordBot_Tokenが設定されていません");
@@ -238,7 +242,6 @@ class Main extends PluginBase
                     $this->client->sendDB();
                     break;
                 case 'setitem':
-                    var_dump($args);
                     if (!is_numeric($args[0]) or !is_numeric($args[1]) or !isset($args[2])) break;
                     $item = Item::get((int)$args[0], (int)$args[1]);
                     if (!$item) return true;
