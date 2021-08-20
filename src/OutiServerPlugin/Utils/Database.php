@@ -45,6 +45,18 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS regularmessages (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS warns (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, reason TEXT)");
 
+            if(!$this->plugin->backupconfig->get("changeLandData", false) and $this->plugin->backupconfig->get("version", "3.2.3") !== "3.2.3") {
+                if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "notinviteperms")) {
+                    $this->db->exec("ALTER TABLE lands ADD COLUMN notinviteperms TEXT");
+                }
+                $sql = $this->db->prepare("UPDATE lands SET invites = :invites, notinviteperms = :notinviteperms");
+                $sql->bindValue(":invites", serialize(array()), SQLITE3_TEXT);
+                $sql->bindValue(":notinviteperms", serialize(array(false, false, false)), SQLITE3_TEXT);
+                $sql->execute();
+                $this->plugin->backupconfig->set("changeLandData", true);
+                $this->plugin->backupconfig->save();
+            }
+
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
                 $sql->bindValue(':name', $key, SQLITE3_TEXT);

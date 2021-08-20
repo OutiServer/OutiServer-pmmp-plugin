@@ -29,6 +29,7 @@ class EventListener implements Listener
 {
     private Main $plugin;
     private array $playerlevel = [];
+    private array $landalarm = [];
 
     // <editor-fold desc="コンストラクタ">
     public function __construct(Main $plugin)
@@ -95,6 +96,7 @@ class EventListener implements Listener
             $player = $event->getPlayer();
             $this->plugin->sound->StopSound($player);
             $name = $player->getName();
+            unset($this->plugin->applewatch->check[$name], $this->plugin->land->startlands[$name], $this->plugin->land->endlands[$name], $this->playerlevel[$name], $this->landalarm[$name]);
             $this->plugin->client->sendChatMessage("**$name**がサーバーから退出しました\n");
             $playerdata = $this->plugin->db->GetMoney($name);
             $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', ''), "{$name}がゲームにから退出しました。 ワールド {$player->getLevel()->getName()} X座標 {$player->getX()} Y座標 {$player->getY()} Z座標 {$player->getZ()} 所持金 {$playerdata["money"]}円"));
@@ -149,32 +151,20 @@ class EventListener implements Listener
                 }
                 elseif ($landid) {
                     if (!$this->plugin->db->CheckLandOwner($landid, $name) and $this->plugin->db->CheckLandProtection($landid)) {
-                        if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP)) {
-                            //$event->setCancelled();
+                        if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP_INSTALLATION)) {
+                            $event->setCancelled();
                         }
-                        elseif ($this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP, $name)) {
-                            //$event->setCancelled();
+                        elseif ($this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP_INSTALLATION, $name)) {
+                            $event->setCancelled();
                         }
                     }
+                }
+                elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+                    $event->setCancelled();
                 }
 
                 if (!$event->isCancelled()) {
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nのブロック {$itemname["janame"]} をタップしました"));
-                }
-            }
-            elseif ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_AIR) {
-                var_dump("設置");
-                if (!$player->isOp()) {
-                    if ($landid) {
-                        if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_INSTALLATION)) {
-                            $event->setCancelled();
-                        }
-                        elseif ($this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_INSTALLATION, $name)) {
-                            $event->setCancelled();
-                        }
-                    } elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
-                        $event->setCancelled();
-                    }
                 }
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -342,12 +332,14 @@ class EventListener implements Listener
             $player = $event->getPlayer();
             $name = $player->getName();
             $level = $player->getLevel();
+            $landid = $this->plugin->db->GetLandId($level->getName(), (int)$player->x, (int)$player->z);
             if(isset($this->playerlevel[$name])) {
                 if($this->playerlevel[$name] !== $level->getName()) {
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPlayerLog_Webhook', ''), "{$name}が ワールド: {$this->playerlevel[$name]} から {$player->getLevel()->getName()} に移動しました"));
                     $this->playerlevel[$name] = $level->getName();
                 }
             }
+
             if (isset($this->plugin->sound->playersounds[$name])) {
                 $startX = $this->plugin->sound->playersounds[$name]["startx"];
                 $startZ = $this->plugin->sound->playersounds[$name]["startz"];
@@ -361,6 +353,16 @@ class EventListener implements Listener
             } else {
                 $this->plugin->sound->PlaySound($player);
             }
+
+            if($landid) {
+                if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandOwner($landid, $name) and $this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_ALARM) and !isset($this->landalarm[$name])) {
+                    $this->landalarm[$name] = true;
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "⚠️警告⚠️ $name が 土地ID $landid に侵入しました"));
+                    $this->plugin->getServer()->broadcastMessage("§e⚠警告⚠ $name が 土地ID $landid に侵入しました");
+
+                }
+            }
+            else unset($this->landalarm[$name]);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -379,7 +381,6 @@ class EventListener implements Listener
     }
     // </editor-fold>
 
-    /*
     public function onBlockPlace(BlockPlaceEvent $event)
     {
         try {
@@ -398,13 +399,13 @@ class EventListener implements Listener
             $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nにブロック {$itemname["janame"]} を設置しました"));
             if (!$player->isOp()) {
                 if ($landid) {
-                    if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_INSTALLATION)) {
+                    if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP_INSTALLATION)) {
                         $event->setCancelled();
                     }
-                    elseif ($this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_INSTALLATION, $name)) {
+                    elseif ($this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP_INSTALLATION, $name)) {
                         $event->setCancelled();
                     }
-                } elseif (!$player->isOp() and !in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
+                } elseif (!in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
                     $event->setCancelled();
                 }
             }
@@ -412,5 +413,4 @@ class EventListener implements Listener
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
     }
-    */
 }
