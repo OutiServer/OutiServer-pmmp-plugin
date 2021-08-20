@@ -27,6 +27,9 @@ DiscordBlockLog_Webhook: ""
 # DiscordのPluginLog用WebhookURL
 DiscordPluginLog_Webhook: ""
 
+# Discordの処罰ログ用WebhookURL
+DiscordPunishmentLog_Webhook: ""
+
 # DiscordのCommand Prefix
 Discord_Command_Prefix: "?unko"
 

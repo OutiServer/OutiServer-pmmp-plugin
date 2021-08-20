@@ -43,17 +43,8 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS casinoslotsettings (levelname TEXT PRIMARY KEY, jp INTEGER, highjp INTEGER, highplayer TEXT, lastjp INTEGER, lastplayer TEXT, x INTEGER, y INTEGER, z INTEGER)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS itemdatas (item TEXT PRIMARY KEY, id INTEGER, meta INTEGER, janame TEXT, imagepath TEXT)");
             $this->db->exec("CREATE TABLE IF NOT EXISTS regularmessages (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT)");
-            if(!$this->plugin->backupconfig->get("changeLandData", false)) {
-                if (!strpos($this->db->prepare("SELECT * FROM sqlite_master WHERE type = 'table' AND name = 'lands'")->execute()->fetchArray()["sql"], "notinviteperms")) {
-                    $this->db->exec("ALTER TABLE lands ADD COLUMN notinviteperms TEXT");
-                }
-                $sql = $this->db->prepare("UPDATE lands SET invites = :invites, notinviteperms = :notinviteperms");
-                $sql->bindValue(":invites", serialize(array()), SQLITE3_TEXT);
-                $sql->bindValue(":notinviteperms", serialize(array(false, false, false, false)), SQLITE3_TEXT);
-                $sql->execute();
-                $this->plugin->backupconfig->set("changeLandData", true);
-                $this->plugin->backupconfig->save();
-            }
+            $this->db->exec("CREATE TABLE IF NOT EXISTS warns (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, reason TEXT)");
+
             foreach ($DefaultItemCategory as $key) {
                 $sql = $this->db->prepare("SELECT * FROM itemcategorys WHERE name = :name");
                 $sql->bindValue(':name', $key, SQLITE3_TEXT);
@@ -1300,6 +1291,61 @@ class Database
             $sql = $this->db->prepare("DELETE FROM regularmessages WHERE id = :id");
             $sql->bindValue(':id', $id, SQLITE3_INTEGER);
             $sql->execute();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+    }
+
+    public function AddWarn(string $name, string $reason)
+    {
+        // CREATE TABLE IF NOT EXISTS warns (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, reason TEXT)
+        try {
+            $sql = $this->db->prepare("INSERT INTO warns (name, reason) VALUES (:name, :reason)");
+            $sql->bindValue(':name', $name, SQLITE3_TEXT);
+            $sql->bindValue(':reason', $reason, SQLITE3_TEXT);
+            $sql->execute();
+            return $this->db->query("SELECT seq FROM sqlite_sequence WHERE name = 'warns'")->fetchArray()["seq"];
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function GetWarnName(string $name)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM warns WHERE name = :name");
+            $sql->bindValue(":name", $name, SQLITE3_TEXT);
+            $result = $sql->execute();
+            return $result->fetchArray();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function GetWarnCase(int $case)
+    {
+        try {
+            $sql = $this->db->prepare("SELECT * FROM warns WHERE id = :id");
+            $sql->bindValue(":id", $case, SQLITE3_INTEGER);
+            $result = $sql->execute();
+            return $result->fetchArray();
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function RemoveWarnName(string $name)
+    {
+        try {
+            $sql = $this->db->prepare("DELETE FROM warns WHERE name = :name");
+            $sql->bindValue(":name", $name, SQLITE3_TEXT);
+            $result = $sql->execute();
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
