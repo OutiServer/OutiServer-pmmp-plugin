@@ -163,7 +163,10 @@ class EventListener implements Listener
                     $event->setCancelled();
                 }
 
-                if (!$event->isCancelled()) {
+                if ($event->isCancelled()) {
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nのブロック {$itemname["janame"]} をタップしようとしました"));
+                }
+                else {
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nのブロック {$itemname["janame"]} をタップしました"));
                 }
             }
@@ -192,6 +195,12 @@ class EventListener implements Listener
                 );
             }
 
+            if(!in_array(strtolower($player->getName()), $this->plugin->config->get('OPList', array())) and $item->getId() === 7) {
+                $player->kick("§cプラグインにより不正検知されました\n岩盤破壊をしているがOPホワイトリストに存在しない\nこれが誤検知である場合は、運営に解除申請をしてください");
+                $player->setBanned(true);
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "{$player->getName()} がプラグインにより不正検知されました\n不正検知詳細: 岩盤破壊をしているがOPホワイトリストに存在しない"));
+                return;
+            }
             if ($slotid) {
                 if (!$player->isOp()) {
                     $player->sendMessage("§b[おうちカジノ(スロット)] >> §4スロットを破壊できるのはOP権限を所有している人のみです");
@@ -224,7 +233,10 @@ class EventListener implements Listener
                 $event->setCancelled();
             }
 
-            if(!$event->isCancelled()) {
+            if($event->isCancelled()) {
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nのブロック {$itemname["janame"]} を破壊しようとしました"));
+            }
+            else {
                 $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nのブロック {$itemname["janame"]} を破壊しました"));
             }
 
@@ -301,7 +313,10 @@ class EventListener implements Listener
                 }
             } else $event->setCancelled();
 
-            if(!$event->isCancelled()) {
+            if($event->isCancelled()) {
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "X座標 $block->x Y座標 $block->y Z座標 $block->z ワールド {$block->getLevel()->getName()}\nのブロック {$itemname["janame"]} が焼失しようとしました"));
+            }
+            else {
                 $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "X座標 $block->x Y座標 $block->y Z座標 $block->z ワールド {$block->getLevel()->getName()}\nのブロック {$itemname["janame"]} が焼失しました"));
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
@@ -396,7 +411,7 @@ class EventListener implements Listener
                     "janame" => $item->getName()
                 );
             }
-            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nにブロック {$itemname["janame"]} を設置しました"));
+
             if (!$player->isOp()) {
                 if ($landid) {
                     if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_TAP_INSTALLATION)) {
@@ -408,6 +423,13 @@ class EventListener implements Listener
                 } elseif (!in_array($levelname, $this->plugin->config->get('Land_Protection_Allow', array()))) {
                     $event->setCancelled();
                 }
+            }
+
+            if($event->isCancelled()) {
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nにブロック {$itemname["janame"]} を設置しようとしました"));
+            }
+            else {
+                $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordBlockLog_Webhook', ''), "{$name}がX座標 $block->x Y座標 $block->y Z座標 $block->z ワールド $levelname\nにブロック {$itemname["janame"]} を設置しました"));
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

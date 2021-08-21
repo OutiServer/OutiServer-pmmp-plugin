@@ -30,6 +30,26 @@ class PlayerStatus extends Task
     {
         try {
             foreach ($this->plugin->getServer()->getOnlinePlayers() as $player) {
+                if($player->isOp() and !in_array(strtolower($player->getName()), $this->plugin->config->get('OPList', array()))) {
+                    $player->kick("§cプラグインにより不正検知されました\nOPを所持しているがOPホワイトリストに存在しない\nこれが誤検知である場合は、運営に解除申請をしてください");
+                    $player->setBanned(true);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "{$player->getName()} がプラグインにより不正検知されました\n不正検知詳細: OPを所持しているがOPホワイトリストに存在しない"));
+                    return;
+                }
+                elseif (($player->getGamemode() === Player::CREATIVE or $player->getGamemode() === Player::SPECTATOR) and !in_array(strtolower($player->getName()), $this->plugin->config->get('OPList', array()))) {
+                    $player->kick("§cプラグインにより不正検知されました\nゲームモードがクリエイティブ・スペクテイターモードだがOPホワイトリストに存在しない\nこれが誤検知である場合は、運営に解除申請をしてください");
+                    $player->setBanned(true);
+                    $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "{$player->getName()} がプラグインにより不正検知されました\nゲームモードがクリエイティブ・スペクテイターモードだがOPホワイトリストに存在しない"));
+                    return;
+                }
+
+                $levelname = $player->getLevel()->getName();
+                $landid = $this->plugin->db->GetLandId($levelname, (int)$player->x, (int)$player->z);
+                $owner = "誰も所有していません";
+                if($landid) {
+                    $land = $this->plugin->db->GetLandData($landid);
+                    $owner = "{$land["owner"]}が所有しています";
+                }
                 $item = Item::get(347);
                 $item->setCustomName("OutiWatch");
                 if (!$player->getInventory()->contains($item)) {
@@ -47,6 +67,7 @@ class PlayerStatus extends Task
                 $this->sendData($player, "§6オンライン人数: " . count($this->plugin->getServer()->getOnlinePlayers()) . "/" . $this->plugin->getServer()->getMaxPlayers(), 6);
                 $this->sendData($player, "§dPing: " . $player->getPing() . "ms", 7);
                 $this->sendData($player, "§c" . gmdate("アイテムクリアまであとi分s秒", $this->plugin->autoClearLagg->seconds), 8);
+                $this->sendData($player, "§a現在立っている土地は$owner", 9);
             }
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);

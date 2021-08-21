@@ -73,4 +73,14 @@ WarningClearItemTick: [ 60, 5 ]
 # 定期メッセージの間隔(秒)
 RegularMessageTick: 60
 
+OPList: [
+    unkomen265,
+    bacotchang,
+    sei3kari0125,
+    kencir0909,
+    steelyvase48078,
+    SpareParty38777,
+    marcoco0920
+]
+
 ...

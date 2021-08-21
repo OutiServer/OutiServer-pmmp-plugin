@@ -121,7 +121,7 @@ class Main extends PluginBase
                     }
 
                     foreach ($this->client->GetChatMessage() as $message) {
-                        $this->getServer()->broadcastMessage("[Discord:{$message["role"]}:" . $message["username"] . "] " . $message["content"]);
+                        $this->getServer()->broadcastMessage("[Discord:" . $message["username"] . "] " . $message["content"]);
                     }
                 }
             ), 5, 1);
@@ -132,7 +132,7 @@ class Main extends PluginBase
                             switch ($command["name"]) {
                                 case "server":
                                     $server = $this->getServer();
-                                    $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: " . $server->getIp() . "\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
+                                    $this->client->sendCommand($command["channelid"], "```diff\n🏠おうちサーバー(PMMP)の現在の状態🏠\n+ IP: outiserver.com\n+ PORT: " . $server->getPort() . "\n+ サーバーのバージョン: " . $server->getVersion() . "\n+ デフォルトゲームモード: " . $server->getDefaultGamemode() . "\n+ デフォルトワールド: " . $server->getDefaultLevel()->getName() . "\n+ 現在参加中のメンバー: " . count($server->getOnlinePlayers()) . "/" . $server->getMaxPlayers() . "人\n```\n");
                                     break;
                                 case "announce":
                                     $time = new DateTime('now');
