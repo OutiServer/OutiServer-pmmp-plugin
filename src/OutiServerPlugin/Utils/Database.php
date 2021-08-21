@@ -51,7 +51,7 @@ class Database
                 }
                 $sql = $this->db->prepare("UPDATE lands SET invites = :invites, notinviteperms = :notinviteperms");
                 $sql->bindValue(":invites", serialize(array()), SQLITE3_TEXT);
-                $sql->bindValue(":notinviteperms", serialize(array(false, false, false)), SQLITE3_TEXT);
+                $sql->bindValue(":notinviteperms", serialize(array(false, false, false, false)), SQLITE3_TEXT);
                 $sql->execute();
                 $this->plugin->backupconfig->set("changeLandData", true);
                 $this->plugin->backupconfig->save();
@@ -502,22 +502,15 @@ class Database
     }
     // </editor-fold>
 
-    public function GetAllLandOwnerInviteData(string $name)
+    public function GetLandTP(string $name)
     {
         try {
             $alldata = [];
-            $sql = $this->db->prepare("SELECT * FROM lands WHERE owner = :owner");
-            $sql->bindValue(":owner", strtolower($name), SQLITE3_TEXT);
-            $result = $sql->execute();
-            while ($d = $result->fetchArray(SQLITE3_ASSOC)) {
-                if (!$d["tpx"]) continue;
-                $alldata[] = "{$d["id"]}";
-            }
 
             $lands = $this->GetAllLand();
             if (!$lands) return false;
             foreach ($lands as $data) {
-                if (!$this->checkInvite($data["id"], $name) or !$data["tpx"]) continue;
+                if((!$this->CheckLandOwner($data["id"], $name) and !$this->checkInvite($data["id"], $name) and !$this->CheckLandPerms($data["id"], Enum::LAND_PERMS_ALL_TP)) or !$data["tpx"])   return false;
 
                 $alldata[] = "{$data["id"]}";
             }
@@ -525,6 +518,21 @@ class Database
             if (count($alldata) < 1) return false;
 
             return $alldata;
+        } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
+            $this->plugin->errorHandler->onErrorNotPlayer($e);
+        }
+
+        return false;
+    }
+
+    public function CheckLandTP(int $id, string $name): bool
+    {
+        try {
+            if(!$this->CheckLandOwner($id, $name) and !$this->checkInvite($id, $name) and !$this->CheckLandPerms($id, Enum::LAND_PERMS_ALL_TP))  return false;
+            $data = $this->GetLandData($id);
+            if(!$data["tpx"]) return false;
+
+            return true;
         } catch (SQLiteException | Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onErrorNotPlayer($e);
         }
@@ -652,6 +660,7 @@ class Database
     {
         try {
             $invites = $this->GetLandInvites($id);
+            if(!$invites) return false;
             $invitename = strtolower($name);
             foreach ($invites as $data) {
                 if(in_array($invitename, $data)) return true;

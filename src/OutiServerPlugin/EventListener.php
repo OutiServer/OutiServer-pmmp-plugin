@@ -358,7 +358,7 @@ class EventListener implements Listener
                 if(!$this->plugin->db->checkInvite($landid, $name) and !$this->plugin->db->CheckLandOwner($landid, $name) and $this->plugin->db->CheckLandPerms($landid, Enum::LAND_PERMS_ALARM) and !isset($this->landalarm[$name])) {
                     $this->landalarm[$name] = true;
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPunishmentLog_Webhook', ''), "⚠️警告⚠️ $name が 土地ID $landid に侵入しました"));
-                    $this->plugin->getServer()->broadcastMessage("§e⚠警告⚠ $name が 土地ID $landid に侵入しました");
+                    $player->sendMessage("§e⚠警告⚠ 土地ID $landid に不法侵入しています");
 
                 }
             }

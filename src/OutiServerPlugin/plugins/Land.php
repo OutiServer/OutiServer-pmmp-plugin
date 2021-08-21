@@ -175,7 +175,8 @@ class Land
                             $perms = array(
                                 $data[5],
                                 $data[6],
-                                $data[7]
+                                $data[7],
+                                $data[8]
                             );
                             $id = $this->plugin->db->SetLand($name, $levelname, $startX, $startZ, $endX, $endZ, $perms, (int)$data[2], $data[3] ? $player->asVector3() : null);
                             $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地購入を使用し ワールド $levelname 開始X座標 $startX 開始Z座標 $startZ 終了X座標 $endX 終了Z座標 $endZ の土地を $price 円で購入しました\n土地ID $id\n" . $data[3] ? "TP地点 X座標 {$player->asVector3()->getX()} Y座標 {$player->asVector3()->getY()} Z座標 {$player->asVector3()->getZ()}" : "\n権限: $data[5] $data[6] $data[7]"));
@@ -200,6 +201,7 @@ class Land
             $form->addToggle("購入時土地保護を有効にする", true);
             $form->addToggle("現在立っている場所をtp地点に設定する", false);
             $form->addLabel("ーーー招待されてないプレイヤーができる操作設定ーーー");
+            $form->addToggle("誰でもTPできるようにする", false);
             $form->addToggle("ブロックタップ・ブロック設置", false);
             $form->addToggle("ブロック破壊", false);
             $form->addToggle("侵入した時に警報装置を作動させる", true);
@@ -222,23 +224,32 @@ class Land
             $form = new CustomForm(function (Player $player, $data) use ($name, $alllands) {
                 try {
                     if ($data === null) return true;
-                    else if (!is_numeric($data[0])) return true;
+                    elseif ($data[0]) {
+                        $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
+                        return true;
+                    }
+                    else if (!is_numeric($data[1])) return true;
+                    elseif ($this->plugin->db->CheckLandOwner((int)$data[1], $data[2])) {
+                        $player->sendMessage("§b[土地保護] >> §4土地ID #$data[1] はあなたが所有していません");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "inviteland"], [$player]), 20);
+                        return true;
+                    }
 
-                    $landid = (int)$alllands[(int)$data[0]];
-                    $landdata = $this->plugin->db->GetLandData($landid);
+                    $landdata = $this->plugin->db->GetLandData((int)$data[1]);
                     if (!$landdata) {
                         $player->sendMessage("§b[土地保護] >> §4土地データが見つかりませんでした");
                         return true;
                     }
 
-                    if ($this->plugin->db->CheckLandProtection($landid)) {
-                        $this->plugin->db->UpdateLandProtection($landid, 0);
-                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $landid の土地保護を無効化しました"));
-                        $player->sendMessage("§b[土地保護] >> §4土地ID #$landid の土地保護を無効にしました");
+                    if ($this->plugin->db->CheckLandProtection((int)$data[1])) {
+                        $this->plugin->db->UpdateLandProtection((int)$data[1], 0);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $data[1] の土地保護を無効化しました"));
+                        $player->sendMessage("§b[土地保護] >> §4土地ID #$data[1] の土地保護を無効にしました");
                     } else {
-                        $this->plugin->db->UpdateLandProtection($landid, 1);
-                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $landid の土地保護を有効化しました"));
-                        $player->sendMessage("§b[土地保護] >> §6土地ID #$landid の土地保護を有効にしました");
+                        $this->plugin->db->UpdateLandProtection((int)$data[1], 1);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地保護設定を使用し Id $data[1] の土地保護を有効化しました"));
+                        $player->sendMessage("§b[土地保護] >> §6土地ID #$data[1] の土地保護を有効にしました");
                     }
 
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
@@ -250,7 +261,8 @@ class Land
             });
 
             $form->setTitle("OutiWatch-土地-保護");
-            $form->addDropdown("土地保護・保護解除する土地ID", $alllands);
+            $form->addToggle("キャンセルして戻る");
+            $form->addInput("土地保護・保護解除する土地ID", "id", "");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
@@ -260,15 +272,7 @@ class Land
     public function inviteland(Player $player)
     {
         try {
-            $name = $player->getName();
-            $alllands = $this->plugin->db->GetAllLandOwnerData($name);
-            if (!$alllands) {
-                $player->sendMessage("§b[土地保護] >> §4あなたが現在所有している土地は存在しないようです。");
-                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
-                return;
-            }
-
-            $form = new CustomForm(function (Player $player, $data) use ($alllands) {
+            $form = new CustomForm(function (Player $player, $data) {
                 try {
                     if ($data === null) return true;
                     elseif ($data[0]) {
@@ -276,26 +280,29 @@ class Land
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
                     } else if (!is_numeric($data[1]) or !isset($data[2])) return true;
+                    elseif ($this->plugin->db->CheckLandOwner((int)$data[1], $data[2])) {
+                        $player->sendMessage("§b[土地保護] >> §4土地ID #$data[1] はあなたが所有していません");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "inviteland"], [$player]), 20);
+                        return true;
+                    }
                     else if (!Player::isValidUserName($data[2])) {
                         $player->sendMessage("§b[土地保護] >> §4不正なプレイヤー名です");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "inviteland"], [$player]), 20);
                         return true;
                     }
 
-                    $landid = (int)$alllands[(int)$data[1]];
-
-                    if ($this->plugin->db->checkInvite($landid, $data[2])) {
-                            $this->plugin->db->RemoveLandInvite($landid, $data[2]);
-                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $landid の $data[2] の招待を取り消しました"));
-                            $player->sendMessage("§b[土地保護] >> §6$data[2]の土地ID #$landid の招待を削除しました");
+                    if ($this->plugin->db->checkInvite((int)$data[1], $data[2])) {
+                            $this->plugin->db->RemoveLandInvite((int)$data[1], $data[2]);
+                            $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $data[1] の $data[2] の招待を取り消しました"));
+                            $player->sendMessage("§b[土地保護] >> §6$data[2]の土地ID #$data[1] の招待を削除しました");
                     } else {
                         $perms = array(
                             $data[4],
                             $data[5]
                         );
-                        $this->plugin->db->AddLandInvite($landid, $data[2], $perms);
-                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $landid に $data[2] を招待しました\n権限 $data[4] $data[5]"));
-                        $player->sendMessage("§b[土地保護] >> §6$data[2]を土地ID #$landid に招待しました");
+                        $this->plugin->db->AddLandInvite((int)$data[1], $data[2], $perms);
+                        $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地招待を使用し Id $data[1] に $data[2] を招待しました\n権限 $data[4] $data[5]"));
+                        $player->sendMessage("§b[土地保護] >> §6$data[2]を土地ID #$data[1] に招待しました");
                     }
 
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
@@ -308,7 +315,7 @@ class Land
 
             $form->setTitle("OutiWatch-土地-招待");
             $form->addToggle("キャンセルして戻る", false);
-            $form->addDropdown("土地に招待・招待を取り消す土地ID", $alllands);
+            $form->addInput("土地に招待・招待を取り消す土地ID", "id", "");
             $form->addInput("招待する・招待を取り消すプレイヤー名", "playername", "");
             $form->addLabel("ーーー招待するプレイヤーができる操作設定ーーー");
             $form->addToggle("ブロックタップ・ブロック設置", true);
@@ -502,27 +509,25 @@ class Land
     public function TeleportLand(Player $player)
     {
         try {
-            $name = $player->getName();
-            $alllands = $this->plugin->db->GetAllLandOwnerInviteData($name);
-            if (!$alllands) {
-                $player->sendMessage("§b[土地保護] >> §4あなたが現在所有してTP地点が設定されている土地・招待されていてTP地点が設定されている土地は存在しないようです。");
-                $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
-                return;
-            }
-
-            $form = new CustomForm(function (Player $player, $data) use ($alllands) {
+            $form = new CustomForm(function (Player $player, $data) {
                 try {
+                    $name = $player->getName();
                     if ($data === null) return true;
                     elseif ($data[0] === true) {
                         $player->sendMessage("§b[土地保護] >> §eキャンセルしました");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                         return true;
-                    } elseif (!is_numeric($data[1])) return true;
+                    }
+                    elseif (!is_numeric($data[1])) return true;
+                    elseif (!$this->plugin->db->CheckLandTP((int)$data[1], $name)) {
+                        $player->sendMessage("§b[土地保護] >> §4土地ID #$data[1] はTP地点が設定されていないか、所有権がない、招待されていない、全員のTPを許可していない土地のようです");
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "TeleportLand"], [$player]), 20);
+                        return true;
+                    }
 
-                    $landid = (int)$alllands[(int)$data[1]];
-                    $landdata = $this->plugin->db->GetLandData($landid);
+                    $landdata = $this->plugin->db->GetLandData((int)$data[1]);
                     if (!$this->plugin->getServer()->isLevelGenerated($landdata["levelname"])) {
-                        $player->sendMessage("§b[土地保護] >> §4テレポート先のワールドが存在しないようです");
+                        $player->sendMessage("§b[土地保護] >> §4テレポート先のワールドデータが見つかりません");
                         $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "TeleportLand"], [$player]), 20);
                         return true;
                     }
@@ -534,8 +539,7 @@ class Land
                     $oldtp = $player;
                     $player->teleport($pos);
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "{$player->getName()}が土地TPを使用し、 ワールド {$oldtp->getLevel()->getName()} X座標 {$oldtp->getX()} Y座標 {$oldtp->getY()} Z座標 {$oldtp->getZ()} から ワールド {$level->getName()} X座標 {$player->getX()} Y座標 {$player->getY()} Z座標 {$player->getZ()} にTPしました"));
-                    $player->sendMessage("§b[土地保護] >> §6土地ID #$landid にテレポートしました");
-
+                    $player->sendMessage("§b[土地保護] >> §6土地ID #$data[1] にテレポートしました");
                     $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "land"], [$player]), 20);
                 } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
                     $this->plugin->errorHandler->onError($e, $player);
@@ -546,7 +550,7 @@ class Land
 
             $form->setTitle("OutiWatch-土地-テレポート");
             $form->addToggle("キャンセルして戻る", false);
-            $form->addDropdown("テレポートする土地ID", $alllands);
+            $form->addInput("テレポートする土地ID", "id", "");
             $player->sendForm($form);
         } catch (Error | TypeError | Exception | InvalidArgumentException | ArgumentCountError $e) {
             $this->plugin->errorHandler->onError($e, $player);
@@ -574,7 +578,8 @@ class Land
                     $perms = array(
                         $data[2],
                         $data[3],
-                        $data[4]
+                        $data[4],
+                        $data[5]
                     );
                     $this->plugin->db->UpdateLandPemrs((int)$data[1], $perms);
                     $this->plugin->getServer()->getAsyncPool()->submitTask(new SendLog($this->plugin->config->get('DiscordPluginLog_Webhook', ''), "$name が 土地ID $data[1] の権限を $data[2] $data[3] $data[4] に変更しました"));
@@ -590,6 +595,7 @@ class Land
             $form->setTitle("OutiWatch-土地-権限変更");
             $form->addToggle("キャンセルして戻る");
             $form->addInput("土地ID", "id", "");
+            $form->addToggle("誰でもTPできるようにする", false);
             $form->addToggle("ブロックタップ・ブロック設置", false);
             $form->addToggle("ブロック破壊", false);
             $form->addToggle("侵入した時に警報装置を作動させる", true);
