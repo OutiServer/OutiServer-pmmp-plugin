@@ -51,7 +51,7 @@ class Sound
                     $pk->x = (int)$player->x;
                     $pk->y = (int)$player->y;
                     $pk->z = (int)$player->z;
-                    $pk->volume = 1;
+                    $pk->volume = (float)$data["volume"];
                     $pk->pitch = 1;
                     $player->senddataPacket($pk);
                     $this->playersounds[$name] = array(

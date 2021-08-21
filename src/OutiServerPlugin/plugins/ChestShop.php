@@ -90,7 +90,7 @@ class ChestShop
 
                     if (!$inventory->canAddItem($item)) {
                         $player->sendMessage('§b[チェストショップ] §f>> §6インベントリの空きが足りません');
-                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "CreateChestShop"], [$player, $shopdata]), 20);
+                        $this->plugin->getScheduler()->scheduleDelayedTask(new ReturnForm([$this, "BuyChestShop"], [$player, $shopdata]), 20);
                         return true;
                     }
 

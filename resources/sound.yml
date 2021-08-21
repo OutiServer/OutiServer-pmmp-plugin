@@ -6,4 +6,5 @@ world:
     startz: 314
     endx: 155
     endz: 345
+    volume: 1
 ...

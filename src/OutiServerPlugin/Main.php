@@ -44,6 +44,7 @@ class Main extends PluginBase
     public Config $config;
     public Config $music;
     public Config $landconfig;
+    public Config $backupconfig;
     public Land $land;
     public ChestShop $chestshop;
     public AdminShop $adminshop;
@@ -67,6 +68,10 @@ class Main extends PluginBase
             $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
             $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
             $this->landconfig = new Config($this->getDataFolder() . "land.yml", Config::YAML);
+            $this->backupconfig = new Config($this->getDataFolder() . "backup.yml", Config::YAML, array(
+                "version" => '3.2.2',
+                "changeLandData" => false
+            ));
             $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
             if ($token === 'DISCORD_TOKEN') {
                 $this->getLogger()->error("config.yml: DiscordBot_Tokenが設定されていません");
@@ -180,6 +185,8 @@ class Main extends PluginBase
             $this->db->close();
             $this->client->sendChatMessage("サーバーが停止しました\n");
             $this->getLogger()->info("出力バッファリングを終了しています...");
+            $this->backupconfig->set('version', '3.2.3');
+            $this->backupconfig->save();
             $this->client->shutdown();
             ob_flush();
             ob_end_clean();
@@ -268,6 +275,8 @@ class Main extends PluginBase
                         $this->db->AddWarn($args[0], $args[1]);
                         $this->getServer()->getAsyncPool()->submitTask(new SendLog($this->config->get('DiscordPunishmentLog_Webhook', ''), "$name が警告されました\n警告理由: $args[1]"));
                         $sender->sendMessage("$args[0] を警告しました\n理由: $args[1]");
+                        $this->getServer()->broadcastMessage("$args[0] が警告されました\n理由: $args[1]");
+                        $this->client->sendChatMessage("$args[0] が警告されました\n理由: $args[1]");
                         $player = $this->getServer()->getPlayer($args[0]);
                         if($player instanceof Player) {
                             $nt = $player->getNameTag();
@@ -301,6 +310,9 @@ class Main extends PluginBase
                     else {
                         $this->db->RemoveWarnName($args[0]);
                         $sender->sendMessage("$args[0] の警告を解除しました");
+                        $this->getServer()->getAsyncPool()->submitTask(new SendLog($this->config->get('DiscordPunishmentLog_Webhook', ''), "$name の警告が解除されました"));
+                        $this->getServer()->broadcastMessage("$args[0] の警告が解除されました");
+                        $this->client->sendChatMessage("$args[0] の警告が解除されました");
                         $player = $this->getServer()->getPlayer($args[0]);
                         if($player instanceof Player) {
                             $nt = str_replace("§c⚠§f", "", $player->getNameTag());
