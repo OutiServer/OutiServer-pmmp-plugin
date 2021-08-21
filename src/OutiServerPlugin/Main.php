@@ -69,7 +69,7 @@ class Main extends PluginBase
             $this->music = new Config($this->getDataFolder() . "sound.yml", Config::YAML);
             $this->landconfig = new Config($this->getDataFolder() . "land.yml", Config::YAML);
             $this->backupconfig = new Config($this->getDataFolder() . "backup.yml", Config::YAML, array(
-                "version" => '3.2.2',
+                "version" => '3.2.3',
                 "changeLandData" => false
             ));
             $token = $this->config->get('DiscordBot_Token', "DISCORD_TOKEN");
